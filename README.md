@@ -3,7 +3,7 @@ The goal here is to provide a testing framework that can cover testing all aspec
 
 Melinoë is a chthonic nymph or goddess invoked in one of the Orphic Hymns and represented as a bringer of nightmares and madness. This seems particularly suitable for a testing framework.
 
-Hecate is most often shown holding a pair of torches or a key, perfect for a component that shines a light on outgoing often invisible requests.
+Hecate is most often shown holding a pair of torches or a key, perfect for a component that shines a light on outgoing, often invisible, requests.
 
 ### Goals
 1. Test a web application
