@@ -4,9 +4,7 @@ import org.goodiemania.melinoe.framework.MelinoeTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class Basic extends MelinoeTest {
-    private GithubRepositoryPage githubRepositoryPage;
-
+public class SecondBasic extends MelinoeTest {
     @BeforeAll
     public static void init() {
         getClassSession();
@@ -14,7 +12,6 @@ public class Basic extends MelinoeTest {
 
     @Test
     public void run() {
-        getSession().web().get("https://github.com/Goodie01/Melinoe");
-        githubRepositoryPage.checkPage();
+        getSession();
     }
 }

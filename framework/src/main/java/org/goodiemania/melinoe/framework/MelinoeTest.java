@@ -1,48 +1,87 @@
 package org.goodiemania.melinoe.framework;
 
+import java.lang.reflect.Field;
+import java.util.Optional;
+import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class MelinoeTest {
-
-    private static Context classContext;
+    private static final MetaSession metaSession = new MetaSession();
+    private static Session classSession;
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        System.out.println("Before all callback; " + extensionContext.getDisplayName());
+        classSession = new SessionImpl(metaSession);
+
+        Class<?> currentClass = new Object() {
+        }.getClass().getEnclosingClass();
+        FlowDecorator flowDecorator = new FlowDecorator(classSession);
+
+        while (currentClass != Object.class) {
+            Field[] fields = currentClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    break;
+                }
+                flowDecorator.decorate(field)
+                        .ifPresent(o -> {
+                            try {
+                                field.setAccessible(true);
+                                field.set(null, o);
+                            } catch (IllegalAccessException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        });
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+    };
+
+    @RegisterExtension
+    static AfterAllCallback afterAllCallback = extensionContext -> Optional.ofNullable(classSession).ifPresent(session1 -> System.out.println("Closing class session"));
+
+    private Session session;
+
+    @RegisterExtension
+    BeforeEachCallback beforeEachCallback = extensionContext -> {
+        session = new SessionImpl(metaSession);
+        Class<?> currentClass = this.getClass();
+        FlowDecorator flowDecorator = new FlowDecorator(session);
+
+        while (currentClass != Object.class) {
+            Field[] fields = currentClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                    break;
+                }
+                flowDecorator.decorate(field)
+                        .ifPresent(o -> {
+                            try {
+                                field.setAccessible(true);
+                                field.set(this, o);
+                            } catch (IllegalAccessException e) {
+                                throw new IllegalStateException(e);
+                            }
+                        });
+            }
+            currentClass = currentClass.getSuperclass();
+        }
     };
     @RegisterExtension
-    static AfterAllCallback afterAllCallback = extensionContext -> {
-        System.out.println("After all callback");
-    };
-
-    private Context context;
+    AfterEachCallback afterEachCallback = extensionContext -> Optional.ofNullable(session).ifPresent(session1 -> System.out.println("closing session"));
 
     //we want to do some funky stuff here...
-    public static Context getClassContext() {
-        System.out.println("getClassContext()");
-        return new Context() {
-            public void rest() {
-
-            }
-
-            public void web() {
-
-            }
-        };
+    public static Session getClassSession() {
+        System.out.println("getClassSession()");
+        return classSession;
     }
 
-    public Context getContext() {
-        System.out.println("getContext()");
-        return new Context() {
-            public void rest() {
-
-            }
-
-            public void web() {
-
-            }
-        };
+    public Session getSession() {
+        System.out.println("getSession()");
+        return session;
     }
 }
