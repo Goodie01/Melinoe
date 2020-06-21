@@ -3,6 +3,7 @@ package org.goodiemania.melinoe.framework.web;
 import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
+import org.goodiemania.melinoe.framework.session.logging.LogFileManager;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -66,8 +67,7 @@ public class ScreenshotTaker {
 
     public File takeScreenshot() {
         File screenshot = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        //TODO
-        File imageFile = null;//LogFileManager.GET_INSTANCE().createImageFile();
+        File imageFile = LogFileManager.GET_INSTANCE().createImageFile();
 
         try {
             FileUtils.copyFile(screenshot, imageFile);

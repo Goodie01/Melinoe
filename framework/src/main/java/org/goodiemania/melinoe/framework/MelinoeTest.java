@@ -2,6 +2,7 @@ package org.goodiemania.melinoe.framework;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
+import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -15,7 +16,7 @@ public abstract class MelinoeTest {
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        classSession = new SessionImpl(metaSession);
+        classSession = metaSession.createSessionFor(extensionContext);
 
         Class<?> currentClass = new Object() {
         }.getClass().getEnclosingClass();
@@ -42,13 +43,16 @@ public abstract class MelinoeTest {
     };
 
     @RegisterExtension
-    static AfterAllCallback afterAllCallback = extensionContext -> Optional.ofNullable(classSession).ifPresent(session1 -> System.out.println("Closing class session"));
+    static AfterAllCallback afterAllCallback = extensionContext -> {
+        metaSession.closeAllDrivers();
+        metaSession.logStuff();
+    };
 
     private Session session;
 
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
-        session = new SessionImpl(metaSession);
+        session = metaSession.createSessionFor(extensionContext);
         Class<?> currentClass = this.getClass();
         FlowDecorator flowDecorator = new FlowDecorator(session);
 
@@ -72,16 +76,16 @@ public abstract class MelinoeTest {
         }
     };
     @RegisterExtension
-    AfterEachCallback afterEachCallback = extensionContext -> Optional.ofNullable(session).ifPresent(session1 -> System.out.println("closing session"));
+    AfterEachCallback afterEachCallback = extensionContext -> {
+        metaSession.closeAllDrivers();
+    };
 
     //we want to do some funky stuff here...
     public static Session getClassSession() {
-        System.out.println("getClassSession()");
         return classSession;
     }
 
     public Session getSession() {
-        System.out.println("getSession()");
         return session;
     }
 }
