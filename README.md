@@ -11,7 +11,7 @@ Hecate is most often shown holding a pair of torches or a key, perfect for a com
 1. Test that when you perform a action via a rest API or UI, a outgoing request is made
 1. Detailed logs of all success and failures can be seen after a run
 
-## Melinoe is being created in at multiphased approach phases:
+## Melinoe is being created in at multiphased approach phases
 1. Create framework
    1. Selenium based web testing
    1. Testing a rest API
@@ -21,7 +21,7 @@ Hecate is most often shown holding a pair of torches or a key, perfect for a com
    1. Will store logs for validating requests were made
 1. Create Hecate-UI, which will allow testers to be able view logs and configure the new component on the fly
 
-## Componets:
+## Componets
 1. Test library, intended as a java library to be pulled in instead of JUnit, to write intergration tests
 1. Outgoing Rest API proxy (This needs a succinct name)
 1. Outgoing REST API proxy UI
