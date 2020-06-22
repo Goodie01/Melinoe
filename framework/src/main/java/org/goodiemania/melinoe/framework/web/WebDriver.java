@@ -21,7 +21,11 @@ public class WebDriver implements ClosableDriver {
 
     private String reloadFlag = "reloadFlag";
 
-    public WebDriver(final Session session, final org.openqa.selenium.WebDriver webDriver, final ScreenshotTaker screenshotTaker, final WebDriverWait webDriverWait, final LocalStorage localStorage) {
+    public WebDriver(final Session session,
+                     final org.openqa.selenium.WebDriver webDriver,
+                     final ScreenshotTaker screenshotTaker,
+                     final WebDriverWait webDriverWait,
+                     final LocalStorage localStorage) {
         this.session = session;
         this.webDriver = webDriver;
         this.screenshotTaker = screenshotTaker;

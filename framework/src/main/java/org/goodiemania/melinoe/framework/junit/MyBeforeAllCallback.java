@@ -3,7 +3,6 @@ package org.goodiemania.melinoe.framework.junit;
 import java.lang.reflect.Field;
 import org.goodiemania.melinoe.framework.FlowDecorator;
 import org.goodiemania.melinoe.framework.Session;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class MyBeforeAllCallback {
     public static void callBack(final Session session, final Class<?> parentClass) throws Exception {

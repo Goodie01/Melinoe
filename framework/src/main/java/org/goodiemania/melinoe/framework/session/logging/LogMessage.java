@@ -1,17 +1,16 @@
 package org.goodiemania.melinoe.framework.session.logging;
 
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 public class LogMessage {
     private final LocalDateTime dateTime;
     private final String message;
-    private String rawSecondMessage;
+    private final String secondMessage;
 
-    public LogMessage(final LocalDateTime dateTime, final String rawMessage, final String rawSecondMessage) {
+    public LogMessage(final LocalDateTime dateTime, final String rawMessage, final String secondMessage) {
         this.dateTime = dateTime;
         this.message = rawMessage;
-        this.rawSecondMessage = rawSecondMessage;
+        this.secondMessage = secondMessage;
     }
 
     public LocalDateTime getDateTime() {
@@ -22,7 +21,7 @@ public class LogMessage {
         return message;
     }
 
-    public String getRawSecondMessage() {
-        return rawSecondMessage;
+    public String getSecondMessage() {
+        return secondMessage;
     }
 }

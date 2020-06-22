@@ -1,6 +1,5 @@
 package org.goodiemania.melinoe.framework.web;
 
-import org.goodiemania.melinoe.framework.Session;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 

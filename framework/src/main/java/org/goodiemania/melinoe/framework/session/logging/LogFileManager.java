@@ -24,7 +24,9 @@ public class LogFileManager {
 
             String sessionName = System.getProperty("logName");
             if (StringUtils.isBlank(sessionName)) {
-                sessionName = String.format("Test_%s_%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")), UUID.randomUUID());
+                sessionName = String.format("Test_%s_%s",
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")),
+                        UUID.randomUUID());
             }
 
             runDirectory = new File(baseDir, sessionName);
@@ -40,7 +42,7 @@ public class LogFileManager {
         }
     }
 
-    public static LogFileManager GET_INSTANCE() {
+    public static LogFileManager getInstance() {
         return INSTANCE;
     }
 

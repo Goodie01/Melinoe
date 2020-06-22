@@ -40,7 +40,7 @@ public class MetaSession {
             System.out.println("======================  " + s + "  ++++++++++++++++++++");
 
             classLogger.getLogMessages().forEach(logMessage -> {
-                System.out.println(logMessage.getMessage() + "  ------  " + logMessage.getRawSecondMessage());
+                System.out.println(logMessage.getMessage() + "  ------  " + logMessage.getSecondMessage());
             });
         });
     }

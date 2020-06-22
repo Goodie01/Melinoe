@@ -67,7 +67,7 @@ public class ScreenshotTaker {
 
     public File takeScreenshot() {
         File screenshot = takesScreenshot.getScreenshotAs(OutputType.FILE);
-        File imageFile = LogFileManager.GET_INSTANCE().createImageFile();
+        File imageFile = LogFileManager.getInstance().createImageFile();
 
         try {
             FileUtils.copyFile(screenshot, imageFile);

@@ -2,7 +2,6 @@ package org.goodiemania.melinoe.framework.web.validators;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.Session;
-import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.openqa.selenium.WebDriver;
 
 /**
