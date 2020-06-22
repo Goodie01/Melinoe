@@ -1,8 +1,7 @@
 package org.goodiemania.melinoe.framework;
 
-import java.lang.reflect.Field;
-import java.util.Optional;
-import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
+import org.goodiemania.melinoe.framework.junit.MyBeforeAllCallback;
+import org.goodiemania.melinoe.framework.junit.MyBeforeEachCallback;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -16,35 +15,16 @@ public abstract class MelinoeTest {
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        classSession = metaSession.createSessionFor(extensionContext);
-
         Class<?> currentClass = new Object() {
         }.getClass().getEnclosingClass();
-        FlowDecorator flowDecorator = new FlowDecorator(classSession);
 
-        while (currentClass != Object.class) {
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    break;
-                }
-                flowDecorator.decorate(field)
-                        .ifPresent(o -> {
-                            try {
-                                field.setAccessible(true);
-                                field.set(null, o);
-                            } catch (IllegalAccessException e) {
-                                throw new IllegalStateException(e);
-                            }
-                        });
-            }
-            currentClass = currentClass.getSuperclass();
-        }
+        classSession = metaSession.createSessionFor(extensionContext);
+        MyBeforeAllCallback.callBack(classSession, currentClass);
     };
 
     @RegisterExtension
     static AfterAllCallback afterAllCallback = extensionContext -> {
-        metaSession.closeAllDrivers();
+        metaSession.endSession();
         metaSession.logStuff();
     };
 
@@ -53,34 +33,14 @@ public abstract class MelinoeTest {
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
         session = metaSession.createSessionFor(extensionContext);
-        Class<?> currentClass = this.getClass();
-        FlowDecorator flowDecorator = new FlowDecorator(session);
-
-        while (currentClass != Object.class) {
-            Field[] fields = currentClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    break;
-                }
-                flowDecorator.decorate(field)
-                        .ifPresent(o -> {
-                            try {
-                                field.setAccessible(true);
-                                field.set(this, o);
-                            } catch (IllegalAccessException e) {
-                                throw new IllegalStateException(e);
-                            }
-                        });
-            }
-            currentClass = currentClass.getSuperclass();
-        }
+        MyBeforeEachCallback.callback(session, this);
     };
+
     @RegisterExtension
     AfterEachCallback afterEachCallback = extensionContext -> {
-        metaSession.closeAllDrivers();
+        metaSession.endSession();
     };
 
-    //we want to do some funky stuff here...
     public static Session getClassSession() {
         return classSession;
     }

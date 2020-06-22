@@ -45,10 +45,12 @@ public class MetaSession {
         });
     }
 
-    public void closeAllDrivers() {
+    public void endSession() {
         List<ClosableDriver> soonToBeClosedDrivers = drivers;
         drivers = new ArrayList<>();
-
         soonToBeClosedDrivers.forEach(ClosableDriver::close);
+
+        //TODO write logs
+
     }
 }
