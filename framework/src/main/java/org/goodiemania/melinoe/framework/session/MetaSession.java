@@ -1,5 +1,6 @@
 package org.goodiemania.melinoe.framework.session;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class MetaSession {
     private List<ClosableDriver> drivers = new ArrayList<>();
     private Map<String, ClassLogger> logs = new HashMap<>();
+
+    public MetaSession() {
+        System.out.println("Creating a new meta session: " + this.hashCode());
+    }
 
     public void addDriver(final ClosableDriver driver) {
         drivers.add(driver);
@@ -26,9 +31,12 @@ public class MetaSession {
                 .map(Class::getName)
                 .orElse("NO_CLASS_NAME");
 
-        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), extensionContext.getTestMethod()
-                .map(method -> className + "." + method.getName())
-                .orElse(className));
+        String packageName = extensionContext.getTestMethod()
+                .map(Method::getName)
+                .map(name -> className + "." + name)
+                .orElse(className);
+
+        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName);
 
         logs.put(classLogger.getPackageName(), classLogger);
 

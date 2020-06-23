@@ -46,6 +46,17 @@ public class LogFileManager {
         return INSTANCE;
     }
 
+    public File createRootLogFile() {
+        try {
+            File indexFile = new File(runDirectory, "index.html");
+            FileUtils.touch(indexFile);
+
+            return indexFile;
+        } catch (final IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     public File createLogFile(final String className) {
         try {
             final File testDirectory = new File(runDirectory, className);

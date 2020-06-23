@@ -20,7 +20,9 @@ public class WebDriverGenerator {
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
         options.setHeadless(true);
 
+        //TODO find a better way to make this work
         File pathToFirefoxBinary = new File("C:\\Program Files\\Firefox Nightly\\firefox.exe");
+        //File pathToFirefoxBinary = new File("C:\\Users\\thomasgo\\AppData\\Local\\Firefox Nightly\\firefox.exe");
         options.setBinary(pathToFirefoxBinary.getPath());
 
         FirefoxDriver webDriver = new FirefoxDriver(options);

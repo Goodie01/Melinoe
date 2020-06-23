@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class SecondBasic extends MelinoeTest {
+    private GithubRepositoryPage githubRepositoryPage;
+
     @BeforeAll
     public static void init() {
         getClassSession();
@@ -12,6 +14,7 @@ public class SecondBasic extends MelinoeTest {
 
     @Test
     public void run() {
-        getSession();
+        getSession().web().get("https://github.com/Goodie01/Melinoe");
+        githubRepositoryPage.checkPage();
     }
 }

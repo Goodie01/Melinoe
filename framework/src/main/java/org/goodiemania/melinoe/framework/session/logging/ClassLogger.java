@@ -5,21 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClassLogger {
-    private String name;
+    private String displayName;
     private String packageName;
     private List<LogMessage> logMessages;
     private Boolean hasPassed;
 
-    public ClassLogger(final String name, final String packageName) {
-        this.name = name;
+    public ClassLogger(final String displayName, final String packageName) {
+        this.displayName = displayName;
         this.packageName = packageName;
 
         logMessages = new ArrayList<>();
         hasPassed = true;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 
     public String getPackageName() {
