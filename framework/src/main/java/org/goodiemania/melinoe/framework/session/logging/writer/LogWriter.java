@@ -41,9 +41,19 @@ public class LogWriter {
     }
 
     private static List<String> createRootLogFile(final List<String> template, final Map<String, ClassLogger> logs) {
-        logs.forEach((uniqueName, classLogger) -> {
-
-        });
+        logs.entrySet()
+                .stream()
+                .map(stringClassLoggerEntry -> {
+                    final String color = stringClassLoggerEntry.getValue().getHasPassed() ? "#FF0000" : "";
+                    return "\n"
+                            + "        <div class=\"media text-muted pt-3\">\n"
+                            + "            <svg class=\"bd-placeholder-img mr-2 rounded\" width=\"32\" height=\"32\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\" focusable=\"false\" role=\"img\" aria-label=\"Placeholder: 32x32\"><title>Placeholder</title><rect width=\"100%\" height=\"100%\" fill=\"#007bff\"></rect><text x=\"50%\" y=\"50%\" fill=\"#007bff\" dy=\".3em\">32x32</text></svg>\n"
+                            + "            <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">\n"
+                            + "                <strong class=\"d-block text-gray-dark\">@username</strong>\n"
+                            + "                Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.\n"
+                            + "            </p>\n"
+                            + "        </div>"
+                })
 
         template.addAll(1, Collections.emptyList());
 
