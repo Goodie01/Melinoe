@@ -7,23 +7,25 @@ import java.util.List;
 public class ClassLogger {
     private String displayName;
     private String packageName;
+    private String fullMethodName;
     private List<LogMessage> logMessages;
     private Boolean hasPassed;
 
-    public ClassLogger(final String displayName, final String packageName) {
+    public ClassLogger(final String displayName, final String packageName, final String fullMethodName) {
         this.displayName = displayName;
         this.packageName = packageName;
+        this.fullMethodName = fullMethodName;
 
-        logMessages = new ArrayList<>();
-        hasPassed = true;
+        this.logMessages = new ArrayList<>();
+        this.hasPassed = true;
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
-    public String getPackageName() {
-        return packageName;
+    public String getFullMethodName() {
+        return fullMethodName;
     }
 
     public List<LogMessage> getLogMessages() {
@@ -36,7 +38,6 @@ public class ClassLogger {
 
     public void fail() {
         hasPassed = false;
-        //TODO This needs to cascade upwards
     }
 
     public void add(final String message) {
@@ -47,5 +48,9 @@ public class ClassLogger {
     public void add(final String message, final String extraInfo) {
         LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, extraInfo);
         logMessages.add(logMessage);
+    }
+
+    public String getPackageName() {
+        return packageName;
     }
 }

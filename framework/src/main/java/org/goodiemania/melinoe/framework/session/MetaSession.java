@@ -27,18 +27,22 @@ public class MetaSession {
     }
 
     public SessionImpl createSessionFor(final ExtensionContext extensionContext) {
+        String packageName = extensionContext.getTestClass()
+                .map(Class::getPackageName)
+                .orElse("NO_PACKAGE");
+
         String className = extensionContext.getTestClass()
                 .map(Class::getName)
                 .orElse("NO_CLASS_NAME");
 
-        String packageName = extensionContext.getTestMethod()
+        String fullMethodName = extensionContext.getTestMethod()
                 .map(Method::getName)
                 .map(name -> className + "." + name)
                 .orElse(className);
 
-        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName);
+        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName, fullMethodName);
 
-        logs.put(classLogger.getPackageName(), classLogger);
+        logs.put(classLogger.getFullMethodName(), classLogger);
 
         return new SessionImpl(this, classLogger);
     }
