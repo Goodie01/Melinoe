@@ -7,13 +7,17 @@ import java.util.List;
 public class ClassLogger {
     private String displayName;
     private String packageName;
+    private String className;
+    private String methodName;
     private String fullMethodName;
     private List<LogMessage> logMessages;
     private Boolean hasPassed;
 
-    public ClassLogger(final String displayName, final String packageName, final String fullMethodName) {
+    public ClassLogger(final String displayName, final String packageName, final String className, final String methodName, final String fullMethodName) {
         this.displayName = displayName;
         this.packageName = packageName;
+        this.className = className;
+        this.methodName = methodName;
         this.fullMethodName = fullMethodName;
 
         this.logMessages = new ArrayList<>();
@@ -41,8 +45,7 @@ public class ClassLogger {
     }
 
     public void add(final String message) {
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, "");
-        logMessages.add(logMessage);
+        add(message, "");
     }
 
     public void add(final String message, final String extraInfo) {
@@ -52,5 +55,13 @@ public class ClassLogger {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getMethodName() {
+        return methodName;
     }
 }

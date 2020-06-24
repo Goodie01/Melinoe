@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.goodiemania.melinoe.framework.SessionImpl;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
+import org.goodiemania.melinoe.framework.session.logging.writer.LogWriter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class MetaSession {
@@ -22,10 +24,6 @@ public class MetaSession {
         drivers.add(driver);
     }
 
-    public List<ClosableDriver> getDrivers() {
-        return drivers;
-    }
-
     public SessionImpl createSessionFor(final ExtensionContext extensionContext) {
         String packageName = extensionContext.getTestClass()
                 .map(Class::getPackageName)
@@ -35,12 +33,16 @@ public class MetaSession {
                 .map(Class::getName)
                 .orElse("NO_CLASS_NAME");
 
+        String methodName = extensionContext.getTestMethod()
+                .map(Method::getName)
+                .orElse("NO_METHOD_NAME");
+
         String fullMethodName = extensionContext.getTestMethod()
                 .map(Method::getName)
-                .map(name -> className + "." + name)
+                .map(name -> className + "." + methodName)
                 .orElse(className);
 
-        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName, fullMethodName);
+        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName, className, methodName, fullMethodName);
 
         logs.put(classLogger.getFullMethodName(), classLogger);
 
@@ -62,7 +64,6 @@ public class MetaSession {
         drivers = new ArrayList<>();
         soonToBeClosedDrivers.forEach(ClosableDriver::close);
 
-        //TODO write logs
-
+        new LogWriter().write(logs);
     }
 }

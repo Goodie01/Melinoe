@@ -2,6 +2,7 @@ package org.goodiemania.melinoe.framework.session.logging;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -58,19 +59,26 @@ public class LogFileManager {
     }
 
     public File createLogFile(final String className) {
+        return createLogFile(className, "index");
+    }
+
+    public File createImageFile() {
+        return new File(imageDir, UUID.randomUUID().toString() + ".jpg");
+    }
+
+    public File createLogFile(final String className, final String methodName) {
         try {
             final File testDirectory = new File(runDirectory, className);
             FileUtils.forceMkdir(runDirectory);
-            File indexFile = new File(testDirectory, "index.html");
+            File indexFile = new File(testDirectory, methodName + ".html");
             FileUtils.touch(indexFile);
+
+            PrintWriter pw = new PrintWriter(indexFile);
+            pw.close();
 
             return indexFile;
         } catch (final IOException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public File createImageFile() {
-        return new File(imageDir, UUID.randomUUID().toString() + ".jpg");
     }
 }

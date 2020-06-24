@@ -47,7 +47,7 @@ public class WebDriver implements ClosableDriver {
         webDriverWait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
 
         File file = screenshotTaker.takeScreenshot();
-        session.getLogger().add("Checking page", String.format("<img src='%s'>", file.getPath()));
+        session.getLogger().add("Checking page", String.format("<img width='200' src='%s'>", "file:///" + file.getAbsolutePath()));
 
         validators.stream()
                 .map(webValidator -> webValidator.validate(session, webDriver))
