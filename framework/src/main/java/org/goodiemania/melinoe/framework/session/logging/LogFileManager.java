@@ -58,12 +58,12 @@ public class LogFileManager {
         }
     }
 
-    public File createLogFile(final String className) {
-        return createLogFile(className, "index");
-    }
-
     public File createImageFile() {
         return new File(imageDir, UUID.randomUUID().toString() + ".jpg");
+    }
+
+    public File createLogFile(final String className) {
+        return createLogFile(className, "index");
     }
 
     public File createLogFile(final String className, final String methodName) {

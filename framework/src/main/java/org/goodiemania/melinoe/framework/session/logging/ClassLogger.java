@@ -13,7 +13,12 @@ public class ClassLogger {
     private List<LogMessage> logMessages;
     private Boolean hasPassed;
 
-    public ClassLogger(final String displayName, final String packageName, final String className, final String methodName, final String fullMethodName) {
+    public ClassLogger(
+            final String displayName,
+            final String packageName,
+            final String className,
+            final String methodName,
+            final String fullMethodName) {
         this.displayName = displayName;
         this.packageName = packageName;
         this.className = className;
