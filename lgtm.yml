@@ -1,0 +1,24 @@
+##########################################################################################
+# Customize file classifications.                                                        #
+# Results from files under any classifier will be excluded from LGTM                     #
+# statistics.                                                                            #
+##########################################################################################
+
+##########################################################################################
+# Use the `path_classifiers` block to define changes to the default classification of    #
+# files.                                                                                 #
+##########################################################################################
+
+extraction: 
+  # Define settings for Java analysis
+  ####################################
+  java:
+    # The `prepare` step exists for customization on LGTM.com only.
+    # prepare:
+    #   packages:
+    #     - example_package
+    # Add an `after-prepare` step if you need to run commands after the prepare step.
+    # Each command should be listed on a separate line.
+    after_prepare:
+      - export PATH=$LGTM_WORKSPACE/tools:$PATH
+      - export LGTM_SRC=$LGTM_SRC/framework
