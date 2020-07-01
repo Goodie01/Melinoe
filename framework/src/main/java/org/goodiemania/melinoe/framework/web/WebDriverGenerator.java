@@ -41,6 +41,7 @@ public class WebDriverGenerator {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
+                //suggestion from sonar
                 Thread.currentThread().interrupt();
                 throw new IllegalStateException(e);
             }
