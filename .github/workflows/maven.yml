@@ -23,8 +23,14 @@ jobs:
       run: mvn -B install --file examples/pom.xml
     - name: Run sonar for framework
       run: mvn -B sonar:sonar --file framework/pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Run Sonar for examples
       run: mvn -B sonar:sonar --file examples/pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     ################################
     # Run Linter against code base #
     ################################
