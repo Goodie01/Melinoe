@@ -23,7 +23,7 @@ public class Basic extends MelinoeTest {
     @Test
     @DisplayName("Run baseline test")
     public void run() {
-        getSession().web().get("https://github.com/Goodie01/Melinoe");
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepositoryPage.checkPage();
     }
 }

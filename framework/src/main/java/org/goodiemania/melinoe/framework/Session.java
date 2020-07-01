@@ -2,6 +2,7 @@ package org.goodiemania.melinoe.framework;
 
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.web.WebDriver;
+import org.goodiemania.melinoe.framework.web.WebDriverImpl;
 
 public interface Session {
     void rest();

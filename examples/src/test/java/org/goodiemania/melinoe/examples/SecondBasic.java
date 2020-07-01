@@ -14,7 +14,7 @@ public class SecondBasic extends MelinoeTest {
 
     @Test
     public void run() {
-        getSession().web().get("https://github.com/Goodie01/Melinoe");
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepositoryPage.checkPage();
     }
 }

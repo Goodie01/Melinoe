@@ -14,7 +14,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class WebDriverGenerator {
-    public WebDriver generate(final Session session) {
+    public WebDriverImpl generate(final Session session) {
         System.setProperty("webdriver.gecko.driver", waitForDriverExtraction("drivers/geckodriver.exe"));
         FirefoxOptions options = new FirefoxOptions();
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
@@ -32,7 +32,7 @@ public class WebDriverGenerator {
         WebDriverWait webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
         LocalStorage localStorage = new LocalStorage(webDriver);
 
-        return new WebDriver(session, webDriver, screenshotTaker, webDriverWait, localStorage);
+        return new WebDriverImpl(session, webDriver, screenshotTaker, webDriverWait, localStorage);
     }
 
     private static String waitForDriverExtraction(final String driverLocation) {
@@ -53,7 +53,7 @@ public class WebDriverGenerator {
         File targetFile = new File("target/" + driverLocation);
 
         if (!targetFile.exists()) {
-            InputStream resourceAsStream = WebDriver.class.getClassLoader().getResourceAsStream(driverLocation);
+            InputStream resourceAsStream = WebDriverImpl.class.getClassLoader().getResourceAsStream(driverLocation);
             Objects.requireNonNull(resourceAsStream);
             try {
                 FileUtils.copyInputStreamToFile(resourceAsStream, targetFile);
