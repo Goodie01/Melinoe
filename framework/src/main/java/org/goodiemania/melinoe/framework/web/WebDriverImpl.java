@@ -68,6 +68,7 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
     }
 
     //TODO should this be publicly accessible?
+    @Override
     public <T extends BasePage> T buildPage(final Class<T> classType) {
         try {
             return classType.getConstructor(Session.class).newInstance(session);

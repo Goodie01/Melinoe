@@ -1,4 +1,5 @@
 package org.goodiemania.melinoe.framework.web;
+
 import java.util.List;
 import org.goodiemania.melinoe.framework.web.validators.WebValidator;
 
@@ -9,4 +10,6 @@ public interface WebDriver {
     void checkPage(List<WebValidator> validators);
 
     String getTitle();
+
+    <T extends BasePage> T buildPage(final Class<T> classType);
 }

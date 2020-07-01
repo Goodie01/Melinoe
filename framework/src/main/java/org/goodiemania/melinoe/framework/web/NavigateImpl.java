@@ -1,7 +1,8 @@
 package org.goodiemania.melinoe.framework.web;
+
 import org.openqa.selenium.WebDriver;
 
-public class NavigateImpl implements Navigate{
+public class NavigateImpl implements Navigate {
     private final org.openqa.selenium.WebDriver webDriver;
 
     public NavigateImpl(final WebDriver webDriver) {
