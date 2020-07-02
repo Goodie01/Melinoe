@@ -6,6 +6,9 @@ import org.goodiemania.melinoe.framework.MelinoeTest;
 import org.goodiemania.melinoe.framework.Session;
 
 public class MyBeforeEachCallback {
+    private MyBeforeEachCallback() {
+    }
+
     public static void callback(final Session session, final MelinoeTest melinoeTest) {
         FlowDecorator flowDecorator = new FlowDecorator(session);
         Class<?> currentClass = melinoeTest.getClass();

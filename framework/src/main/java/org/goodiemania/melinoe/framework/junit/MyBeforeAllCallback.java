@@ -5,6 +5,9 @@ import org.goodiemania.melinoe.framework.FlowDecorator;
 import org.goodiemania.melinoe.framework.Session;
 
 public class MyBeforeAllCallback {
+    private MyBeforeAllCallback() {
+    }
+
     public static void callBack(final Session session, final Class<?> parentClass) throws Exception {
         FlowDecorator flowDecorator = new FlowDecorator(session);
         Class<?> currentClass = parentClass;
