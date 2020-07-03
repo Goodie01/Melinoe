@@ -1,21 +1,20 @@
 package org.goodiemania.melinoe.framework;
 
-import java.util.Objects;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
+import org.goodiemania.melinoe.framework.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.web.WebDriver;
-import org.goodiemania.melinoe.framework.web.WebDriverGenerator;
 import org.goodiemania.melinoe.framework.web.WebDriverImpl;
 
 public class SessionImpl implements Session {
     private final MetaSession metaSession;
     private final ClassLogger classLogger;
 
-    private WebDriverImpl webDriver;
+    private RawWebDriver rawWebDriver;
 
-    public SessionImpl(final MetaSession metaSession, final ClassLogger classLogger) {
+    public SessionImpl(final MetaSession metaSession, final ClassLogger classLogger, final RawWebDriver rawWebDriver) {
+        this.rawWebDriver = rawWebDriver;
         this.classLogger = classLogger;
-        Objects.requireNonNull(metaSession, "Meta Session is null");
         this.metaSession = metaSession;
     }
 
@@ -26,10 +25,8 @@ public class SessionImpl implements Session {
 
     @Override
     public WebDriver web() {
-        if (webDriver == null) {
-            webDriver = new WebDriverGenerator().generate(this);
-            metaSession.addDriver(webDriver);
-        }
+        WebDriverImpl webDriver = rawWebDriver.getWebDriver();
+        metaSession.addDriver(webDriver);
         return webDriver;
     }
 

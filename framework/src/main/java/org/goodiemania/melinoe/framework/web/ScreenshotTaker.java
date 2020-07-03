@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.goodiemania.melinoe.framework.session.logging.LogFileManager;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 
 public class ScreenshotTaker {
@@ -55,18 +53,16 @@ public class ScreenshotTaker {
             + "elem.style.borderBottom = borders[2];\n"
             + "elem.style.borderLeft = borders[3];";
 
-    private TakesScreenshot takesScreenshot;
-    private JavascriptExecutor js;
     private WebElement lastElem = null;
+    private RawWebDriver rawWebDriver;
 
-    public ScreenshotTaker(final TakesScreenshot takesScreenshot, final JavascriptExecutor javascriptExecutor) {
-        this.takesScreenshot = takesScreenshot;
-        this.js = javascriptExecutor;
+    public ScreenshotTaker(final RawWebDriver rawWebDriver) {
+        this.rawWebDriver = rawWebDriver;
     }
 
 
     public File takeScreenshot() {
-        File screenshot = takesScreenshot.getScreenshotAs(OutputType.FILE);
+        File screenshot = rawWebDriver.remoteWebDriver().getScreenshotAs(OutputType.FILE);
         File imageFile = LogFileManager.getInstance().createImageFile();
 
         try {
@@ -87,14 +83,14 @@ public class ScreenshotTaker {
 
     private String highlightElement(WebElement elem) {
         lastElem = elem;
-        return (String) (js.executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
+        return (String) (rawWebDriver.remoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
     }
 
     private void unhighlightLast(final String boarderId) {
         if (lastElem != null) {
             try {
                 // if there already is a highlighted element, unhighlight it
-                js.executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
+                rawWebDriver.remoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
             } catch (StaleElementReferenceException ignored) {
                 //TODO
                 // the page got reloaded, the element isn't there

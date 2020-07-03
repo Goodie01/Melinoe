@@ -1,16 +1,14 @@
 package org.goodiemania.melinoe.framework.junit;
 
 import java.lang.reflect.Field;
-import org.goodiemania.melinoe.framework.FlowDecorator;
-import org.goodiemania.melinoe.framework.MelinoeTest;
-import org.goodiemania.melinoe.framework.Session;
+import org.goodiemania.melinoe.framework.InternalSession;
+import org.goodiemania.melinoe.framework.api.MelinoeTest;
 
 public class MyBeforeEachCallback {
     private MyBeforeEachCallback() {
     }
 
-    public static void callback(final Session session, final MelinoeTest melinoeTest) {
-        FlowDecorator flowDecorator = new FlowDecorator(session);
+    public static void callback(final InternalSession session, final MelinoeTest melinoeTest) {
         Class<?> currentClass = melinoeTest.getClass();
 
         while (currentClass != Object.class) {
@@ -19,7 +17,7 @@ public class MyBeforeEachCallback {
                 if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
                     break;
                 }
-                flowDecorator.decorate(field)
+                session.getFlowDecorator().decorate(field)
                         .ifPresent(o -> {
                             try {
                                 field.setAccessible(true);

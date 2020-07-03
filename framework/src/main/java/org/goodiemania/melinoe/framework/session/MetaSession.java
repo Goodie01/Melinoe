@@ -3,28 +3,28 @@ package org.goodiemania.melinoe.framework.session;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import org.goodiemania.melinoe.framework.SessionImpl;
+import java.util.Set;
+import org.goodiemania.melinoe.framework.InternalSession;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.writer.LogWriter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class MetaSession {
-    private List<ClosableDriver> drivers = new ArrayList<>();
+    private Set<ClosableDriver> drivers = new HashSet<>();
     private Map<String, ClassLogger> logs = new HashMap<>();
 
     public MetaSession() {
-        System.out.println("Creating a new meta session: " + this.hashCode());
     }
 
     public void addDriver(final ClosableDriver driver) {
         drivers.add(driver);
     }
 
-    public SessionImpl createSessionFor(final ExtensionContext extensionContext) {
+    public InternalSession createSessionFor(final ExtensionContext extensionContext) {
         String packageName = extensionContext.getTestClass()
                 .map(Class::getPackageName)
                 .orElse("NO_PACKAGE");
@@ -46,24 +46,16 @@ public class MetaSession {
 
         logs.put(classLogger.getFullMethodName(), classLogger);
 
-        return new SessionImpl(this, classLogger);
+        return new InternalSession(this, classLogger);
     }
 
     public void logStuff() {
-        logs.forEach((s, classLogger) -> {
-            System.out.println("======================  " + s + "  ++++++++++++++++++++");
-
-            classLogger.getLogMessages().forEach(logMessage -> {
-                System.out.println(logMessage.getMessage() + "  ------  " + logMessage.getSecondMessage());
-            });
-        });
+        new LogWriter().write(logs);
     }
 
     public void endSession() {
-        List<ClosableDriver> soonToBeClosedDrivers = drivers;
-        drivers = new ArrayList<>();
+        Set<ClosableDriver> soonToBeClosedDrivers = drivers;
+        drivers = new HashSet<>();
         soonToBeClosedDrivers.forEach(ClosableDriver::close);
-
-        new LogWriter().write(logs);
     }
 }

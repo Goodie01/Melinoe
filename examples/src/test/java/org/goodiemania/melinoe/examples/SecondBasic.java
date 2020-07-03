@@ -1,6 +1,6 @@
 package org.goodiemania.melinoe.examples;
 
-import org.goodiemania.melinoe.framework.MelinoeTest;
+import org.goodiemania.melinoe.framework.api.MelinoeTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

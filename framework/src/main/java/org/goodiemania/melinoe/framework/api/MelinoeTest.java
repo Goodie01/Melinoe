@@ -1,5 +1,7 @@
-package org.goodiemania.melinoe.framework;
+package org.goodiemania.melinoe.framework.api;
 
+import org.goodiemania.melinoe.framework.InternalSession;
+import org.goodiemania.melinoe.framework.Session;
 import org.goodiemania.melinoe.framework.junit.MyBeforeAllCallback;
 import org.goodiemania.melinoe.framework.junit.MyBeforeEachCallback;
 import org.goodiemania.melinoe.framework.session.MetaSession;
@@ -11,7 +13,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
-    private static Session classSession;
+    private static InternalSession classSession;
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
@@ -28,7 +30,7 @@ public abstract class MelinoeTest {
         metaSession.logStuff();
     };
 
-    private Session session;
+    private InternalSession session;
 
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
@@ -42,10 +44,10 @@ public abstract class MelinoeTest {
     };
 
     public static Session getClassSession() {
-        return classSession;
+        return classSession.getSession();
     }
 
     public Session getSession() {
-        return session;
+        return session.getSession();
     }
 }

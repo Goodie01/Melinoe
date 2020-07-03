@@ -1,39 +1,38 @@
 package org.goodiemania.melinoe.framework.web;
 
 import org.openqa.selenium.JavascriptException;
-import org.openqa.selenium.JavascriptExecutor;
 
 public class LocalStorage {
-    private JavascriptExecutor jsExecutor;
+    private RawWebDriver rawWebDriver;
 
-    public LocalStorage(final JavascriptExecutor jsExecutor) {
-        this.jsExecutor = jsExecutor;
+    public LocalStorage(final RawWebDriver rawWebDriver) {
+        this.rawWebDriver = rawWebDriver;
     }
 
     private void init() {
         try {
-            jsExecutor.executeScript("return window.test.size;");
+            rawWebDriver.remoteWebDriver().executeScript("return window.test.size;");
         } catch (JavascriptException e) {
-            jsExecutor.executeScript("window.test = new Map();");
+            rawWebDriver.remoteWebDriver().executeScript("window.test = new Map();");
         }
     }
 
     public void put(String item, String value) {
         init();
-        jsExecutor.executeScript(String.format(
+        rawWebDriver.remoteWebDriver().executeScript(String.format(
                 "window.test.set('%s','%s');", item, value));
     }
 
     public String get(String key) {
         init();
-        return (String) jsExecutor.executeScript(String.format(
+        return (String) rawWebDriver.remoteWebDriver().executeScript(String.format(
                 "return window.test.get('%s');", key));
     }
 
 
     public Long size() {
         init();
-        return (Long) jsExecutor.executeScript("return window.test.size;");
+        return (Long) rawWebDriver.remoteWebDriver().executeScript("return window.test.size;");
     }
 
     public boolean isEmpty() {
