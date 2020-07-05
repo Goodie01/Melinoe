@@ -29,19 +29,21 @@ public class RawWebDriver {
     private LocalStorage localStorage;
 
     private WebDriverImpl webDriver;
+    private MetaSession metaSession;
     private InternalSession internalSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
     public RawWebDriver(final MetaSession metaSession, final InternalSession internalSession) {
+        this.metaSession = metaSession;
         this.internalSession = internalSession;
         this.webDriver = new WebDriverImpl(internalSession, this);
-        metaSession.addDriver(this.webDriver);
     }
 
     public RemoteWebDriver getRemoteWebDriver() {
         if (remoteWebDriver == null) {
             generate();
+            metaSession.addDriver(webDriver);
         }
 
         return remoteWebDriver;
@@ -81,7 +83,7 @@ public class RawWebDriver {
         System.setProperty("webdriver.gecko.driver", waitForDriverExtraction("drivers/geckodriver.exe"));
         FirefoxOptions options = new FirefoxOptions();
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
-        options.setHeadless(true);
+        //options.setHeadless(true);
 
         File pathToFirefoxBinary = new File("C:\\Program Files\\Firefox Nightly\\firefox.exe");
         options.setBinary(pathToFirefoxBinary.getPath());
