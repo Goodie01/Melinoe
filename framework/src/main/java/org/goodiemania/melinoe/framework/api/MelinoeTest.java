@@ -13,7 +13,6 @@ public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
     private static InternalSessionClassImpl classSession;
 
-    @SuppressWarnings("")
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
         Class<?> testClass = extensionContext.getTestClass().orElseThrow();
