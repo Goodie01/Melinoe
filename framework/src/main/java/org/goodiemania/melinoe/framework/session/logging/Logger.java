@@ -16,7 +16,11 @@ public class Logger {
 
     private File logFile;
 
-    public Logger(final LogFileManager logFileManager, final String displayName, final String packageName, final String className, final String methodName) {
+    public Logger(final LogFileManager logFileManager,
+                  final String displayName,
+                  final String packageName,
+                  final String className,
+                  final String methodName) {
         this.logFileManager = logFileManager;
         this.displayName = displayName;
         this.packageName = packageName;

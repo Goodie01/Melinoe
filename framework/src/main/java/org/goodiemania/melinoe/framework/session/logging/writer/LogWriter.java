@@ -5,10 +5,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.goodiemania.melinoe.framework.session.logging.LogFileManager;
+import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
-import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 
 public class LogWriter {
     public void write(final MetaLogger logs) {

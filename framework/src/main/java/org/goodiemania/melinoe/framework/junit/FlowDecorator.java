@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.goodiemania.melinoe.framework.api.FindElement;
 import org.goodiemania.melinoe.framework.api.Flow;
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.drivers.web.BasePage;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.By;
 
 /**

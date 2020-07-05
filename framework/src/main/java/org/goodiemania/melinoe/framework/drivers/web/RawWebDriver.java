@@ -1,6 +1,5 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,9 +10,9 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goodiemania.melinoe.framework.drivers.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
-import org.goodiemania.melinoe.framework.drivers.web.validators.WebValidator;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;

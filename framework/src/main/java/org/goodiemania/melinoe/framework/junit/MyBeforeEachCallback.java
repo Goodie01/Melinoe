@@ -1,7 +1,7 @@
 package org.goodiemania.melinoe.framework.junit;
 
-import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class MyBeforeEachCallback {
     private MyBeforeEachCallback() {
