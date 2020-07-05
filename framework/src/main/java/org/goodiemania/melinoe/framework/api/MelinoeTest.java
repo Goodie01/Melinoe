@@ -16,10 +16,10 @@ public abstract class MelinoeTest {
     @SuppressWarnings("")
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        Class<?> aClass = extensionContext.getTestClass().orElseThrow();
+        Class<?> testClass = extensionContext.getTestClass().orElseThrow();
 
         classSession = metaSession.createSessionFor(extensionContext);
-        classSession.getFlowDecorator().decorate(aClass);
+        classSession.getFlowDecorator().decorate(testClass);
     };
 
     @RegisterExtension
