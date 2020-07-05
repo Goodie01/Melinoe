@@ -6,6 +6,6 @@ import org.goodiemania.melinoe.framework.drivers.web.validators.TitleValidator;
 
 public class GithubRepoIssuesPage extends BasePage {
     public GithubRepoIssuesPage(final Session session) {
-        super(session, new TitleValidator("Issues · Goodie01/Melinoe · GitHub"));
+        super(session, new TitleValidator("Pull requests · Goodie01/Melinoe · GitHub"));
     }
 }

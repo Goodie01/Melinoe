@@ -83,7 +83,7 @@ public class RawWebDriver {
         System.setProperty("webdriver.gecko.driver", waitForDriverExtraction("drivers/geckodriver.exe"));
         FirefoxOptions options = new FirefoxOptions();
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
-        //options.setHeadless(true);
+        options.setHeadless(true);
 
         File pathToFirefoxBinary = new File("C:\\Program Files\\Firefox Nightly\\firefox.exe");
         options.setBinary(pathToFirefoxBinary.getPath());
