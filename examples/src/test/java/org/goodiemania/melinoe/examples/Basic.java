@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class Basic extends MelinoeTest {
     private GithubRepoPage githubRepoPage;
-    private GithubRepoIssuesPage githubRepoIssuesPage;
+    private GithubRepoPullRequestPage githubRepoPullRequestPage;
 
     @BeforeAll
     public static void init() {
@@ -25,7 +25,7 @@ public class Basic extends MelinoeTest {
     public void run() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
-        githubRepoPage.clickIssuesLink();
-        githubRepoIssuesPage.checkPage();
+        githubRepoPage.clickPullRequestLink();
+        githubRepoPullRequestPage.checkPage();
     }
 }
