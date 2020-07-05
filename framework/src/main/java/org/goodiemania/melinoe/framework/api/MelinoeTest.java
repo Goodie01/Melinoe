@@ -1,7 +1,5 @@
 package org.goodiemania.melinoe.framework.api;
 
-import org.goodiemania.melinoe.framework.junit.MyBeforeAllCallback;
-import org.goodiemania.melinoe.framework.junit.MyBeforeEachCallback;
 import org.goodiemania.melinoe.framework.session.InternalSessionClassImpl;
 import org.goodiemania.melinoe.framework.session.InternalSessionImpl;
 import org.goodiemania.melinoe.framework.session.MetaSession;
@@ -15,13 +13,13 @@ public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
     private static InternalSessionClassImpl classSession;
 
+    @SuppressWarnings("")
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        Class<?> currentClass = new Object() {
-        }.getClass().getEnclosingClass();
+        Class<?> aClass = extensionContext.getTestClass().orElseThrow();
 
         classSession = metaSession.createSessionFor(extensionContext);
-        MyBeforeAllCallback.callBack(classSession, currentClass);
+        classSession.getFlowDecorator().decorate(aClass);
     };
 
     @RegisterExtension
@@ -35,13 +33,11 @@ public abstract class MelinoeTest {
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
         session = classSession.createTestSession(extensionContext);
-        MyBeforeEachCallback.callback(session, this);
+        session.getFlowDecorator().decorate(this);
     };
 
     @RegisterExtension
-    AfterEachCallback afterEachCallback = extensionContext -> {
-        metaSession.endSession();
-    };
+    AfterEachCallback afterEachCallback = extensionContext -> metaSession.endSession();
 
     public static Session getClassSession() {
         return classSession.getSession();

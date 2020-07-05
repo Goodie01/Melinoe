@@ -29,7 +29,6 @@ public class RawWebDriver {
     private LocalStorage localStorage;
 
     private WebDriverImpl webDriver;
-    private MetaSession metaSession;
     private InternalSession internalSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
@@ -57,7 +56,7 @@ public class RawWebDriver {
     }
 
     public void checkPage(final List<WebValidator> validators) {
-        webDriverWait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
+        webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
 
         internalSession.getSession().getLogger().addWithImage("Checking page", screenshotTaker.takeScreenshot());
 
@@ -84,19 +83,14 @@ public class RawWebDriver {
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
         options.setHeadless(true);
 
-        //TODO find a better way to make this work
         File pathToFirefoxBinary = new File("C:\\Program Files\\Firefox Nightly\\firefox.exe");
-        //File pathToFirefoxBinary = new File("C:\\Users\\thomasgo\\AppData\\Local\\Firefox Nightly\\firefox.exe");
         options.setBinary(pathToFirefoxBinary.getPath());
 
-        FirefoxDriver webDriver = new FirefoxDriver(options);
-        webDriver.manage().window().maximize();
+        this.remoteWebDriver = new FirefoxDriver(options);
+        this.remoteWebDriver.manage().window().maximize();
 
-        this.remoteWebDriver = webDriver;
-
-        //TODO find a beter way to handle this
         screenshotTaker = new ScreenshotTaker(this);
-        webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(60));
+        webDriverWait = new WebDriverWait(remoteWebDriver, Duration.ofSeconds(60));
         localStorage = new LocalStorage(this);
     }
 

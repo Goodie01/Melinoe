@@ -27,7 +27,6 @@ public interface WebElement {
 
     Point getLocation();
 
-    //todo decide if we want these
     Dimension getSize();
 
     Rectangle getRect();

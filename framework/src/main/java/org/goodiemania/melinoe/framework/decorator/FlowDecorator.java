@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.junit;
+package org.goodiemania.melinoe.framework.decorator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
