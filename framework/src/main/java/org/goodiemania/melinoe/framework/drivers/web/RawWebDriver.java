@@ -1,19 +1,19 @@
-package org.goodiemania.melinoe.framework.web;
+package org.goodiemania.melinoe.framework.drivers.web;
 
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
-import org.goodiemania.melinoe.framework.InternalSession;
-import org.goodiemania.melinoe.framework.Session;
-import org.goodiemania.melinoe.framework.web.validators.WebValidator;
+import org.apache.commons.lang3.StringUtils;
+import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.session.MetaSession;
+import org.goodiemania.melinoe.framework.drivers.web.validators.WebValidator;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
@@ -24,38 +24,43 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class RawWebDriver {
     private static final String RELOAD_FLAG_VALUE = "reloadFlag";
 
-    private RemoteWebDriver driver;
+    private RemoteWebDriver remoteWebDriver;
     private ScreenshotTaker screenshotTaker;
     private WebDriverWait webDriverWait;
     private LocalStorage localStorage;
 
     private WebDriverImpl webDriver;
+    private MetaSession metaSession;
     private InternalSession internalSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
-    public RawWebDriver(final InternalSession internalSession) {
+    public RawWebDriver(final MetaSession metaSession, final InternalSession internalSession) {
         this.internalSession = internalSession;
-        this.webDriver = new WebDriverImpl(this);
+        this.webDriver = new WebDriverImpl(internalSession, this);
+        metaSession.addDriver(this.webDriver);
     }
 
-    public RemoteWebDriver remoteWebDriver() {
-        if (driver == null) {
+    public RemoteWebDriver getRemoteWebDriver() {
+        if (remoteWebDriver == null) {
             generate();
         }
 
-        return driver;
+        return remoteWebDriver;
     }
 
     public WebDriverImpl getWebDriver() {
         return webDriver;
     }
 
+    public ScreenshotTaker getScreenshotTaker() {
+        return screenshotTaker;
+    }
+
     public void checkPage(final List<WebValidator> validators) {
         webDriverWait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
 
-        File file = screenshotTaker.takeScreenshot();
-        internalSession.getSession().getLogger().add("Checking page", String.format("<img width='200' src='%s'>", "file:///" + file.getAbsolutePath()));
+        internalSession.getSession().getLogger().addWithImage("Checking page", screenshotTaker.takeScreenshot());
 
         validators.stream()
                 .map(webValidator -> webValidator.validate(internalSession.getSession(), getWebDriver()))
@@ -70,13 +75,8 @@ public class RawWebDriver {
         localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
     }
 
-    //TODO not sure this should live here... but it doesn't need to be on the public web driver so
-    public <T extends BasePage> T buildPage(final Class<T> classType) {
-        try {
-            return classType.getConstructor(Session.class).newInstance(internalSession.getSession());
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
+    public boolean hasPageBeenChecked() {
+        return StringUtils.equals(localStorage.get(reloadFlag), RELOAD_FLAG_VALUE);
     }
 
     private void generate() {
@@ -93,7 +93,7 @@ public class RawWebDriver {
         FirefoxDriver webDriver = new FirefoxDriver(options);
         webDriver.manage().window().maximize();
 
-        this.driver = webDriver;
+        this.remoteWebDriver = webDriver;
 
         //TODO find a beter way to handle this
         screenshotTaker = new ScreenshotTaker(this);

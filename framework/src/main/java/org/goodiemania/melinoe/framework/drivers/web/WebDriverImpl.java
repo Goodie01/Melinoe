@@ -1,23 +1,24 @@
-package org.goodiemania.melinoe.framework.web;
+package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
-import org.goodiemania.melinoe.framework.web.validators.WebValidator;
+import org.goodiemania.melinoe.framework.drivers.web.validators.WebValidator;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class WebDriverImpl implements ClosableDriver, WebDriver {
     private final RawWebDriver rawWebDriver;
 
-    private NavigateImpl navigate;
+    private Navigate navigate;
 
-    public WebDriverImpl(final RawWebDriver rawWebDriver) {
+    public WebDriverImpl(final InternalSession internalSession, final RawWebDriver rawWebDriver) {
         this.rawWebDriver = rawWebDriver;
-        this.navigate = new NavigateImpl(rawWebDriver);
+        this.navigate = new NavigateImpl(internalSession, rawWebDriver);
     }
 
     @Override
     public void close() {
         //TODO we should handle this betterer
-        this.rawWebDriver.remoteWebDriver().close();
+        this.rawWebDriver.getRemoteWebDriver().quit();
     }
 
     @Override
@@ -32,6 +33,6 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
 
     @Override
     public String getTitle() {
-        return rawWebDriver.remoteWebDriver().getTitle();
+        return rawWebDriver.getRemoteWebDriver().getTitle();
     }
 }

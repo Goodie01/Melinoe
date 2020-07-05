@@ -1,21 +1,15 @@
 package org.goodiemania.melinoe.framework.session;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import org.goodiemania.melinoe.framework.InternalSession;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
-import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
+import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
 import org.goodiemania.melinoe.framework.session.logging.writer.LogWriter;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class MetaSession {
     private Set<ClosableDriver> drivers = new HashSet<>();
-    private Map<String, ClassLogger> logs = new HashMap<>();
+    private MetaLogger metaLogger = new MetaLogger();
 
     public MetaSession() {
     }
@@ -24,7 +18,7 @@ public class MetaSession {
         drivers.add(driver);
     }
 
-    public InternalSession createSessionFor(final ExtensionContext extensionContext) {
+    public InternalSessionClassImpl createSessionFor(final ExtensionContext extensionContext) {
         String packageName = extensionContext.getTestClass()
                 .map(Class::getPackageName)
                 .orElse("NO_PACKAGE");
@@ -33,24 +27,11 @@ public class MetaSession {
                 .map(Class::getName)
                 .orElse("NO_CLASS_NAME");
 
-        String methodName = extensionContext.getTestMethod()
-                .map(Method::getName)
-                .orElse("NO_METHOD_NAME");
-
-        String fullMethodName = extensionContext.getTestMethod()
-                .map(Method::getName)
-                .map(name -> className + "." + methodName)
-                .orElse(className);
-
-        ClassLogger classLogger = new ClassLogger(extensionContext.getDisplayName(), packageName, className, methodName, fullMethodName);
-
-        logs.put(classLogger.getFullMethodName(), classLogger);
-
-        return new InternalSession(this, classLogger);
+        return new InternalSessionClassImpl(this, metaLogger.createClassLogger(extensionContext.getDisplayName(), packageName, className));
     }
 
     public void logStuff() {
-        new LogWriter().write(logs);
+        new LogWriter().write(metaLogger);
     }
 
     public void endSession() {

@@ -13,12 +13,10 @@ import org.apache.commons.lang3.StringUtils;
  * Created on 24/06/2019.
  */
 public class LogFileManager {
-    private static final LogFileManager INSTANCE = new LogFileManager();
-
     private final File runDirectory;
     private final File imageDir;
 
-    private LogFileManager() {
+    public LogFileManager() {
         try {
             File baseDir = new File(System.getProperty("logDir", "logs"));
             FileUtils.forceMkdir(baseDir);
@@ -43,10 +41,6 @@ public class LogFileManager {
         }
     }
 
-    public static LogFileManager getInstance() {
-        return INSTANCE;
-    }
-
     public File createRootLogFile() {
         try {
             File indexFile = new File(runDirectory, "index.html");
@@ -58,8 +52,16 @@ public class LogFileManager {
         }
     }
 
-    public File createImageFile() {
-        return new File(imageDir, UUID.randomUUID().toString() + ".jpg");
+    public File createImageFile(final File imageFile) {
+        File newImageFile = new File(imageDir, UUID.randomUUID().toString() + ".jpg");
+
+        try {
+            FileUtils.copyFile(imageFile, newImageFile);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+
+        return newImageFile;
     }
 
     public File createLogFile(final String className) {

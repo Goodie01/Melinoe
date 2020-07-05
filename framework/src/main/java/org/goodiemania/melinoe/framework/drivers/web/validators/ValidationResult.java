@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.web.validators;
+package org.goodiemania.melinoe.framework.drivers.web.validators;
 
 import java.util.Arrays;
 import java.util.List;

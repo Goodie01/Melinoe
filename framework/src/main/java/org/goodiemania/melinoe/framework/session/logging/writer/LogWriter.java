@@ -2,62 +2,71 @@ package org.goodiemania.melinoe.framework.session.logging.writer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
-import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.LogFileManager;
-import org.jetbrains.annotations.NotNull;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
+import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
+import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 
 public class LogWriter {
-    //TODO I'm doing a lot of finandaling here... but I could just store them in not in a map but rather something more sensible
-    public void write(final Map<String, ClassLogger> logs) {
-        LogFileManager instance = LogFileManager.getInstance();
-        Set<String> rootLog = new HashSet<>();
-        Map<String, Set<String>> classNames = new HashMap<>();
+    public void write(final MetaLogger logs) {
+        createRootLogFile(logs);
 
-        File rootLogFile = instance.createRootLogFile();
+        logs.getClassLoggers().forEach(classLogger -> {
+            createClassLogFile(classLogger);
 
-        logs.values().forEach(classLogger -> {
-            //write page....
-            File logFile = instance.createLogFile(classLogger.getClassName(), classLogger.getMethodName());
-            List<String> processedLogs = createMethodLogFile(classLogger);
-
-            writeLines(logFile, processedLogs);
-            //Add to root logging page...
-            rootLog.add(classLogger.getClassName());
-
-            //add to class logging page...
-            Set<String> orDefault = classNames.getOrDefault(classLogger.getClassName(), new HashSet<>());
-            classNames.put(classLogger.getClassName(), orDefault);
-            orDefault.add(classLogger.getFullMethodName());
+            classLogger.getLoggers().forEach(this::createLogFile);
         });
     }
 
-    @NotNull
-    private List<String> createMethodLogFile(final ClassLogger classLogger) {
-        List<String> processedLogs = classLogger.getLogMessages()
-                .stream()
+    private void createLogFile(final Logger classLogger) {
+        List<String> processedLogs = classLogger.getLogMessages().stream()
                 .map(logMessage -> String.format(LogWriterConstants.INDIVIDUAL_SECTION_LOG_HTML,
                         logMessage.getDateTime(),
                         logMessage.getMessage(),
                         logMessage.getSecondMessage()))
                 .collect(Collectors.toList());
 
+        processedLogs.add(0, LogWriterConstants.HTML_HEAD);
+        processedLogs.add(LogWriterConstants.HTML_FOOTER);
+
+        writeLines(classLogger.getLogFile(), processedLogs);
+    }
+
+    private void createClassLogFile(final ClassLogger classLogger) {
         String passColor = classLogger.getHasPassed() ? "#00ff7b" : "#ff007b";
 
-        processedLogs.add(0, String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
-                passColor,
-                classLogger.getDisplayName(),
-                classLogger.getFullMethodName()));
+        List<String> processedLogs = classLogger.getLoggers().stream()
+                .map(logger -> String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
+                        "file://" + logger.getLogFile().getAbsolutePath(),
+                        passColor,
+                        logger.getDisplayName(),
+                        logger.getClassName() + "." + logger.getMethodName()))
+                .collect(Collectors.toList());
 
         processedLogs.add(0, LogWriterConstants.HTML_HEAD);
         processedLogs.add(LogWriterConstants.HTML_FOOTER);
-        return processedLogs;
+
+        writeLines(classLogger.getLogFile(), processedLogs);
+    }
+
+    private void createRootLogFile(final MetaLogger logs) {
+        String passColor = logs.getHasPassed() ? "#00ff7b" : "#ff007b";
+
+        List<String> processedLogs = logs.getClassLoggers().stream()
+                .map(classLogger -> String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
+                        "file://" + classLogger.getLogFile().getAbsolutePath(),
+                        passColor,
+                        classLogger.getDisplayName(),
+                        classLogger.getClassName()))
+                .collect(Collectors.toList());
+
+        processedLogs.add(0, LogWriterConstants.HTML_HEAD);
+        processedLogs.add(LogWriterConstants.HTML_FOOTER);
+
+        writeLines(logs.getRootLogFile(), processedLogs);
     }
 
     private void writeLines(final File logFile, final List<String> processedLogs) {

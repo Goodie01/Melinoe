@@ -61,13 +61,15 @@ public class LogWriterConstants {
             + "\n"
             + "</body></html>";
     public static final String INDIVIDUAL_SECTION_HTML = "\n"
+            + "        <a href=\"%s\">"
             + "        <div class=\"media text-muted pt-3\">\n"
             + "            <svg class=\"bd-placeholder-img mr-2 rounded\" width=\"32\" height=\"32\" xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid slice\" focusable=\"false\" role=\"img\" aria-label=\"Placeholder: 32x32\"><title>Placeholder</title><rect width=\"100%%\" height=\"100%%\" fill=\"%s\"></rect><text x=\"50%%\" y=\"50%%\" fill=\"#007bff\" dy=\".3em\"></text></svg>\n"
             + "            <p class=\"media-body pb-3 mb-0 small lh-125 border-bottom border-gray\">\n"
             + "                <strong class=\"d-block text-gray-dark\">%s</strong>\n"
             + "                %s \n"
             + "            </p>\n"
-            + "        </div>";
+            + "        </div>"
+            + "        </a>";
     public static final String INDIVIDUAL_SECTION_LOG_HTML = "\n"
             + "        <div class=\"media text-muted pt-3 border-bottom border-gray container\">\n"
             + "            <p class=\"media-body pb-3 mb-0 small lh-125 col-sm-3\">\n"
@@ -77,7 +79,7 @@ public class LogWriterConstants {
             + "                %s\n"
             + "            </p>\n"
             + "            <p class=\"media-body pb-3 mb-0 small lh-125 col-sm-3\">\n"
-            + "                %s.\n"
+            + "                %s\n"
             + "            </p>\n"
             + "        </div>";
 }

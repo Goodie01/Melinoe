@@ -1,9 +1,6 @@
-package org.goodiemania.melinoe.framework.web;
+package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.io.File;
-import java.io.IOException;
-import org.apache.commons.io.FileUtils;
-import org.goodiemania.melinoe.framework.session.logging.LogFileManager;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -62,16 +59,7 @@ public class ScreenshotTaker {
 
 
     public File takeScreenshot() {
-        File screenshot = rawWebDriver.remoteWebDriver().getScreenshotAs(OutputType.FILE);
-        File imageFile = LogFileManager.getInstance().createImageFile();
-
-        try {
-            FileUtils.copyFile(screenshot, imageFile);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return imageFile;
+        return rawWebDriver.getRemoteWebDriver().getScreenshotAs(OutputType.FILE);
     }
 
     public File takeScreenshot(final WebElement element) {
@@ -83,14 +71,14 @@ public class ScreenshotTaker {
 
     private String highlightElement(WebElement elem) {
         lastElem = elem;
-        return (String) (rawWebDriver.remoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
+        return (String) (rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
     }
 
     private void unhighlightLast(final String boarderId) {
         if (lastElem != null) {
             try {
                 // if there already is a highlighted element, unhighlight it
-                rawWebDriver.remoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
+                rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
             } catch (StaleElementReferenceException ignored) {
                 //TODO
                 // the page got reloaded, the element isn't there
