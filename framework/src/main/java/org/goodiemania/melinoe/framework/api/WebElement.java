@@ -1,5 +1,8 @@
 package org.goodiemania.melinoe.framework.api;
 
+import java.util.List;
+import java.util.Optional;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
@@ -23,6 +26,10 @@ public interface WebElement {
 
     String getText();
 
+    List<WebElement> findElements(By by);
+
+    Optional<WebElement> findElement(By by);
+
     boolean isDisplayed();
 
     Point getLocation();
@@ -30,4 +37,6 @@ public interface WebElement {
     Dimension getSize();
 
     Rectangle getRect();
+
+    String getCssValue(String propertyName);
 }

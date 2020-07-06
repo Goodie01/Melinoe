@@ -1,6 +1,9 @@
 package org.goodiemania.melinoe.framework.drivers.web.page;
 
 import java.io.File;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import org.goodiemania.melinoe.framework.api.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
@@ -105,6 +108,16 @@ public class WebElementImpl implements WebElement {
     }
 
     @Override
+    public List<WebElement> findElements(final By by) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Optional<WebElement> findElement(final By by) {
+        return Optional.empty();
+    }
+
+    @Override
     public boolean isDisplayed() {
         return getDriver().findElement(by).isDisplayed();
     }
@@ -122,5 +135,10 @@ public class WebElementImpl implements WebElement {
     @Override
     public Rectangle getRect() {
         return getDriver().findElement(by).getRect();
+    }
+
+    @Override
+    public String getCssValue(final String propertyName) {
+        return null;
     }
 }
