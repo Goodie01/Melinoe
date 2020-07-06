@@ -1,7 +1,6 @@
 package org.goodiemania.melinoe.framework.drivers.web.page;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.function.Consumer;
 import org.goodiemania.melinoe.framework.api.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
@@ -56,12 +55,12 @@ public class WebElementImpl implements WebElement {
     }
 
     @Override
-    public void sendKeys(final CharSequence... keysToSend) {
+    public void sendKeys(final String keysToSend) {
         withDriver(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
             internalSession.getSession().getLogger().addWithImage(
                     String.format("Entering text '%s' into element found by: %s",
-                            Arrays.toString(keysToSend),
+                            keysToSend,
                             by),
                     file);
             webElement.sendKeys(keysToSend);

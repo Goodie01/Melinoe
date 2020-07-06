@@ -9,7 +9,7 @@ public interface WebElement {
 
     void submit();
 
-    void sendKeys(CharSequence... keysToSend);
+    void sendKeys(String stringToEnter);
 
     void clear();
 
