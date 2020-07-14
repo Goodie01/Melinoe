@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.api;
+package org.goodiemania.melinoe.framework.api.web;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.drivers.web.validators;
+package org.goodiemania.melinoe.framework.api.web.validators;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.Session;

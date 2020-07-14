@@ -3,7 +3,7 @@ package org.goodiemania.melinoe.framework.decorator;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
-import org.goodiemania.melinoe.framework.api.FindElement;
+import org.goodiemania.melinoe.framework.api.web.FindElement;
 import org.goodiemania.melinoe.framework.api.Flow;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.drivers.web.BasePage;

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
-import org.goodiemania.melinoe.framework.api.WebElement;
+import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;

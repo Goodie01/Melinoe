@@ -1,10 +1,10 @@
 package org.goodiemania.melinoe.examples;
 
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.api.FindElement;
-import org.goodiemania.melinoe.framework.api.WebElement;
+import org.goodiemania.melinoe.framework.api.web.FindElement;
+import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.BasePage;
-import org.goodiemania.melinoe.framework.drivers.web.validators.TitleValidator;
+import org.goodiemania.melinoe.framework.api.web.validators.TitleValidator;
 
 public class GithubRepoPage extends BasePage {
     @FindElement(linkText = "Pull requests")
