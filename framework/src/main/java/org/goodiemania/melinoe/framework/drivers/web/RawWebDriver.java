@@ -43,7 +43,6 @@ public class RawWebDriver {
     public RemoteWebDriver getRemoteWebDriver() {
         if (remoteWebDriver == null) {
             generate();
-            metaSession.addDriver(webDriver);
         }
 
         return remoteWebDriver;
@@ -94,6 +93,8 @@ public class RawWebDriver {
         screenshotTaker = new ScreenshotTaker(this);
         webDriverWait = new WebDriverWait(remoteWebDriver, Duration.ofSeconds(60));
         localStorage = new LocalStorage(this);
+
+        metaSession.addDriver(webDriver);
     }
 
     private static String waitForDriverExtraction(final String driverLocation) {
@@ -124,5 +125,10 @@ public class RawWebDriver {
         }
 
         return Optional.of(targetFile.getAbsolutePath());
+    }
+
+    public void close() {
+        remoteWebDriver.quit();
+        remoteWebDriver = null;
     }
 }

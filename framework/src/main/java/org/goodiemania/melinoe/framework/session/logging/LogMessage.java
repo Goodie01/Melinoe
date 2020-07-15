@@ -6,11 +6,13 @@ public class LogMessage {
     private final LocalDateTime dateTime;
     private final String message;
     private final String secondMessage;
+    private final String hiddenInfo;
 
-    public LogMessage(final LocalDateTime dateTime, final String rawMessage, final String secondMessage) {
+    public LogMessage(final LocalDateTime dateTime, final String rawMessage, final String secondMessage, final String hiddenInfo) {
         this.dateTime = dateTime;
         this.message = rawMessage;
         this.secondMessage = secondMessage;
+        this.hiddenInfo = hiddenInfo;
     }
 
     public LocalDateTime getDateTime() {
@@ -23,5 +25,9 @@ public class LogMessage {
 
     public String getSecondMessage() {
         return secondMessage;
+    }
+
+    public String getHiddenInfo() {
+        return hiddenInfo;
     }
 }

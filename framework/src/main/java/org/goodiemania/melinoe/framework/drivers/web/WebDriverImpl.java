@@ -17,8 +17,7 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
 
     @Override
     public void close() {
-        //TODO we should handle this betterer
-        this.rawWebDriver.getRemoteWebDriver().quit();
+        this.rawWebDriver.close();
     }
 
     @Override

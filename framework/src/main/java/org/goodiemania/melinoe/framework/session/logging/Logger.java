@@ -28,15 +28,19 @@ public class Logger {
         this.methodName = methodName;
 
         this.logFile = logFileManager.createLogFile(className, methodName);
-        ;
     }
 
     public void add(final String message) {
         add(message, "");
     }
 
+    public void addWithHiddenInfo(final String message, final String hiddenInfo) {
+        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, "", hiddenInfo);
+        logMessages.add(logMessage);
+    }
+
     public void add(final String message, final String extraInfo) {
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, extraInfo);
+        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, extraInfo, "");
         logMessages.add(logMessage);
     }
 
@@ -48,7 +52,7 @@ public class Logger {
                 "file:///" + newImageFile.getAbsolutePath()
         );
 
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, imageString);
+        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, imageString, "");
         logMessages.add(logMessage);
     }
 
