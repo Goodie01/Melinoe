@@ -1,8 +1,8 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
-import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
+import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class WebDriverImpl implements ClosableDriver, WebDriver {

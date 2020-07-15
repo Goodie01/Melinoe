@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.drivers;
+package org.goodiemania.melinoe.framework.drivers.rest;
 
 import java.net.http.HttpResponse;
 

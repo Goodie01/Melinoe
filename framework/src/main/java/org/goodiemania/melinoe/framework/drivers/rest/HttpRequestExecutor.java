@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.goodiemania.melinoe.framework.api.HttpMethodType;
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.drivers.RestResponse;
 
 public class HttpRequestExecutor {
     private final Session session;

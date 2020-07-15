@@ -128,7 +128,9 @@ public class RawWebDriver {
     }
 
     public void close() {
-        remoteWebDriver.quit();
-        remoteWebDriver = null;
+        if (remoteWebDriver != null) {
+            remoteWebDriver.quit();
+            remoteWebDriver = null;
+        }
     }
 }

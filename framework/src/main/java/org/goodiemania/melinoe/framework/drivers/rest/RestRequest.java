@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.drivers;
+package org.goodiemania.melinoe.framework.drivers.rest;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import org.goodiemania.melinoe.framework.api.HttpMethodType;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
-import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
 
 public class RestRequest {
     private final HttpRequestExecutor requestExecutor;
@@ -37,7 +36,11 @@ public class RestRequest {
         this.headers = Collections.emptyMap();
     }
 
-    private RestRequest(final HttpRequestExecutor requestExecutor, final URI uri, final HttpMethodType httpMethodType, final String body, final Map<String, List<String>> headers) {
+    private RestRequest(final HttpRequestExecutor requestExecutor,
+                        final URI uri,
+                        final HttpMethodType httpMethodType,
+                        final String body,
+                        final Map<String, List<String>> headers) {
         this.requestExecutor = requestExecutor;
         this.uri = uri;
         this.httpMethodType = httpMethodType;

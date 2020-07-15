@@ -30,13 +30,13 @@ public class Logger {
         this.logFile = logFileManager.createLogFile(className, methodName);
     }
 
-    public void add(final String message) {
-        add(message, "");
-    }
-
     public void addWithHiddenInfo(final String message, final String hiddenInfo) {
         LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, "", hiddenInfo);
         logMessages.add(logMessage);
+    }
+
+    public void add(final String message) {
+        add(message, "");
     }
 
     public void add(final String message, final String extraInfo) {
