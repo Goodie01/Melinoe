@@ -2,6 +2,7 @@ package org.goodiemania.melinoe.examples;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,14 @@ public class Basic extends MelinoeTest {
 
     @BeforeAll
     public static void init() {
-        getClassSession();
+        getClassSession().getLogger()
+                .add("Before all");
     }
 
     @AfterAll
     public static void tearDown() {
-        getClassSession();
+        getClassSession().getLogger()
+                .add("After all");
     }
 
     @Test
@@ -27,5 +30,15 @@ public class Basic extends MelinoeTest {
         githubRepoPage.checkPage();
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();
+    }
+
+    @Test
+    @DisplayName("Failing test")
+    public void thisWillFail() {
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        githubRepoPage.checkPage();
+        githubRepoPullRequestPage.checkPage();
+        githubRepoPage.clickPullRequestLink();
+        Assertions.fail();
     }
 }

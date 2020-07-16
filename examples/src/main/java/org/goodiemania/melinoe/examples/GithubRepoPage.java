@@ -15,6 +15,8 @@ public class GithubRepoPage extends BasePage {
     }
 
     public void clickPullRequestLink() {
+        //TODO handle clicking this
+        //  This is a AJAX link and will require a wait for here
         pullRequestLink.click();
     }
 }

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
@@ -48,7 +49,7 @@ public class RawWebDriver {
         return remoteWebDriver;
     }
 
-    public WebDriverImpl getWebDriver() {
+    public WebDriver getWebDriver() {
         return webDriver;
     }
 
@@ -64,11 +65,16 @@ public class RawWebDriver {
         validators.stream()
                 .map(webValidator -> webValidator.validate(internalSession.getSession(), getWebDriver()))
                 .forEach(validationResult -> {
+                    validationResult.getMessages().forEach(s -> internalSession.getSession().getLogger().add(s));
                     if (!validationResult.isValid()) {
                         internalSession.getSession().getLogger().fail();
                     }
-                    validationResult.getMessages().forEach(s -> internalSession.getSession().getLogger().add(s));
                 });
+
+        if(!internalSession.getSession().getLogger().getHasPassed()) {
+            internalSession.getSession().getLogger().add("Failure in validation detected. Failing now.");
+            Assertions.fail();
+        }
 
         reloadFlag = UUID.randomUUID().toString();
         localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);

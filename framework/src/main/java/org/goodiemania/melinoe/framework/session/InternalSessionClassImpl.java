@@ -9,7 +9,7 @@ import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class InternalSessionClassImpl implements InternalSession {
-    private MetaSession metaSession;
+    private final MetaSession metaSession;
     private final ClassLogger classLogger;
     private final FlowDecorator flowDecorator;
     private final RawWebDriver rawWebDriver;

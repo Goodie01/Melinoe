@@ -51,14 +51,16 @@ public class LogWriter {
     }
 
     private void createClassLogFile(final ClassLogger classLogger) {
-        String passColor = classLogger.getHasPassed() ? "#00ff7b" : "#ff007b";
-
         List<String> processedLogs = classLogger.getLoggers().stream()
-                .map(logger -> String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
-                        "file://" + logger.getLogFile().getAbsolutePath(),
-                        passColor,
-                        logger.getDisplayName(),
-                        logger.getClassName() + "." + logger.getMethodName()))
+                .map(logger -> {
+                    String passColor = logger.getHasPassed() ? "#00ff7b" : "#ff007b";
+
+                    return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
+                            "file://" + logger.getLogFile().getAbsolutePath(),
+                            passColor,
+                            logger.getDisplayName(),
+                            logger.getClassName() + "." + logger.getMethodName());
+                })
                 .collect(Collectors.toList());
 
         processedLogs.add(0, LogWriterConstants.HTML_HEAD);
@@ -68,14 +70,16 @@ public class LogWriter {
     }
 
     private void createRootLogFile(final MetaLogger logs) {
-        String passColor = logs.getHasPassed() ? "#00ff7b" : "#ff007b";
-
         List<String> processedLogs = logs.getClassLoggers().stream()
-                .map(classLogger -> String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
-                        "file://" + classLogger.getLogFile().getAbsolutePath(),
-                        passColor,
-                        classLogger.getDisplayName(),
-                        classLogger.getClassName()))
+                .map(classLogger -> {
+                    String passColor = classLogger.getHasPassed() ? "#00ff7b" : "#ff007b";
+
+                    return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
+                            "file://" + classLogger.getLogFile().getAbsolutePath(),
+                            passColor,
+                            classLogger.getDisplayName(),
+                            classLogger.getClassName());
+                })
                 .collect(Collectors.toList());
 
         processedLogs.add(0, LogWriterConstants.HTML_HEAD);

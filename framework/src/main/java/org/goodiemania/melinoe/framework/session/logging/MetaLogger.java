@@ -8,7 +8,6 @@ public class MetaLogger {
     private final File rootLogFile;
     private final List<ClassLogger> classLoggers;
     private final LogFileManager fileManager;
-    private Boolean hasPassed = true;
 
     public MetaLogger() {
         fileManager = new LogFileManager();
@@ -25,10 +24,6 @@ public class MetaLogger {
 
     public List<ClassLogger> getClassLoggers() {
         return classLoggers;
-    }
-
-    public Boolean getHasPassed() {
-        return hasPassed;
     }
 
     public File getRootLogFile() {

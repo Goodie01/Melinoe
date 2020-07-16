@@ -8,12 +8,11 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class ClassLogger {
     private final File logFile;
-    private List<Logger> loggers = new ArrayList<>();
-    private LogFileManager fileManager;
-    private String displayName;
-    private String packageName;
-    private String className;
-    private boolean hasPassed = true;
+    private final List<Logger> loggers = new ArrayList<>();
+    private final LogFileManager fileManager;
+    private final String displayName;
+    private final String packageName;
+    private final String className;
 
     public ClassLogger(final LogFileManager fileManager, final String displayName, final String packageName, final String className) {
         this.fileManager = fileManager;
@@ -37,7 +36,12 @@ public class ClassLogger {
     }
 
     public Boolean getHasPassed() {
-        return hasPassed;
+        for (Logger logger : loggers) {
+            if (!logger.getHasPassed()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public List<Logger> getLoggers() {
