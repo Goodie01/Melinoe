@@ -40,4 +40,8 @@ public class MetaLogger {
         classLoggers.add(classLogger);
         return classLogger;
     }
+
+    public LogFileManager getFileManager() {
+        return fileManager;
+    }
 }

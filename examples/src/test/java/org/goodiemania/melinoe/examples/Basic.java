@@ -15,13 +15,15 @@ public class Basic extends MelinoeTest {
     @BeforeAll
     public static void init() {
         getClassSession().getLogger()
-                .add("Before all");
+                .add()
+                .withMessage("Before all");
     }
 
     @AfterAll
     public static void tearDown() {
         getClassSession().getLogger()
-                .add("After all");
+                .add()
+                .withMessage("After all");
     }
 
     @Test

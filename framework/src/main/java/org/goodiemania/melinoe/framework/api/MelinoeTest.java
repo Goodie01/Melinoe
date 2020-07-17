@@ -39,8 +39,10 @@ public abstract class MelinoeTest {
     AfterEachCallback afterEachCallback = extensionContext -> {
         extensionContext.getExecutionException()
                 .ifPresent(throwable -> {
-                    session.getSession().getLogger().add("Exception detected in after each callback");
-                    session.getSession().getLogger().fail();
+                    session.getSession().getLogger().add()
+                            .fail()
+                            .withMessage("Exception thrown")
+                            .withThrowable(throwable);
                 });
         metaSession.endSession();
     };

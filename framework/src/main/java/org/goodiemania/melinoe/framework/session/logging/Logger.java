@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Logger {
-    private LogFileManager logFileManager;
-    private String displayName;
-    private String packageName;
-    private String className;
-    private String methodName;
-    private List<LogMessage> logMessages = new ArrayList<>();
-    private Boolean hasPassed = true;
+    private final LogFileManager logFileManager;
+    private final String displayName;
+    private final String packageName;
+    private final String className;
+    private final String methodName;
+    private final List<LogMessage> logMessages = new ArrayList<>();
 
-    private File logFile;
+    private final File logFile;
 
     public Logger(final LogFileManager logFileManager,
                   final String displayName,
@@ -30,34 +29,11 @@ public class Logger {
         this.logFile = logFileManager.createLogFile(className, methodName);
     }
 
-    public void addWithHiddenInfo(final String message, final String hiddenInfo) {
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, "", hiddenInfo);
+    public LogMessage add() {
+        LogMessage logMessage = new LogMessage(LocalDateTime.now());
         logMessages.add(logMessage);
-    }
 
-    public void add(final String message) {
-        add(message, "");
-    }
-
-    public void add(final String message, final String extraInfo) {
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, extraInfo, "");
-        logMessages.add(logMessage);
-    }
-
-    public void addWithImage(final String message, final File imageFile) {
-        File newImageFile = logFileManager.createImageFile(imageFile);
-
-        String imageString = String.format("<a href='%s'><img width='200' src='%s'></a>",
-                "file:///" + newImageFile.getAbsolutePath(),
-                "file:///" + newImageFile.getAbsolutePath()
-        );
-
-        LogMessage logMessage = new LogMessage(LocalDateTime.now(), message, imageString, "");
-        logMessages.add(logMessage);
-    }
-
-    public void fail() {
-        hasPassed = false;
+        return logMessage;
     }
 
     public File getLogFile() {
@@ -85,6 +61,11 @@ public class Logger {
     }
 
     public Boolean getHasPassed() {
-        return hasPassed;
+        for (LogMessage message : logMessages) {
+            if (message.getFail()) {
+                return false;
+            }
+        }
+        return true;
     }
 }

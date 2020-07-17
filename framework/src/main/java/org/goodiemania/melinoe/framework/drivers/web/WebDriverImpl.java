@@ -39,8 +39,8 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
     }
 
     public void waitFor(final Predicate<WebDriver> predicate) {
-        internalSession.getSession().getLogger().add("Waiting for predicate to be true");
+        internalSession.getSession().getLogger().add().withMessage("Waiting for predicate to be true");
         rawWebDriver.getWebDriverWait().until(webDriver -> predicate.test(this));
-        internalSession.getSession().getLogger().add("Wait finished");
+        internalSession.getSession().getLogger().add().withMessage("Wait finished");
     }
 }

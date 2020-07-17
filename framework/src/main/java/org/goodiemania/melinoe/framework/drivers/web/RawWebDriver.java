@@ -64,19 +64,29 @@ public class RawWebDriver {
     public void checkPage(final List<WebValidator> validators) {
         webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
 
-        internalSession.getSession().getLogger().addWithImage("Checking page", screenshotTaker.takeScreenshot());
+        internalSession.getSession().getLogger().add()
+                .withMessage("Checking page")
+                .withImage(screenshotTaker.takeScreenshot());
 
         validators.stream()
                 .map(webValidator -> webValidator.validate(internalSession.getSession(), getWebDriver()))
                 .forEach(validationResult -> {
-                    validationResult.getMessages().forEach(s -> internalSession.getSession().getLogger().add(s));
-                    if (!validationResult.isValid()) {
-                        internalSession.getSession().getLogger().fail();
-                    }
+                    validationResult.getMessages().forEach(s -> {
+                        if (validationResult.isValid()) {
+                            internalSession.getSession().getLogger().add()
+                                    .withMessage(s);
+                        } else {
+                            internalSession.getSession().getLogger().add()
+                                    .withMessage(s)
+                                    .fail();
+                        }
+                    });
                 });
 
         if (!internalSession.getSession().getLogger().getHasPassed()) {
-            internalSession.getSession().getLogger().add("Failure in validation detected. Failing now.");
+            internalSession.getSession().getLogger().add()
+                    .withMessage("Failure in validation detected. Failing now.")
+                    .fail();
             Assertions.fail();
         }
 

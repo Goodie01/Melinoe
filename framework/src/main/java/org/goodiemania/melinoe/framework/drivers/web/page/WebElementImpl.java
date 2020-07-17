@@ -42,7 +42,9 @@ public class WebElementImpl implements WebElement {
     public void click() {
         withDriver(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().addWithImage(String.format("Clicking link found by: %s", by), file);
+            internalSession.getSession().getLogger().add()
+                    .withMessage(String.format("Clicking link found by: %s", by))
+                    .withImage(file);
             webElement.click();
         });
 
@@ -52,7 +54,9 @@ public class WebElementImpl implements WebElement {
     public void submit() {
         withDriver(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().addWithImage(String.format("Submitted element found by: %s", by), file);
+            internalSession.getSession().getLogger().add()
+                    .withMessage(String.format("Submitted element found by: %s", by))
+                    .withImage(file);
             webElement.submit();
         });
     }
@@ -61,11 +65,11 @@ public class WebElementImpl implements WebElement {
     public void sendKeys(final String keysToSend) {
         withDriver(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().addWithImage(
-                    String.format("Entering text '%s' into element found by: %s",
+            internalSession.getSession().getLogger().add()
+                    .withMessage(String.format("Entering text '%s' into element found by: %s",
                             keysToSend,
-                            by),
-                    file);
+                            by))
+                    .withImage(file);
             webElement.sendKeys(keysToSend);
         });
     }
@@ -74,10 +78,9 @@ public class WebElementImpl implements WebElement {
     public void clear() {
         withDriver(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().addWithImage(
-                    String.format("Calling clear on element found by: %s",
-                            by),
-                    file);
+            internalSession.getSession().getLogger().add()
+                    .withMessage(String.format("Calling clear on element found by: %s", by))
+                    .withImage(file);
             webElement.clear();
         });
     }

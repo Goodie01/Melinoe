@@ -33,12 +33,12 @@ public class HttpRequestExecutor {
             HttpResponse<String> stringHttpResponse = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
             long stopTime = System.currentTimeMillis();
 
-            session.getLogger().addWithHiddenInfo(
-                    String.format("Made a HTTP request to %s with a %d status in %dms",
+            session.getLogger().add()
+                    .withMessage(String.format("Made a HTTP request to %s with a %d status in %dms",
                             uri,
                             stringHttpResponse.statusCode(),
-                            stopTime - startTime),
-                    stringHttpResponse.body());
+                            stopTime - startTime))
+                    .withHiddenInfo(stringHttpResponse.body());
 
             return new RestResponse(stringHttpResponse);
         } catch (IOException | InterruptedException e) {
