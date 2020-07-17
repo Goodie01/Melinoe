@@ -51,13 +51,14 @@ public class ClassLogger {
     public Logger createClassLogger() {
         String methodName = "STATIC";
 
-        Logger logger = new Logger(fileManager, displayName, packageName, className, methodName);
+        Logger logger = new Logger(fileManager, "Before all", packageName, className, methodName);
         loggers.add(logger);
         return logger;
     }
 
     public Logger createClassLogger(final ExtensionContext extensionContext) {
         String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
+        String displayName = extensionContext.getDisplayName();
 
         Logger logger = new Logger(fileManager, displayName, packageName, className, methodName);
         loggers.add(logger);

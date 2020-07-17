@@ -24,7 +24,7 @@ public abstract class MelinoeTest {
     @RegisterExtension
     static AfterAllCallback afterAllCallback = extensionContext -> {
         metaSession.endSession();
-        metaSession.logStuff();
+        metaSession.writeLogs();
     };
 
     private InternalSessionImpl session;
@@ -36,7 +36,14 @@ public abstract class MelinoeTest {
     };
 
     @RegisterExtension
-    AfterEachCallback afterEachCallback = extensionContext -> metaSession.endSession();
+    AfterEachCallback afterEachCallback = extensionContext -> {
+        extensionContext.getExecutionException()
+                .ifPresent(throwable -> {
+                    session.getSession().getLogger().add("Exception detected in after each callback");
+                    session.getSession().getLogger().fail();
+                });
+        metaSession.endSession();
+    };
 
     public static Session getClassSession() {
         return classSession.getSession();

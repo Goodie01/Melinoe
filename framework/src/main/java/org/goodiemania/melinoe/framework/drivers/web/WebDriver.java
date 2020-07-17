@@ -1,6 +1,7 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
+import java.util.function.Predicate;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 
 public interface WebDriver {
@@ -9,4 +10,6 @@ public interface WebDriver {
     String getTitle();
 
     void checkPage(List<WebValidator> validators);
+
+    void waitFor(Predicate<WebDriver> predicate);
 }

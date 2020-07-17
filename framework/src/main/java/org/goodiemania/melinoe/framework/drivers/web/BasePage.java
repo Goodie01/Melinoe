@@ -14,6 +14,10 @@ public class BasePage {
         this.validators = Arrays.asList(validators);
     }
 
+    public Session getSession() {
+        return session;
+    }
+
     public void checkPage() {
         session.web().checkPage(validators);
     }

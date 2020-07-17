@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("Howdy")
 public class Basic extends MelinoeTest {
     private GithubRepoPage githubRepoPage;
     private GithubRepoPullRequestPage githubRepoPullRequestPage;
@@ -37,8 +38,8 @@ public class Basic extends MelinoeTest {
     public void thisWillFail() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
-        githubRepoPullRequestPage.checkPage();
         githubRepoPage.clickPullRequestLink();
+        githubRepoPullRequestPage.checkPage();
         Assertions.fail();
     }
 }

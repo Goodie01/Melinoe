@@ -18,5 +18,6 @@ public class GithubRepoPage extends BasePage {
         //TODO handle clicking this
         //  This is a AJAX link and will require a wait for here
         pullRequestLink.click();
+        getSession().web().waitFor(webDriver -> webDriver.getTitle().equals("Pull requests · Goodie01/Melinoe · GitHub"));
     }
 }

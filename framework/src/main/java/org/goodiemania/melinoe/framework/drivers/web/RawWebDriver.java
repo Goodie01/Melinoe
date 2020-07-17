@@ -57,6 +57,10 @@ public class RawWebDriver {
         return screenshotTaker;
     }
 
+    public WebDriverWait getWebDriverWait() {
+        return webDriverWait;
+    }
+
     public void checkPage(final List<WebValidator> validators) {
         webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
 
@@ -71,7 +75,7 @@ public class RawWebDriver {
                     }
                 });
 
-        if(!internalSession.getSession().getLogger().getHasPassed()) {
+        if (!internalSession.getSession().getLogger().getHasPassed()) {
             internalSession.getSession().getLogger().add("Failure in validation detected. Failing now.");
             Assertions.fail();
         }

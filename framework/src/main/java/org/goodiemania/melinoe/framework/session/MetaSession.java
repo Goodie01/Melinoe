@@ -19,18 +19,10 @@ public class MetaSession {
     }
 
     public InternalSessionClassImpl createSessionFor(final ExtensionContext extensionContext) {
-        String packageName = extensionContext.getTestClass()
-                .map(Class::getPackageName)
-                .orElse("NO_PACKAGE");
-
-        String className = extensionContext.getTestClass()
-                .map(Class::getName)
-                .orElse("NO_CLASS_NAME");
-
-        return new InternalSessionClassImpl(this, metaLogger.createClassLogger(extensionContext.getDisplayName(), packageName, className));
+        return new InternalSessionClassImpl(this, metaLogger.createClassLogger(extensionContext));
     }
 
-    public void logStuff() {
+    public void writeLogs() {
         new LogWriter().write(metaLogger);
     }
 

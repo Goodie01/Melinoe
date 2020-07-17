@@ -13,7 +13,7 @@ public class RestExample extends MelinoeTest {
     }
 
     @Test
-    public void run() {
+    public void runThisThing() {
         getSession().rest("https://jsonplaceholder.typicode.com/users")
                 .execute();
     }
