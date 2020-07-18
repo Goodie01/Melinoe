@@ -8,7 +8,7 @@ import org.goodiemania.melinoe.framework.drivers.web.WebDriver;
  * Created on 28/06/2019.
  */
 public class TitleValidator implements WebValidator {
-    private String expectedTitle;
+    private final String expectedTitle;
 
     public TitleValidator(final String expectedTitle) {
         this.expectedTitle = expectedTitle;
@@ -18,11 +18,11 @@ public class TitleValidator implements WebValidator {
     public ValidationResult validate(final Session context, final WebDriver webDriver) {
         String actualTitle = webDriver.getTitle();
         if (StringUtils.equals(actualTitle, expectedTitle)) {
-            return ValidationResult.passed();
+            return ValidationResult.passed("Found expected title: " + expectedTitle);
         } else {
             return ValidationResult.failed("Title is not as expected",
-                    "Expected title: " + expectedTitle,
-                    "Actual title: " + actualTitle);
+                    String.format("Expected title: %s", expectedTitle),
+                    String.format("Actual title: %s", actualTitle));
         }
     }
 }

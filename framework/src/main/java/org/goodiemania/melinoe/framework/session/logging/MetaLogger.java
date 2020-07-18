@@ -9,12 +9,14 @@ public class MetaLogger {
     private final File rootLogFile;
     private final List<ClassLogger> classLoggers;
     private final LogFileManager fileManager;
+    private final File cssFile;
 
     public MetaLogger() {
         fileManager = new LogFileManager();
         classLoggers = new ArrayList<>();
 
         rootLogFile = fileManager.createRootLogFile();
+        cssFile = fileManager.createCssFile();
     }
 
     public List<ClassLogger> getClassLoggers() {
@@ -41,7 +43,7 @@ public class MetaLogger {
         return classLogger;
     }
 
-    public LogFileManager getFileManager() {
-        return fileManager;
+    public File getCssFile() {
+        return cssFile;
     }
 }

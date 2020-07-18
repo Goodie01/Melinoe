@@ -2,6 +2,7 @@ package org.goodiemania.melinoe.examples;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class FlowExample extends MelinoeTest {
@@ -13,6 +14,7 @@ public class FlowExample extends MelinoeTest {
     }
 
     @Test
+    @DisplayName("This is an example using a flow")
     public void run() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubFlow.navigateToPullRequestPage();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
@@ -16,23 +17,30 @@ import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
 public class LogWriter {
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public void write(final MetaLogger logs) {
-        createRootLogFile(logs);
+    public void write(final MetaLogger metaLogger) {
+        createCssFile(metaLogger);
 
-        logs.getClassLoggers().forEach(classLogger -> {
-            createClassLogFile(classLogger);
+        createRootLogFile(metaLogger);
 
-            classLogger.getLoggers().forEach(logger -> createLogFile(logs, logger));
+        metaLogger.getClassLoggers().forEach(classLogger -> {
+            createClassLogFile(metaLogger, classLogger);
+
+            classLogger.getLoggers().forEach(logger -> createLogFile(metaLogger, logger));
         });
     }
 
-    private void createLogFile(final MetaLogger metaLogger, final Logger classLogger) {
-        List<String> processedLogs = classLogger.getLogMessages().stream()
+    private void createLogFile(final MetaLogger metaLogger, final Logger logger) {
+        File cssFilePath = metaLogger.getCssFile();
+        File logFile = logger.getLogFile();
+
+        List<String> processedLogs = logger.getLogMessages().stream()
                 .map(logMessage -> {
-                    String secondMessage = processSecondText(metaLogger, logMessage);
+                    String cssStyle = logMessage.getFail() ? "error-text" : "text-muted";
+                    String secondMessage = processSecondText(logger, logMessage);
                     String hiddenString = processHiddenText(logMessage);
                     if (StringUtils.isBlank(hiddenString)) {
                         return String.format(LogWriterConstants.INDIVIDUAL_SECTION_LOG_HTML,
+                                cssStyle,
                                 logMessage.getDateTime(),
                                 logMessage.getMessage(),
                                 secondMessage);
@@ -40,6 +48,7 @@ public class LogWriter {
                         String hiddenSectionId = randomAlpha();
 
                         return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HIDDEN_LOG_HTML,
+                                cssStyle,
                                 hiddenSectionId,
                                 logMessage.getDateTime(),
                                 logMessage.getMessage(),
@@ -50,24 +59,20 @@ public class LogWriter {
                 })
                 .collect(Collectors.toList());
 
-        processedLogs.add(0, LogWriterConstants.HTML_HEAD);
+        processedLogs.add(0, String.format(LogWriterConstants.HTML_HEAD,
+                getRelativeFileFileLocation(cssFilePath, logFile)));
         processedLogs.add(LogWriterConstants.HTML_FOOTER);
 
-        writeLines(classLogger.getLogFile(), processedLogs);
+        writeLines(logFile, processedLogs);
     }
 
-    private String processSecondText(final MetaLogger metaLogger, final LogMessage logMessage) {
+    private String processSecondText(final Logger logger, final LogMessage logMessage) {
+        File logFile = logger.getLogFile();
+
         if (logMessage.getImage() != null) {
-            if (!logMessage.isImageCopied()) {
-                File newImageFile = metaLogger.getFileManager().createImageFile(logMessage.getImage());
-
-                logMessage.withImage(newImageFile)
-                        .withImageCopied(true);
-            }
-
             return String.format("<a href='%s'><img width='200' src='%s'></a>",
-                    "file:///" + logMessage.getImage().getAbsolutePath(),
-                    "file:///" + logMessage.getImage().getAbsolutePath()
+                    getRelativeFileFileLocation(logMessage.getImage(), logFile),
+                    getRelativeFileFileLocation(logMessage.getImage(), logFile)
             );
         } else {
             return logMessage.getSecondMessage();
@@ -85,45 +90,63 @@ public class LogWriter {
         }
     }
 
-    private void createClassLogFile(final ClassLogger classLogger) {
+    private void createClassLogFile(final MetaLogger metaLogger, final ClassLogger classLogger) {
+        File cssFilePath = metaLogger.getCssFile();
+        File logFile = classLogger.getLogFile();
+
         List<String> processedLogs = classLogger.getLoggers().stream()
                 .map(logger -> {
                     String passColor = logger.getHasPassed() ? "#00ff7b" : "#ff007b";
 
                     return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
-                            "file://" + logger.getLogFile().getAbsolutePath(),
+                            getRelativeFileFileLocation(logger.getLogFile(), logFile),
                             passColor,
                             logger.getDisplayName(),
                             logger.getClassName() + "." + logger.getMethodName());
                 })
                 .collect(Collectors.toList());
 
-        processedLogs.add(0, LogWriterConstants.HTML_HEAD);
+        processedLogs.add(0, String.format(LogWriterConstants.HTML_HEAD,
+                getRelativeFileFileLocation(cssFilePath, logFile)));
         processedLogs.add(LogWriterConstants.HTML_FOOTER);
 
-        writeLines(classLogger.getLogFile(), processedLogs);
+        writeLines(logFile, processedLogs);
+    }
+
+    private void createCssFile(final MetaLogger logs) {
+        writeLines(
+                logs.getCssFile(),
+                Collections.singletonList(LogWriterConstants.CSS_FILE_CONTENTS));
     }
 
     private void createRootLogFile(final MetaLogger logs) {
+        File cssFilePath = logs.getCssFile();
+        File rootLogFile = logs.getRootLogFile();
+
         List<String> processedLogs = logs.getClassLoggers().stream()
                 .map(classLogger -> {
                     String passColor = classLogger.getHasPassed() ? "#00ff7b" : "#ff007b";
 
                     return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,
-                            "file://" + classLogger.getLogFile().getAbsolutePath(),
+                            getRelativeFileFileLocation(classLogger.getLogFile(), rootLogFile),
                             passColor,
                             classLogger.getDisplayName(),
                             classLogger.getClassName());
                 })
                 .collect(Collectors.toList());
 
-        processedLogs.add(0, LogWriterConstants.HTML_HEAD);
+        processedLogs.add(0, String.format(LogWriterConstants.HTML_HEAD,
+                getRelativeFileFileLocation(cssFilePath, rootLogFile)));
         processedLogs.add(LogWriterConstants.HTML_FOOTER);
 
-        writeLines(logs.getRootLogFile(), processedLogs);
+        writeLines(rootLogFile, processedLogs);
     }
 
-    private void writeLines(final File logFile, final List<String> processedLogs) {
+    private static String getRelativeFileFileLocation(final File toFile, final File fromFile) {
+        return fromFile.getParentFile().toPath().relativize(toFile.toPath()).toString();
+    }
+
+    private static void writeLines(final File logFile, final List<String> processedLogs) {
         try {
             FileUtils.writeLines(logFile, processedLogs);
         } catch (IOException e) {

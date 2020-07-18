@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 
 public class LogMessage {
+    private final LogFileManager logFileManager;
     private final LocalDateTime dateTime;
     private String message = "";
     private String secondMessage = "";
@@ -11,17 +12,10 @@ public class LogMessage {
     private Throwable throwable = null;
     private Boolean fail = false;
     private File image;
-    private boolean imageCopied = false;
 
-    public LogMessage(final LocalDateTime dateTime) {
+    public LogMessage(final LogFileManager logFileManager, final LocalDateTime dateTime) {
+        this.logFileManager = logFileManager;
         this.dateTime = dateTime;
-    }
-
-    public LogMessage(final LocalDateTime dateTime, final String rawMessage, final String secondMessage, final String hiddenInfo) {
-        this.dateTime = dateTime;
-        this.message = rawMessage;
-        this.secondMessage = secondMessage;
-        this.hiddenInfo = hiddenInfo;
     }
 
     public LocalDateTime getDateTime() {
@@ -78,16 +72,7 @@ public class LogMessage {
     }
 
     public LogMessage withImage(final File image) {
-        this.image = image;
-        return this;
-    }
-
-    public boolean isImageCopied() {
-        return imageCopied;
-    }
-
-    public LogMessage withImageCopied(final boolean imageCopied) {
-        this.imageCopied = imageCopied;
+        this.image = logFileManager.createImageFile(image);
         return this;
     }
 }

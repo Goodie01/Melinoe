@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 public class LogFileManager {
     private final File runDirectory;
     private final File imageDir;
+    private final File cssDir;
 
     public LogFileManager() {
         try {
@@ -34,6 +35,11 @@ public class LogFileManager {
             imageDir = new File(runDirectory, "img");
             FileUtils.forceMkdir(imageDir);
 
+            cssDir = new File(runDirectory, "css");
+            FileUtils.forceMkdir(cssDir);
+
+
+
             System.out.println("Log URI: file://" + runDirectory.getAbsolutePath() + "/index.html");
 
         } catch (IOException e) {
@@ -44,6 +50,17 @@ public class LogFileManager {
     public File createRootLogFile() {
         try {
             File indexFile = new File(runDirectory, "index.html");
+            FileUtils.touch(indexFile);
+
+            return indexFile;
+        } catch (final IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public File createCssFile() {
+        try {
+            File indexFile = new File(cssDir, "main.css");
             FileUtils.touch(indexFile);
 
             return indexFile;

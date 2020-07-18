@@ -30,7 +30,7 @@ public class Logger {
     }
 
     public LogMessage add() {
-        LogMessage logMessage = new LogMessage(LocalDateTime.now());
+        LogMessage logMessage = new LogMessage(logFileManager, LocalDateTime.now());
         logMessages.add(logMessage);
 
         return logMessage;

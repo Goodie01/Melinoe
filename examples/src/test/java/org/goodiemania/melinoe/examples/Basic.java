@@ -2,12 +2,11 @@ package org.goodiemania.melinoe.examples;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Howdy")
+@DisplayName("Basic examples")
 public class Basic extends MelinoeTest {
     private GithubRepoPage githubRepoPage;
     private GithubRepoPullRequestPage githubRepoPullRequestPage;
@@ -27,7 +26,7 @@ public class Basic extends MelinoeTest {
     }
 
     @Test
-    @DisplayName("Run baseline test")
+    @DisplayName("Baseline test")
     public void run() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
@@ -36,12 +35,19 @@ public class Basic extends MelinoeTest {
     }
 
     @Test
-    @DisplayName("Failing test")
+    @DisplayName("Baseline test that will fail")
     public void thisWillFail() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
+        githubRepoPullRequestPage.checkPage();
+        githubRepoPage.clickPullRequestLink();
+    }
+
+    @Test
+    @DisplayName("Baseline test that will fail, you must check a page before interacting with it")
+    public void anotherFailure() {
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();
-        Assertions.fail();
     }
 }
