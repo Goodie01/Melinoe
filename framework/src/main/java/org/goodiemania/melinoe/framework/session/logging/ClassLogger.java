@@ -48,11 +48,10 @@ public class ClassLogger {
         return loggers;
     }
 
-    public Logger createClassLogger() {
-        String methodName = "STATIC";
-
-        Logger logger = new Logger(fileManager, "Before all", packageName, className, methodName);
+    public Logger createClassLogger(final String methodName, final String displayName) {
+        Logger logger = new Logger(fileManager, displayName, packageName, className, methodName);
         loggers.add(logger);
+
         return logger;
     }
 

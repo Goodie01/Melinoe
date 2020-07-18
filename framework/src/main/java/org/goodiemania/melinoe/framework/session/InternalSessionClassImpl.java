@@ -13,6 +13,9 @@ public class InternalSessionClassImpl implements InternalSession {
     private final ClassLogger classLogger;
     private final FlowDecorator flowDecorator;
     private final RawWebDriver rawWebDriver;
+    private Logger logger;
+    private String classLoggerMethodName = "beforeAll";
+    private String classLoggerDisplayName = "Before all";
 
 
     public InternalSessionClassImpl(final MetaSession metaSession, final ClassLogger classLogger) {
@@ -25,7 +28,16 @@ public class InternalSessionClassImpl implements InternalSession {
 
     @Override
     public Session getSession() {
-        return new SessionImpl(classLogger.createClassLogger(), rawWebDriver);
+        if (this.logger == null) {
+            this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
+        }
+        return new SessionImpl(logger, rawWebDriver);
+    }
+
+    public void resetLoggerToAfterAll() {
+        logger = null;
+        classLoggerMethodName = "afterAll";
+        classLoggerDisplayName = "After all";
     }
 
     @Override
