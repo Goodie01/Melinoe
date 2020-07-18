@@ -41,7 +41,10 @@ public class HttpRequestExecutor {
                     .withHiddenInfo(stringHttpResponse.body());
 
             return new RestResponse(stringHttpResponse);
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
+            return new RestResponse(e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             return new RestResponse(e);
         }
     }

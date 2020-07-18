@@ -78,7 +78,6 @@ public class LogFileManager {
             throw new IllegalStateException(e);
         }
 
-        imageFile.delete();
         return newImageFile;
     }
 

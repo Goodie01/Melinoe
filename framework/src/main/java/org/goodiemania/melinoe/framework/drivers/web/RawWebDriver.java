@@ -125,7 +125,6 @@ public class RawWebDriver {
             } catch (InterruptedException e) {
                 //suggestion from sonar
                 Thread.currentThread().interrupt();
-                throw new IllegalStateException(e);
             }
         }
         return newDriverLocation.get();

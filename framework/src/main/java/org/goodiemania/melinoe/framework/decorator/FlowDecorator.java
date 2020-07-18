@@ -21,6 +21,7 @@ public class FlowDecorator {
         this.internalSession = internalSession;
     }
 
+    @SuppressWarnings("java:S3011")
     public void decorate(final Class<?> parentClass) {
         Class<?> currentClass = parentClass;
 
