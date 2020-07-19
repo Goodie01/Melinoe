@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Map;
 import org.goodiemania.melinoe.framework.api.HttpMethodType;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.rest.RestRequest;
 
-public class RestRequest {
+public class RestRequestImpl implements RestRequest {
     private final HttpRequestExecutor requestExecutor;
     private final URI uri;
     private final HttpMethodType httpMethodType;
     private final String body;
     private final Map<String, List<String>> headers;
 
-    public RestRequest(final HttpRequestExecutor requestExecutor, final URI uri) {
+    public RestRequestImpl(final HttpRequestExecutor requestExecutor, final URI uri) {
         this.requestExecutor = requestExecutor;
         this.uri = uri;
         this.httpMethodType = HttpMethodType.GET;
@@ -24,7 +25,7 @@ public class RestRequest {
         this.headers = Collections.emptyMap();
     }
 
-    public RestRequest(final HttpRequestExecutor requestExecutor, final String uri) {
+    public RestRequestImpl(final HttpRequestExecutor requestExecutor, final String uri) {
         try {
             this.uri = URI.create(uri);
         } catch (IllegalArgumentException e) {
@@ -36,11 +37,11 @@ public class RestRequest {
         this.headers = Collections.emptyMap();
     }
 
-    private RestRequest(final HttpRequestExecutor requestExecutor,
-                        final URI uri,
-                        final HttpMethodType httpMethodType,
-                        final String body,
-                        final Map<String, List<String>> headers) {
+    private RestRequestImpl(final HttpRequestExecutor requestExecutor,
+                            final URI uri,
+                            final HttpMethodType httpMethodType,
+                            final String body,
+                            final Map<String, List<String>> headers) {
         this.requestExecutor = requestExecutor;
         this.uri = uri;
         this.httpMethodType = httpMethodType;
@@ -48,6 +49,7 @@ public class RestRequest {
         this.headers = headers;
     }
 
+    @Override
     public RestRequest withUri(final String uriString) {
         try {
             return withUri(URI.create(uriString));
@@ -56,18 +58,22 @@ public class RestRequest {
         }
     }
 
+    @Override
     public RestRequest withUri(final URI uri) {
-        return new RestRequest(requestExecutor, uri, httpMethodType, body, headers);
+        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, headers);
     }
 
+    @Override
     public RestRequest withHttpMethodType(final HttpMethodType httpMethodType) {
-        return new RestRequest(requestExecutor, uri, httpMethodType, body, headers);
+        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, headers);
     }
 
+    @Override
     public RestRequest withBody(final String body) {
-        return new RestRequest(requestExecutor, uri, httpMethodType, body, headers);
+        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, headers);
     }
 
+    @Override
     public RestRequest withHeader(final String key, final String value) {
         //this ensures that even if someone were to get a reference to this.headers they can't modify it
         //this means that this entire object is immutable, yay!
@@ -77,9 +83,10 @@ public class RestRequest {
 
         headers.put(key, Collections.unmodifiableList(headerValues));
 
-        return new RestRequest(requestExecutor, uri, httpMethodType, body, Collections.unmodifiableMap(headers));
+        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, Collections.unmodifiableMap(headers));
     }
 
+    @Override
     public RestResponse execute() {
         return requestExecutor.execute(uri, httpMethodType, body, headers);
     }

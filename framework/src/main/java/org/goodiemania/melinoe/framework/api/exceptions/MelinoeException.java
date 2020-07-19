@@ -1,5 +1,10 @@
 package org.goodiemania.melinoe.framework.api.exceptions;
 
+/**
+ * This is our root (runtime) exception.
+ * <p>
+ * If we throw anything any (internal) errors it should extend this. For ex, being unable to convert a rest response to a object.
+ */
 public class MelinoeException extends RuntimeException {
     public MelinoeException(final String message) {
         super(message);

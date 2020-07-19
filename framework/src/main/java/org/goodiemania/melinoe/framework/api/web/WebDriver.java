@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.drivers.web;
+package org.goodiemania.melinoe.framework.api.web;
 
 import java.util.List;
 import java.util.function.Predicate;

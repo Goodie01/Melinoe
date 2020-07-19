@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goodiemania.melinoe.framework.api.Session;
+import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
@@ -64,27 +66,28 @@ public class RawWebDriver {
     public void checkPage(final List<WebValidator> validators) {
         webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
 
-        internalSession.getSession().getLogger().add()
+        Session session = internalSession.getSession();
+        session.getLogger().add()
                 .withMessage("Checking page")
                 .withImage(screenshotTaker.takeScreenshot());
 
         validators.stream()
-                .map(webValidator -> webValidator.validate(internalSession.getSession(), getWebDriver()))
+                .map(webValidator -> webValidator.validate(session, getWebDriver()))
                 .forEach(validationResult -> {
                     validationResult.getMessages().forEach(s -> {
                         if (validationResult.isValid()) {
-                            internalSession.getSession().getLogger().add()
+                            session.getLogger().add()
                                     .withMessage(s);
                         } else {
-                            internalSession.getSession().getLogger().add()
+                            session.getLogger().add()
                                     .withMessage(s)
                                     .fail();
                         }
                     });
                 });
 
-        if (!internalSession.getSession().getLogger().getHasPassed()) {
-            internalSession.getSession().getLogger().add()
+        if (!session.getLogger().getHasPassed()) {
+            session.getLogger().add()
                     .withMessage("Failure in validation detected. Failing now.")
                     .fail();
             Assertions.fail();

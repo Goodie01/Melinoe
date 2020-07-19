@@ -1,5 +1,6 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
+import org.goodiemania.melinoe.framework.api.web.Navigate;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class NavigateImpl implements Navigate {

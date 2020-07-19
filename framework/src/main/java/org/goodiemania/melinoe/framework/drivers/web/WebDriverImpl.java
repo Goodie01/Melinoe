@@ -2,6 +2,8 @@ package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
 import java.util.function.Predicate;
+import org.goodiemania.melinoe.framework.api.web.Navigate;
+import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.session.InternalSession;

@@ -8,13 +8,13 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
 import org.goodiemania.melinoe.framework.api.HttpMethodType;
-import org.goodiemania.melinoe.framework.api.Session;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class HttpRequestExecutor {
-    private final Session session;
+    private final InternalSession session;
     private final HttpClient httpClient;
 
-    public HttpRequestExecutor(final Session session, final HttpClient httpClient) {
+    public HttpRequestExecutor(final InternalSession session, final HttpClient httpClient) {
         this.session = session;
         this.httpClient = httpClient;
     }
@@ -24,7 +24,7 @@ public class HttpRequestExecutor {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(uri)
-                .method(httpMethod, HttpRequest.BodyPublishers.noBody());
+                .method(httpMethod, HttpRequest.BodyPublishers.ofString(body));
 
         headers.forEach((key, valueList) -> valueList.forEach(value -> builder.header(key, value)));
 
@@ -33,19 +33,20 @@ public class HttpRequestExecutor {
             HttpResponse<String> stringHttpResponse = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
             long stopTime = System.currentTimeMillis();
 
-            session.getLogger().add()
+            session.getSession().getLogger().add()
                     .withMessage(String.format("Made a HTTP request to %s with a %d status in %dms",
                             uri,
                             stringHttpResponse.statusCode(),
                             stopTime - startTime))
+                    .withSecondMessage("Click for raw response")
                     .withHiddenInfo(stringHttpResponse.body());
 
-            return new RestResponse(stringHttpResponse);
+            return new RestResponse(session, stringHttpResponse);
         } catch (IOException e) {
-            return new RestResponse(e);
+            return new RestResponse(session, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return new RestResponse(e);
+            return new RestResponse(session, e);
         }
     }
 }

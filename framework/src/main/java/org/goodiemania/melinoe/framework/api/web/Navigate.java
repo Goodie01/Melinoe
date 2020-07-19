@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.framework.drivers.web;
+package org.goodiemania.melinoe.framework.api.web;
 
 public interface Navigate {
 

@@ -1,7 +1,8 @@
 package org.goodiemania.melinoe.framework.api.web.validators;
 
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.drivers.web.WebDriver;
+import org.goodiemania.melinoe.framework.api.ValidationResult;
+import org.goodiemania.melinoe.framework.api.web.WebDriver;
 
 /**
  * Created on 26/06/2019.
