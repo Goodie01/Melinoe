@@ -16,7 +16,7 @@ Requires
 * Maven 3.5.0+
 * firefox binary available at "C:\Program Files\Firefox Nightly\firefox.exe"
 
-```
+```bash
 git clone git@github.com:Goodie01/Melinoe.git
 cd Melinoe
 mvn clean install -f framework/pom.xml && mvn clean test -f examples/pom.xml
