@@ -11,15 +11,15 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
-    private static InternalSessionClassImpl classSession;
+    private static InternalSessionClassImpl internalClassSession;
     private static boolean afterAll = false;
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
         Class<?> testClass = extensionContext.getTestClass().orElseThrow();
 
-        classSession = metaSession.createSessionFor(extensionContext);
-        classSession.getFlowDecorator().decorate(testClass);
+        internalClassSession = metaSession.createSessionFor(extensionContext);
+        internalClassSession.getFlowDecorator().decorate(testClass);
     };
 
     @RegisterExtension
@@ -28,19 +28,19 @@ public abstract class MelinoeTest {
         metaSession.writeLogs();
     };
 
-    private InternalSessionImpl session;
+    private InternalSessionImpl internalSession;
 
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
-        session = classSession.createTestSession(extensionContext);
-        session.getFlowDecorator().decorate(this);
+        internalSession = internalClassSession.createTestSession(extensionContext);
+        internalSession.getFlowDecorator().decorate(this);
         afterAll = true;
     };
 
     @RegisterExtension
     AfterEachCallback afterEachCallback = extensionContext -> {
         extensionContext.getExecutionException()
-                .ifPresent(throwable -> session.getSession().getLogger().add()
+                .ifPresent(throwable -> internalSession.getSession().getLogger().add()
                         .fail()
                         .withMessage("Exception thrown")
                         .withThrowable(throwable));
@@ -49,12 +49,12 @@ public abstract class MelinoeTest {
 
     public static Session getClassSession() {
         if (afterAll) {
-            classSession.resetLoggerToAfterAll();
+            internalClassSession.resetLoggerToAfterAll();
         }
-        return classSession.getSession();
+        return internalClassSession.getSession();
     }
 
     public Session getSession() {
-        return session.getSession();
+        return internalSession.getSession();
     }
 }

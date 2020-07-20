@@ -1,6 +1,7 @@
 package org.goodiemania.melinoe.samples;
 
 import org.goodiemania.melinoe.framework.api.Flow;
+import org.goodiemania.melinoe.framework.api.IgnoreFlowDecoration;
 import org.goodiemania.melinoe.framework.api.Session;
 
 public class GithubFlow extends Flow {

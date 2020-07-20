@@ -13,4 +13,6 @@ public interface Session {
     WebDriver web();
 
     Logger getLogger();
+
+    <T extends Flow> void decorate(T flow);
 }

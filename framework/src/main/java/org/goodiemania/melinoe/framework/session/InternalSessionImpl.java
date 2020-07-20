@@ -27,7 +27,7 @@ public class InternalSessionImpl implements InternalSession {
 
     @Override
     public Session getSession() {
-        return new SessionImpl(logger, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(logger, flowDecorator, rawWebDriver, httpRequestExecutor);
     }
 
     @Override

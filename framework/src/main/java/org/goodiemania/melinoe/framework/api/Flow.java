@@ -5,6 +5,7 @@ public abstract class Flow {
 
     public Flow(final Session session) {
         this.session = session;
+        session.decorate(this);
     }
 
     protected Session getSession() {

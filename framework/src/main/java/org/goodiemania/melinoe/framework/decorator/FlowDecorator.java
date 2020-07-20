@@ -4,10 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import org.goodiemania.melinoe.framework.api.Flow;
+import org.goodiemania.melinoe.framework.api.IgnoreFlowDecoration;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.BasePage;
 import org.goodiemania.melinoe.framework.api.web.FindElement;
+import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.By;
@@ -73,6 +75,10 @@ public class FlowDecorator {
     }
 
     public Optional<Object> createObject(Field field) {
+        if (field.isAnnotationPresent(IgnoreFlowDecoration.class) || field.getType().isAnnotationPresent(IgnoreFlowDecoration.class)) {
+            return Optional.empty();
+        }
+
         if (Flow.class.isAssignableFrom(field.getType())) {
             Class<? extends Flow> type = (Class<? extends Flow>) field.getType();
             return buildFlow(type)
@@ -81,7 +87,7 @@ public class FlowDecorator {
             Class<? extends BasePage> type = (Class<? extends BasePage>) field.getType();
             return buildPage(type)
                     .map(this::decorate);
-        } else if (field.isAnnotationPresent(FindElement.class)) {
+        } else if (WebElement.class.isAssignableFrom(field.getType()) && field.isAnnotationPresent(FindElement.class)) {
             FindElement annotation = field.getAnnotation(FindElement.class);
             return buildByFromShortFindBy(annotation)
                     .map((By by) -> new WebElementImpl(internalSession, by));

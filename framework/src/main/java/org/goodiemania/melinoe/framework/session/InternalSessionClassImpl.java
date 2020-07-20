@@ -39,7 +39,7 @@ public class InternalSessionClassImpl implements InternalSession {
         if (this.logger == null) {
             this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
         }
-        return new SessionImpl(logger, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(logger, flowDecorator, rawWebDriver, httpRequestExecutor);
     }
 
     public void resetLoggerToAfterAll() {
