@@ -26,6 +26,10 @@ public class FlowDecorator {
 
     @SuppressWarnings("java:S3011")
     public void decorate(final Class<?> parentClass) {
+        if (parentClass.isAnnotationPresent(IgnoreFlowDecoration.class)) {
+            return;
+        }
+
         Class<?> currentClass = parentClass;
 
         while (currentClass != Object.class) {
@@ -50,6 +54,10 @@ public class FlowDecorator {
 
     @SuppressWarnings("java:S3011")
     public Object decorate(final Object object) {
+        if (object.getClass().isAnnotationPresent(IgnoreFlowDecoration.class)) {
+            return object;
+        }
+
         Class<?> currentClass = object.getClass();
 
         while (currentClass != Object.class) {
