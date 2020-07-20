@@ -11,7 +11,7 @@ Hecate is most often shown holding a pair of torches or a key, perfect for a com
 
 ## Compile and run examples
 
-Requires 
+Requires
 * Java 11
 * Maven 3.5.0+
 * firefox binary available at "C:\Program Files\Firefox Nightly\firefox.exe"
