@@ -4,6 +4,7 @@ import java.net.URI;
 import org.goodiemania.melinoe.framework.api.Flow;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.rest.RestRequest;
+import org.goodiemania.melinoe.framework.api.web.BasePage;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.decorator.FlowDecorator;
 import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
@@ -49,7 +50,7 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public <T extends Flow> void decorate(final T flow) {
+    public void decorate(final Object flow) {
         flowDecorator.decorate(flow);
     }
 }

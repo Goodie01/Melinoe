@@ -12,6 +12,8 @@ public abstract class BasePage {
     public BasePage(final Session session, final WebValidator... validators) {
         this.session = session;
         this.validators = Arrays.asList(validators);
+
+        session.decorate(this);
     }
 
     protected Session getSession() {

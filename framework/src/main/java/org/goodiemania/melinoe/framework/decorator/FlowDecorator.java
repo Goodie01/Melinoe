@@ -89,12 +89,10 @@ public class FlowDecorator {
 
         if (Flow.class.isAssignableFrom(field.getType())) {
             Class<? extends Flow> type = (Class<? extends Flow>) field.getType();
-            return buildFlow(type)
-                    .map(this::decorate);
+            return buildFlow(type);
         } else if (BasePage.class.isAssignableFrom(field.getType())) {
             Class<? extends BasePage> type = (Class<? extends BasePage>) field.getType();
-            return buildPage(type)
-                    .map(this::decorate);
+            return buildPage(type);
         } else if (WebElement.class.isAssignableFrom(field.getType()) && field.isAnnotationPresent(FindElement.class)) {
             FindElement annotation = field.getAnnotation(FindElement.class);
             return buildByFromShortFindBy(annotation)
@@ -104,7 +102,7 @@ public class FlowDecorator {
         return Optional.empty();
     }
 
-    public <T extends BasePage> Optional<T> buildPage(final Class<T> classType) {
+    public <T extends BasePage> Optional<Object> buildPage(final Class<T> classType) {
         try {
             T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
             return Optional.of(value);
@@ -115,7 +113,7 @@ public class FlowDecorator {
         }
     }
 
-    public <T extends Flow> Optional<T> buildFlow(final Class<T> classType) {
+    public <T extends Flow> Optional<Object> buildFlow(final Class<T> classType) {
         try {
             T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
             return Optional.of(value);
