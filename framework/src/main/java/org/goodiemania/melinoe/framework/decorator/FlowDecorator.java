@@ -5,8 +5,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import org.goodiemania.melinoe.framework.api.Flow;
 import org.goodiemania.melinoe.framework.api.Session;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.web.BasePage;
 import org.goodiemania.melinoe.framework.api.web.FindElement;
-import org.goodiemania.melinoe.framework.drivers.web.BasePage;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.By;
@@ -37,7 +38,7 @@ public class FlowDecorator {
                                 field.setAccessible(true);
                                 field.set(null, o);
                             } catch (IllegalAccessException e) {
-                                throw new IllegalStateException(e);
+                                throw new MelinoeException(e);
                             }
                         });
             }
@@ -60,7 +61,7 @@ public class FlowDecorator {
                                 field.setAccessible(true);
                                 field.set(object, o);
                             } catch (IllegalAccessException e) {
-                                throw new IllegalStateException(e);
+                                throw new MelinoeException(e);
                             }
                         });
             }
@@ -73,11 +74,11 @@ public class FlowDecorator {
     public Optional<Object> createObject(Field field) {
         if (Flow.class.isAssignableFrom(field.getType())) {
             Class<? extends Flow> type = (Class<? extends Flow>) field.getType();
-            return Optional.of(buildFlow(type))
+            return buildFlow(type)
                     .map(this::decorate);
         } else if (BasePage.class.isAssignableFrom(field.getType())) {
             Class<? extends BasePage> type = (Class<? extends BasePage>) field.getType();
-            return Optional.of(buildPage(type))
+            return buildPage(type)
                     .map(this::decorate);
         } else if (field.isAnnotationPresent(FindElement.class)) {
             FindElement annotation = field.getAnnotation(FindElement.class);
@@ -88,19 +89,25 @@ public class FlowDecorator {
         return Optional.empty();
     }
 
-    public <T extends BasePage> T buildPage(final Class<T> classType) {
+    public <T extends BasePage> Optional<T> buildPage(final Class<T> classType) {
         try {
-            return classType.getConstructor(Session.class).newInstance(internalSession.getSession());
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
+            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
+            return Optional.of(value);
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new MelinoeException(e);
         }
     }
 
-    public <T extends Flow> T buildFlow(final Class<T> classType) {
+    public <T extends Flow> Optional<T> buildFlow(final Class<T> classType) {
         try {
-            return classType.getConstructor().newInstance();
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
+            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
+            return Optional.of(value);
+        } catch (NoSuchMethodException e) {
+            return Optional.empty();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new MelinoeException(e);
         }
     }
 

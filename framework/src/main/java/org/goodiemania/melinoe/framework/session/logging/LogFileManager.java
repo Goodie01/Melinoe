@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 
 /**
  * Created on 24/06/2019.
@@ -43,7 +44,7 @@ public class LogFileManager {
             System.out.println("Log URI: file://" + runDirectory.getAbsolutePath() + "/index.html");
 
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new MelinoeException(e);
         }
     }
 
@@ -54,7 +55,7 @@ public class LogFileManager {
 
             return indexFile;
         } catch (final IOException e) {
-            throw new IllegalStateException(e);
+            throw new MelinoeException(e);
         }
     }
 
@@ -65,7 +66,7 @@ public class LogFileManager {
 
             return indexFile;
         } catch (final IOException e) {
-            throw new IllegalStateException(e);
+            throw new MelinoeException(e);
         }
     }
 
@@ -75,7 +76,7 @@ public class LogFileManager {
         try {
             FileUtils.copyFile(imageFile, newImageFile);
         } catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new MelinoeException(e);
         }
 
         return newImageFile;
@@ -97,7 +98,7 @@ public class LogFileManager {
 
             return indexFile;
         } catch (final IOException e) {
-            throw new IllegalStateException(e);
+            throw new MelinoeException(e);
         }
     }
 }

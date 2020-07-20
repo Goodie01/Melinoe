@@ -1,11 +1,11 @@
-package org.goodiemania.melinoe.framework.drivers.web;
+package org.goodiemania.melinoe.framework.api.web;
 
 import java.util.Arrays;
 import java.util.List;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 
-public class BasePage {
+public abstract class BasePage {
     private final Session session;
     private List<WebValidator> validators;
 
@@ -14,7 +14,7 @@ public class BasePage {
         this.validators = Arrays.asList(validators);
     }
 
-    public Session getSession() {
+    protected Session getSession() {
         return session;
     }
 

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.By;
@@ -24,7 +25,7 @@ public class WebElementImpl implements WebElement {
 
     private RemoteWebDriver getDriver() {
         if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
-            throw new IllegalStateException("Please check page before interacting with it");
+            throw new MelinoeException("Please check page before interacting with it");
         }
 
         return internalSession.getRawWebDriver().getRemoteWebDriver();
@@ -32,7 +33,7 @@ public class WebElementImpl implements WebElement {
 
     private void withDriver(final Consumer<org.openqa.selenium.WebElement> function) {
         if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
-            throw new IllegalStateException("Please check page before interacting with it");
+            throw new MelinoeException("Please check page before interacting with it");
         }
 
         function.accept(internalSession.getRawWebDriver().getRemoteWebDriver().findElement(by));

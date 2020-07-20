@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.LogMessage;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
@@ -150,7 +151,7 @@ public class LogWriter {
         try {
             FileUtils.writeLines(logFile, processedLogs);
         } catch (IOException e) {
-            throw new IllegalStateException("Error writing lines to log file");
+            throw new MelinoeException("Error writing lines to log file");
         }
     }
 
