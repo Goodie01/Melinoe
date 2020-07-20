@@ -1,12 +1,13 @@
-package org.goodiemania.melinoe.examples;
+package org.goodiemania.melinoe.samples.standard;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
 import org.goodiemania.melinoe.framework.api.rest.validators.JsonPathValidator;
+import org.goodiemania.melinoe.samples.GithubFlow;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class RestExample extends MelinoeTest {
+public class RestExampleTests extends MelinoeTest {
     private GithubFlow githubFlow;
 
     @BeforeAll

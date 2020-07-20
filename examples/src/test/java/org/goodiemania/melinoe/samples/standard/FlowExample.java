@@ -1,6 +1,7 @@
-package org.goodiemania.melinoe.examples;
+package org.goodiemania.melinoe.samples.standard;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
+import org.goodiemania.melinoe.samples.GithubFlow;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

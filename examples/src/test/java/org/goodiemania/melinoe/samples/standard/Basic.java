@@ -1,6 +1,8 @@
-package org.goodiemania.melinoe.examples;
+package org.goodiemania.melinoe.samples.standard;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
+import org.goodiemania.melinoe.samples.GithubRepoPage;
+import org.goodiemania.melinoe.samples.GithubRepoPullRequestPage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -30,23 +32,6 @@ public class Basic extends MelinoeTest {
     public void run() {
         getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
-        githubRepoPage.clickPullRequestLink();
-        githubRepoPullRequestPage.checkPage();
-    }
-
-    @Test
-    @DisplayName("Baseline test that will fail")
-    public void thisWillFail() {
-        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
-        githubRepoPage.checkPage();
-        githubRepoPullRequestPage.checkPage();
-        githubRepoPage.clickPullRequestLink();
-    }
-
-    @Test
-    @DisplayName("Baseline test that will fail, you must check a page before interacting with it")
-    public void anotherFailure() {
-        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();
     }

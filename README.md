@@ -9,6 +9,18 @@ Melinoë is a chthonic nymph or goddess invoked in one of the Orphic Hymns and r
 
 Hecate is most often shown holding a pair of torches or a key, perfect for a component that shines a light on outgoing, often invisible, requests.
 
+## Compile and run examples
+
+Requires 
+* Java 11
+* Maven 3.5.0+
+* firefox binary available at "C:\Program Files\Firefox Nightly\firefox.exe"
+
+
+    git clone git@github.com:Goodie01/Melinoe.git
+    cd Melinoe
+    mvn clean install -f framework/pom.xml && mvn clean test -f examples/pom.xml
+
 ## Goals
 1. Test a web application
 1. Test a REST api

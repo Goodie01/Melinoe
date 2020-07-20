@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.examples;
+package org.goodiemania.melinoe.samples;
 
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.web.FindElement;
