@@ -77,13 +77,13 @@ public class RestRequestImpl implements RestRequest {
     public RestRequest withHeader(final String key, final String value) {
         //this ensures that even if someone were to get a reference to this.headers they can't modify it
         //this means that this entire object is immutable, yay!
-        HashMap<String, List<String>> headers = new HashMap<>(this.headers);
-        ArrayList<String> headerValues = new ArrayList<>(headers.getOrDefault(key, Collections.emptyList()));
+        HashMap<String, List<String>> currentHeaders = new HashMap<>(this.headers);
+        ArrayList<String> headerValues = new ArrayList<>(currentHeaders.getOrDefault(key, Collections.emptyList()));
         headerValues.add(value);
 
-        headers.put(key, Collections.unmodifiableList(headerValues));
+        currentHeaders.put(key, Collections.unmodifiableList(headerValues));
 
-        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, Collections.unmodifiableMap(headers));
+        return new RestRequestImpl(requestExecutor, uri, httpMethodType, body, Collections.unmodifiableMap(currentHeaders));
     }
 
     @Override

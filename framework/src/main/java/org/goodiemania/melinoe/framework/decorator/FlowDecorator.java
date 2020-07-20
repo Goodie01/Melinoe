@@ -46,6 +46,7 @@ public class FlowDecorator {
         }
     }
 
+    @SuppressWarnings("java:S3011")
     public Object decorate(final Object object) {
         Class<?> currentClass = object.getClass();
 
