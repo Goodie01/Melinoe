@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,11 @@ import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
 
 public class LogWriter {
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static Random random;
+
+    public LogWriter() {
+        random = new Random();
+    }
 
     public void write(final MetaLogger metaLogger) {
         createCssFile(metaLogger);
@@ -160,8 +166,7 @@ public class LogWriter {
         StringBuilder builder = new StringBuilder();
 
         while (count-- != 0) {
-
-            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
+            int character = random.nextInt() * ALPHA_NUMERIC_STRING.length();
 
             builder.append(ALPHA_NUMERIC_STRING.charAt(character));
 

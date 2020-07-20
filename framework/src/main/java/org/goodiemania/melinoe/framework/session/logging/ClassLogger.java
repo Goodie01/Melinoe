@@ -35,7 +35,7 @@ public class ClassLogger {
         return className;
     }
 
-    public Boolean getHasPassed() {
+    public boolean getHasPassed() {
         for (Logger logger : loggers) {
             if (!logger.getHasPassed()) {
                 return false;

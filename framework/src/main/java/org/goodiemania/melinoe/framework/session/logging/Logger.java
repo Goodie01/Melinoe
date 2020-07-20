@@ -60,7 +60,7 @@ public class Logger {
         return logMessages;
     }
 
-    public Boolean getHasPassed() {
+    public boolean getHasPassed() {
         for (LogMessage message : logMessages) {
             if (message.getFail()) {
                 return false;

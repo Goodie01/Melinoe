@@ -10,7 +10,7 @@ public class LogMessage {
     private String secondMessage = "";
     private String hiddenInfo = "";
     private Throwable throwable = null;
-    private Boolean fail = false;
+    private boolean fail = false;
     private File image;
 
     public LogMessage(final LogFileManager logFileManager, final LocalDateTime dateTime) {
@@ -34,7 +34,7 @@ public class LogMessage {
         return hiddenInfo;
     }
 
-    public Boolean getFail() {
+    public boolean getFail() {
         return fail;
     }
 
