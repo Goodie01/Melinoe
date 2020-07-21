@@ -14,6 +14,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.web.By;
+import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -29,6 +31,10 @@ public class WebElementListImpl implements List<WebElement> {
                 .stream()
                 .map(webElement -> (WebElement) new WebElementImpl(internalSession, remoteWebDriver2 -> webElement))
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public WebElementListImpl(final InternalSession internalSession, final By by) {
+        this(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(remoteWebDriver));
     }
 
     private RemoteWebDriver getDriver() {

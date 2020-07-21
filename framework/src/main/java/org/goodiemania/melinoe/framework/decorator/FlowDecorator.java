@@ -9,12 +9,13 @@ import org.goodiemania.melinoe.framework.api.IgnoreFlowDecoration;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.BasePage;
+import org.goodiemania.melinoe.framework.api.web.By;
+import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.FindElement;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.openqa.selenium.By;
 
 /**
  * Created on 2/07/2019.
@@ -101,7 +102,7 @@ public class FlowDecorator {
                 return findBy.map(by -> new WebElementImpl(internalSession, by));
             } else if (List.class.isAssignableFrom(field.getType())) {
                 return findBy.map(by -> new WebElementListImpl(internalSession,
-                        remoteWebDriver -> by.findElements(internalSession.getRawWebDriver().getRemoteWebDriver())));
+                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(internalSession.getRawWebDriver().getRemoteWebDriver())));
             }
         }
 

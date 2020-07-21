@@ -166,10 +166,9 @@ public class LogWriter {
         StringBuilder builder = new StringBuilder();
 
         while (count-- != 0) {
-            int character = random.nextInt() * ALPHA_NUMERIC_STRING.length();
+            int character = random.nextInt(ALPHA_NUMERIC_STRING.length());
 
             builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-
         }
 
         return builder.toString();

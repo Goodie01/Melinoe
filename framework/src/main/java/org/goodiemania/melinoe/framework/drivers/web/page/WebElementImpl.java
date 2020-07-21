@@ -7,9 +7,10 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.web.By;
+import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
@@ -25,7 +26,7 @@ public class WebElementImpl implements WebElement {
     }
 
     public WebElementImpl(final InternalSession internalSession, final By by) {
-        this(internalSession, by::findElement);
+        this(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(remoteWebDriver));
     }
 
     private void withElement(final Consumer<org.openqa.selenium.WebElement> function) {
@@ -117,14 +118,16 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public List<WebElement> findElements(final By by) {
-        return Collections.emptyList();
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(internalSession.getRawWebDriver().getRemoteWebDriver());
+
+        return new WebElementListImpl(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(seleniumWebElement));
     }
 
     @Override
     public Optional<WebElement> findElement(final By by) {
         org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(internalSession.getRawWebDriver().getRemoteWebDriver());
 
-        return Optional.of(new WebElementImpl(internalSession, remoteWebDriver -> by.findElement(seleniumWebElement)));
+        return Optional.of(new WebElementImpl(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(seleniumWebElement)));
     }
 
     @Override

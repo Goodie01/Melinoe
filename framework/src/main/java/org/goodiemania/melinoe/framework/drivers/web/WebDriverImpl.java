@@ -1,11 +1,16 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
+import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.Navigate;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
+import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
+import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
+import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 
 public class WebDriverImpl implements ClosableDriver, WebDriver {
@@ -44,5 +49,15 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
         internalSession.getSession().getLogger().add().withMessage("Waiting for predicate to be true");
         rawWebDriver.getWebDriverWait().until(webDriver -> predicate.test(this));
         internalSession.getSession().getLogger().add().withMessage("Wait finished");
+    }
+
+    @Override
+    public Optional<WebElement> findElement(final By by) {
+        return Optional.of(new WebElementImpl(internalSession, by));
+    }
+
+    @Override
+    public List<WebElement> findElements(final By by) {
+        return new WebElementListImpl(internalSession, by);
     }
 }
