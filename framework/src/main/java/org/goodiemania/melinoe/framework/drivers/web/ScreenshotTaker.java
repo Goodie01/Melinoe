@@ -1,9 +1,17 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
-import org.openqa.selenium.OutputType;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
 public class ScreenshotTaker {
     private static final String SCRIPT_HIGHLIGHT_ELEMENT = "\n"
@@ -51,15 +59,29 @@ public class ScreenshotTaker {
             + "elem.style.borderLeft = borders[3];";
 
     private WebElement lastElem = null;
-    private RawWebDriver rawWebDriver;
+    private MetaSession metaSession;
+    private InternalSession internalSession;
 
-    public ScreenshotTaker(final RawWebDriver rawWebDriver) {
-        this.rawWebDriver = rawWebDriver;
+    public ScreenshotTaker(final MetaSession metaSession, final InternalSession internalSession) {
+        this.metaSession = metaSession;
+        this.internalSession = internalSession;
     }
 
 
     public File takeScreenshot() {
-        return rawWebDriver.getRemoteWebDriver().getScreenshotAs(OutputType.FILE);
+        Screenshot screenshot = new AShot()
+                .shootingStrategy(ShootingStrategies.viewportPasting(100))
+                .takeScreenshot(internalSession.getRawWebDriver().getRemoteWebDriver());
+
+        BufferedImage originalImage = screenshot.getImage();
+
+        try {
+            File imageFile = metaSession.createNewImageFile();
+            ImageIO.write(originalImage, "png", imageFile);
+            return imageFile;
+        } catch (IOException e) {
+            throw new MelinoeException("Unable to write image", e);
+        }
     }
 
     public File takeScreenshot(final WebElement element) {
@@ -71,14 +93,14 @@ public class ScreenshotTaker {
 
     private String highlightElement(WebElement elem) {
         lastElem = elem;
-        return (String) (rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
+        return (String) (internalSession.getRawWebDriver().getRemoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
     }
 
     private void unhighlightLast(final String boarderId) {
         if (lastElem != null) {
             try {
                 // if there already is a highlighted element, unhighlight it
-                rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
+                internalSession.getRawWebDriver().getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
             } catch (StaleElementReferenceException ignored) {
                 //TODO
                 // the page got reloaded, the element isn't there

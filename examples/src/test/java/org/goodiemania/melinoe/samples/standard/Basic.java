@@ -35,4 +35,15 @@ public class Basic extends MelinoeTest {
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();
     }
+
+    @Test
+    @DisplayName("Baseline test that interacts with a list of elements")
+    public void runAgain() {
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        githubRepoPage.checkPage();
+        githubRepoPage.getFileTypes()
+                .forEach(s -> getSession().getLogger()
+                        .add()
+                        .withMessage(s));
+    }
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.session.InternalSession;
@@ -15,12 +16,24 @@ import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementImpl implements WebElement {
-    private InternalSession internalSession;
-    private By by;
+    private final InternalSession internalSession;
+    private final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier;
+
+    public WebElementImpl(final InternalSession internalSession, final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier) {
+        this.internalSession = internalSession;
+        this.webElementSupplier = webElementSupplier;
+    }
 
     public WebElementImpl(final InternalSession internalSession, final By by) {
-        this.internalSession = internalSession;
-        this.by = by;
+        this(internalSession, by::findElement);
+    }
+
+    private void withElement(final Consumer<org.openqa.selenium.WebElement> function) {
+        function.accept(getElement());
+    }
+
+    private org.openqa.selenium.WebElement getElement() {
+        return webElementSupplier.apply(getDriver());
     }
 
     private RemoteWebDriver getDriver() {
@@ -31,20 +44,12 @@ public class WebElementImpl implements WebElement {
         return internalSession.getRawWebDriver().getRemoteWebDriver();
     }
 
-    private void withDriver(final Consumer<org.openqa.selenium.WebElement> function) {
-        if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
-            throw new MelinoeException("Please check page before interacting with it");
-        }
-
-        function.accept(internalSession.getRawWebDriver().getRemoteWebDriver().findElement(by));
-    }
-
     @Override
     public void click() {
-        withDriver(webElement -> {
+        withElement(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
             internalSession.getSession().getLogger().add()
-                    .withMessage(String.format("Clicking link found by: %s", by))
+                    .withMessage("Clicking link")
                     .withImage(file);
             webElement.click();
         });
@@ -53,10 +58,10 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void submit() {
-        withDriver(webElement -> {
+        withElement(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
             internalSession.getSession().getLogger().add()
-                    .withMessage(String.format("Submitted element found by: %s", by))
+                    .withMessage("Submitted element")
                     .withImage(file);
             webElement.submit();
         });
@@ -64,12 +69,11 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void sendKeys(final String keysToSend) {
-        withDriver(webElement -> {
+        withElement(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
             internalSession.getSession().getLogger().add()
-                    .withMessage(String.format("Entering text '%s' into element found by: %s",
-                            keysToSend,
-                            by))
+                    .withMessage(String.format("Entering text '%s' into element",
+                            keysToSend))
                     .withImage(file);
             webElement.sendKeys(keysToSend);
         });
@@ -77,10 +81,10 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void clear() {
-        withDriver(webElement -> {
+        withElement(webElement -> {
             File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
             internalSession.getSession().getLogger().add()
-                    .withMessage(String.format("Calling clear on element found by: %s", by))
+                    .withMessage("Calling clear on element")
                     .withImage(file);
             webElement.clear();
         });
@@ -88,27 +92,27 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public String getTagName() {
-        return getDriver().findElement(by).getTagName();
+        return getElement().getTagName();
     }
 
     @Override
     public String getAttribute(final String name) {
-        return getDriver().findElement(by).getAttribute(name);
+        return getElement().getAttribute(name);
     }
 
     @Override
     public boolean isSelected() {
-        return getDriver().findElement(by).isSelected();
+        return getElement().isSelected();
     }
 
     @Override
     public boolean isEnabled() {
-        return getDriver().findElement(by).isEnabled();
+        return getElement().isEnabled();
     }
 
     @Override
     public String getText() {
-        return getDriver().findElement(by).getText();
+        return getElement().getText();
     }
 
     @Override
@@ -118,27 +122,29 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public Optional<WebElement> findElement(final By by) {
-        return Optional.empty();
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(internalSession.getRawWebDriver().getRemoteWebDriver());
+
+        return Optional.of(new WebElementImpl(internalSession, remoteWebDriver -> by.findElement(seleniumWebElement)));
     }
 
     @Override
     public boolean isDisplayed() {
-        return getDriver().findElement(by).isDisplayed();
+        return getElement().isDisplayed();
     }
 
     @Override
     public Point getLocation() {
-        return getDriver().findElement(by).getLocation();
+        return getElement().getLocation();
     }
 
     @Override
     public Dimension getSize() {
-        return getDriver().findElement(by).getSize();
+        return getElement().getSize();
     }
 
     @Override
     public Rectangle getRect() {
-        return getDriver().findElement(by).getRect();
+        return getElement().getRect();
     }
 
     @Override

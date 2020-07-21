@@ -70,16 +70,8 @@ public class LogFileManager {
         }
     }
 
-    public File createImageFile(final File imageFile) {
-        File newImageFile = new File(imageDir, UUID.randomUUID().toString() + ".jpg");
-
-        try {
-            FileUtils.copyFile(imageFile, newImageFile);
-        } catch (IOException e) {
-            throw new MelinoeException(e);
-        }
-
-        return newImageFile;
+    public File createNewImageFile() {
+        return new File(imageDir, UUID.randomUUID().toString() + ".png");
     }
 
     public File createLogFile(final String className) {

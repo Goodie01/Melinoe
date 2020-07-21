@@ -1,5 +1,6 @@
 package org.goodiemania.melinoe.framework.session;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
@@ -20,6 +21,10 @@ public class MetaSession {
 
     public InternalSessionClassImpl createSessionFor(final ExtensionContext extensionContext) {
         return new InternalSessionClassImpl(this, metaLogger.createClassLogger(extensionContext));
+    }
+
+    public File createNewImageFile() {
+        return metaLogger.createNewImageFile();
     }
 
     public void writeLogs() {

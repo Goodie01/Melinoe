@@ -4,7 +4,6 @@ import java.io.File;
 import java.time.LocalDateTime;
 
 public class LogMessage {
-    private final LogFileManager logFileManager;
     private final LocalDateTime dateTime;
     private String message = "";
     private String secondMessage = "";
@@ -13,8 +12,7 @@ public class LogMessage {
     private boolean fail = false;
     private File image;
 
-    public LogMessage(final LogFileManager logFileManager, final LocalDateTime dateTime) {
-        this.logFileManager = logFileManager;
+    public LogMessage(final LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -72,7 +70,7 @@ public class LogMessage {
     }
 
     public LogMessage withImage(final File image) {
-        this.image = logFileManager.createImageFile(image);
+        this.image = image;
         return this;
     }
 }

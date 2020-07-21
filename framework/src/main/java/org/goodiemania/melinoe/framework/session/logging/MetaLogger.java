@@ -23,6 +23,10 @@ public class MetaLogger {
         return classLoggers;
     }
 
+    public File createNewImageFile() {
+        return fileManager.createNewImageFile();
+    }
+
     public File getRootLogFile() {
         return rootLogFile;
     }

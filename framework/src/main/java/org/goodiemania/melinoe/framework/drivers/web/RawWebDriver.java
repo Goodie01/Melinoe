@@ -113,7 +113,7 @@ public class RawWebDriver {
         this.remoteWebDriver = new FirefoxDriver(options);
         this.remoteWebDriver.manage().window().maximize();
 
-        screenshotTaker = new ScreenshotTaker(this);
+        screenshotTaker = new ScreenshotTaker(metaSession, internalSession);
         webDriverWait = new WebDriverWait(remoteWebDriver, Duration.ofSeconds(60));
         localStorage = new LocalStorage(this);
 
