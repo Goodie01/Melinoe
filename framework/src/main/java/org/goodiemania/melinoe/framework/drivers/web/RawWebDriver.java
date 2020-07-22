@@ -11,8 +11,10 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.Session;
+import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
+import org.goodiemania.melinoe.framework.config.Configuration;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.junit.jupiter.api.Assertions;
@@ -102,13 +104,19 @@ public class RawWebDriver {
     }
 
     private void generate() {
+        final String browserChoice = Configuration.BROWSER.get();
+        if (!StringUtils.equalsIgnoreCase(browserChoice, "FIREFOX")) {
+            throw new MelinoeException(
+                    String.format("Invalid browser choice selected, we currently only support 'firefox', '%s' was given", browserChoice)
+            );
+        }
+
         System.setProperty("webdriver.gecko.driver", waitForDriverExtraction("drivers/geckodriver.exe"));
         FirefoxOptions options = new FirefoxOptions();
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
         options.setHeadless(true);
 
-        File pathToFirefoxBinary = new File("C:\\Program Files\\Firefox Nightly\\firefox.exe");
-        options.setBinary(pathToFirefoxBinary.getPath());
+        options.setBinary(Configuration.BROWSER_EXE_LOCATION.get());
 
         this.remoteWebDriver = new FirefoxDriver(options);
         this.remoteWebDriver.manage().window().maximize();
