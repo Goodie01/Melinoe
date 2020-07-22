@@ -15,8 +15,8 @@ Requires
 * Java 11
 * Maven 3.5.0+
 * Create a default.properties file in /examples/src/main/resources/default.properties
-    * Only firefox is currently supported
-    * The exe location should be correct for your machine
+  * Only firefox is currently supported
+  * The exe location should be correct for your machine
 
 ```properties
 BROWSER=FIREFOX
