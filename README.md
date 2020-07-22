@@ -14,7 +14,14 @@ Hecate is most often shown holding a pair of torches or a key, perfect for a com
 Requires
 * Java 11
 * Maven 3.5.0+
-* firefox binary available at "C:\Program Files\Firefox Nightly\firefox.exe"
+* Create a default.properties file in /examples/src/main/resources/default.properties
+    * Only firefox is currently supported
+    * The exe location should be correct for your machine
+
+```properties
+BROWSER=FIREFOX
+BROWSER_EXE_LOCATION=C:\\Program Files\\Firefox Nightly\\firefox.exe
+```
 
 ```bash
 git clone git@github.com:Goodie01/Melinoe.git
