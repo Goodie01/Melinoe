@@ -1,7 +1,6 @@
 package org.goodiemania.melinoe.framework.api.web.validators;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.ValidationResult;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 
@@ -16,7 +15,7 @@ public class TitleValidator implements WebValidator {
     }
 
     @Override
-    public ValidationResult validate(final Session context, final WebDriver webDriver) {
+    public ValidationResult validate(final WebDriver webDriver) {
         String actualTitle = webDriver.getTitle();
         if (StringUtils.equals(actualTitle, expectedTitle)) {
             return ValidationResult.passed("Found expected title: " + expectedTitle);

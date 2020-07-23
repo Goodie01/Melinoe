@@ -1,6 +1,5 @@
 package org.goodiemania.melinoe.framework.api.web.validators;
 
-import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.ValidationResult;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 
@@ -15,5 +14,5 @@ public interface WebValidator {
      * @param webDriver private driver from within the context itself
      * @return validation result, indicating if it succeeded or not, and any associated error messages
      */
-    ValidationResult validate(final Session context, final WebDriver webDriver);
+    ValidationResult validate(final WebDriver webDriver);
 }

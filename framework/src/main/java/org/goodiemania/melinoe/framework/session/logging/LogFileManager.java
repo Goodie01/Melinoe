@@ -40,7 +40,6 @@ public class LogFileManager {
             FileUtils.forceMkdir(cssDir);
 
 
-
             System.out.println("Log URI: file://" + runDirectory.getAbsolutePath() + "/index.html");
 
         } catch (IOException e) {

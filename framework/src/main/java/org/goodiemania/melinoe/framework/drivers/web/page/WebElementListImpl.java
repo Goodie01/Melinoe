@@ -17,32 +17,37 @@ import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
-import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementListImpl implements List<WebElement> {
-    private final InternalSession internalSession;
+    private final RawWebDriver rawWebDriver;
     private Function<RemoteWebDriver, List<WebElement>> webElementSupplier;
 
-    public WebElementListImpl(final InternalSession internalSession,
+    public WebElementListImpl(final Logger logger,
+                              final RawWebDriver rawWebDriver,
                               final Function<RemoteWebDriver, List<org.openqa.selenium.WebElement>> seleniumWebElementListSupplier) {
-        this.internalSession = internalSession;
+        this.rawWebDriver = rawWebDriver;
+
         this.webElementSupplier = remoteWebDriver -> seleniumWebElementListSupplier.apply(getDriver())
                 .stream()
-                .map(webElement -> (WebElement) new WebElementImpl(internalSession, remoteWebDriver2 -> webElement))
+                .map(webElement -> (WebElement) new WebElementImpl(logger, rawWebDriver, remoteWebDriver2 -> webElement))
                 .collect(Collectors.toUnmodifiableList());
     }
 
-    public WebElementListImpl(final InternalSession internalSession, final By by) {
-        this(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(remoteWebDriver));
+    public WebElementListImpl(final Logger logger,
+                              final RawWebDriver rawWebDriver,
+                              final By by) {
+        this(logger, rawWebDriver, remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(remoteWebDriver));
     }
 
     private RemoteWebDriver getDriver() {
-        if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
+        if (!rawWebDriver.hasPageBeenChecked()) {
             throw new MelinoeException("Please check page before interacting with it");
         }
 
-        return internalSession.getRawWebDriver().getRemoteWebDriver();
+        return rawWebDriver.getRemoteWebDriver();
     }
 
     private List<WebElement> getElementList() {

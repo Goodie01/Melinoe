@@ -4,21 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
-import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
 import org.goodiemania.melinoe.framework.config.Configuration;
-import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
-import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.JavascriptExecutor;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -35,14 +30,12 @@ public class RawWebDriver {
 
     private WebDriverImpl webDriver;
     private MetaSession metaSession;
-    private InternalSession internalSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
-    public RawWebDriver(final MetaSession metaSession, final InternalSession internalSession) {
+    public RawWebDriver(final MetaSession metaSession, final Logger logger) {
         this.metaSession = metaSession;
-        this.internalSession = internalSession;
-        this.webDriver = new WebDriverImpl(internalSession, this);
+        this.webDriver = new WebDriverImpl(logger, this);
     }
 
     public RemoteWebDriver getRemoteWebDriver() {
@@ -63,40 +56,6 @@ public class RawWebDriver {
 
     public WebDriverWait getWebDriverWait() {
         return webDriverWait;
-    }
-
-    public void verify(final List<WebValidator> validators) {
-        webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
-
-        Session session = internalSession.getSession();
-        session.getLogger().add()
-                .withMessage("Checking page")
-                .withImage(screenshotTaker.takeScreenshot());
-
-        validators.stream()
-                .map(webValidator -> webValidator.validate(session, getWebDriver()))
-                .forEach(validationResult -> {
-                    validationResult.getMessages().forEach(s -> {
-                        if (validationResult.isValid()) {
-                            session.getLogger().add()
-                                    .withMessage(s);
-                        } else {
-                            session.getLogger().add()
-                                    .withMessage(s)
-                                    .fail();
-                        }
-                    });
-                });
-
-        if (!session.getLogger().getHasPassed()) {
-            session.getLogger().add()
-                    .withMessage("Failure in validation detected. Failing now.")
-                    .fail();
-            Assertions.fail();
-        }
-
-        reloadFlag = UUID.randomUUID().toString();
-        localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
     }
 
     public boolean hasPageBeenChecked() {
@@ -126,7 +85,7 @@ public class RawWebDriver {
         this.remoteWebDriver = new FirefoxDriver(options);
         this.remoteWebDriver.manage().window().maximize();
 
-        screenshotTaker = new ScreenshotTaker(metaSession, internalSession);
+        screenshotTaker = new ScreenshotTaker(metaSession, this);
         webDriverWait = new WebDriverWait(remoteWebDriver, Duration.ofSeconds(60));
         localStorage = new LocalStorage(this);
 

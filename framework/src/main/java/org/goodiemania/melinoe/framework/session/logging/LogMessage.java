@@ -11,6 +11,7 @@ public class LogMessage {
     private Throwable throwable = null;
     private boolean fail = false;
     private File image;
+    private Logger subSessionLogger;
 
     public LogMessage(final LocalDateTime dateTime) {
         this.dateTime = dateTime;
@@ -71,6 +72,15 @@ public class LogMessage {
 
     public LogMessage withImage(final File image) {
         this.image = image;
+        return this;
+    }
+
+    public Logger getSubSessionLogger() {
+        return subSessionLogger;
+    }
+
+    public LogMessage withSubSessionLogger(final Logger subSessionLogger) {
+        this.subSessionLogger = subSessionLogger;
         return this;
     }
 }

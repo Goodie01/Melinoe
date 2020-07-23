@@ -13,18 +13,31 @@ import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.FindElement;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
+import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.session.SessionImpl;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 /**
  * Created on 2/07/2019.
  */
 public class FlowDecorator {
-    private InternalSession internalSession;
+    private final RawWebDriver rawWebDriver;
+    private final Logger logger;
+    private final Session session;
 
     public FlowDecorator(final InternalSession internalSession) {
-        this.internalSession = internalSession;
+        this.logger = internalSession.getSession().getLogger();
+        this.rawWebDriver = internalSession.getRawWebDriver();
+        this.session = internalSession.getSession();
+    }
+
+    public FlowDecorator(final Logger logger, final RawWebDriver rawWebDriver, final Session session) {
+        this.logger = logger;
+        this.rawWebDriver = rawWebDriver;
+        this.session = session;
     }
 
     @SuppressWarnings("java:S3011")
@@ -99,10 +112,13 @@ public class FlowDecorator {
         } else if (field.isAnnotationPresent(FindElement.class)) {
             Optional<By> findBy = buildByFromShortFindBy(field.getAnnotation(FindElement.class));
             if (WebElement.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementImpl(internalSession, by));
+                return findBy.map(by -> new WebElementImpl(logger,
+                        rawWebDriver,
+                        by));
             } else if (List.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementListImpl(internalSession,
-                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(internalSession.getRawWebDriver().getRemoteWebDriver())));
+                return findBy.map(by -> new WebElementListImpl(logger,
+                        rawWebDriver,
+                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(rawWebDriver.getRemoteWebDriver())));
             }
         }
 
@@ -111,7 +127,7 @@ public class FlowDecorator {
 
     public <T extends BasePage> Optional<Object> buildPage(final Class<T> classType) {
         try {
-            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
+            T value = classType.getConstructor(Session.class).newInstance(session);
             return Optional.of(value);
         } catch (NoSuchMethodException e) {
             return Optional.empty();
@@ -122,7 +138,7 @@ public class FlowDecorator {
 
     public <T extends Flow> Optional<Object> buildFlow(final Class<T> classType) {
         try {
-            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
+            T value = classType.getConstructor(Session.class).newInstance(session);
             return Optional.of(value);
         } catch (NoSuchMethodException e) {
             return Optional.empty();

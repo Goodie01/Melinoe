@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Logger {
-    private final LogFileManager logFileManager;
+    private final boolean isSubSessionLogger;
     private final String displayName;
     private final String packageName;
     private final String className;
@@ -15,18 +15,18 @@ public class Logger {
 
     private final File logFile;
 
-    public Logger(final LogFileManager logFileManager,
+    public Logger(final File logFile,
+                  final boolean isSubSessionLogger,
                   final String displayName,
                   final String packageName,
                   final String className,
                   final String methodName) {
-        this.logFileManager = logFileManager;
+        this.logFile = logFile;
+        this.isSubSessionLogger = isSubSessionLogger;
         this.displayName = displayName;
         this.packageName = packageName;
         this.className = className;
         this.methodName = methodName;
-
-        this.logFile = logFileManager.createLogFile(className, methodName);
     }
 
     public LogMessage add() {
@@ -67,5 +67,9 @@ public class Logger {
             }
         }
         return true;
+    }
+
+    public boolean isSubSessionLogger() {
+        return isSubSessionLogger;
     }
 }

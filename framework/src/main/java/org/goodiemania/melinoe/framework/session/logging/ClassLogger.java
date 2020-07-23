@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class ClassLogger {
@@ -49,18 +50,19 @@ public class ClassLogger {
     }
 
     public Logger createClassLogger(final String methodName, final String displayName) {
-        Logger logger = new Logger(fileManager, displayName, packageName, className, methodName);
+        final File logFile = fileManager.createLogFile(className, methodName);
+        Logger logger = new Logger(logFile, false, displayName, packageName, className, methodName);
         loggers.add(logger);
 
         return logger;
     }
 
-    public Logger createClassLogger(final ExtensionContext extensionContext) {
-        String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
-        String displayName = extensionContext.getDisplayName();
+    public Logger createSubSessionLogger(final String methodName) {
+        final File logFile = fileManager.createLogFile(className, methodName + "_SubSession_" + UUID.randomUUID().toString());
 
-        Logger logger = new Logger(fileManager, displayName, packageName, className, methodName);
+        Logger logger = new Logger(logFile, true, displayName, packageName, className, methodName);
         loggers.add(logger);
+
         return logger;
     }
 

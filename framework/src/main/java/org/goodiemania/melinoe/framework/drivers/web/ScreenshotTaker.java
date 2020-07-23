@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
-import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
@@ -60,18 +59,17 @@ public class ScreenshotTaker {
 
     private WebElement lastElem = null;
     private MetaSession metaSession;
-    private InternalSession internalSession;
+    private RawWebDriver rawWebDriver;
 
-    public ScreenshotTaker(final MetaSession metaSession, final InternalSession internalSession) {
+    public ScreenshotTaker(final MetaSession metaSession, final RawWebDriver rawWebDriver) {
         this.metaSession = metaSession;
-        this.internalSession = internalSession;
+        this.rawWebDriver = rawWebDriver;
     }
-
 
     public File takeScreenshot() {
         Screenshot screenshot = new AShot()
                 .shootingStrategy(ShootingStrategies.viewportPasting(100))
-                .takeScreenshot(internalSession.getRawWebDriver().getRemoteWebDriver());
+                .takeScreenshot(rawWebDriver.getRemoteWebDriver());
 
         BufferedImage originalImage = screenshot.getImage();
 
@@ -93,14 +91,14 @@ public class ScreenshotTaker {
 
     private String highlightElement(WebElement elem) {
         lastElem = elem;
-        return (String) (internalSession.getRawWebDriver().getRemoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
+        return (String) (rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_HIGHLIGHT_ELEMENT, elem));
     }
 
     private void unhighlightLast(final String boarderId) {
         if (lastElem != null) {
             try {
                 // if there already is a highlighted element, unhighlight it
-                internalSession.getRawWebDriver().getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
+                rawWebDriver.getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
             } catch (StaleElementReferenceException ignored) {
                 //TODO
                 // the page got reloaded, the element isn't there

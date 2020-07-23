@@ -1,6 +1,7 @@
 package org.goodiemania.melinoe.samples.standard;
 
 import org.goodiemania.melinoe.framework.api.MelinoeTest;
+import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.samples.GithubRepoPage;
 import org.goodiemania.melinoe.samples.GithubRepoPullRequestPage;
 import org.junit.jupiter.api.AfterAll;
@@ -30,7 +31,11 @@ public class Basic extends MelinoeTest {
     @Test
     @DisplayName("Baseline test")
     public void run() {
-        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        final Session subSession = getSession().createSubSession("Ohboi here we go");
+        githubRepoPage = new GithubRepoPage(subSession);
+        githubRepoPullRequestPage = new GithubRepoPullRequestPage(subSession);
+
+        subSession.web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();

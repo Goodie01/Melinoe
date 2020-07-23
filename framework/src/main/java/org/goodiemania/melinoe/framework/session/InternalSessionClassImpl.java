@@ -28,8 +28,10 @@ public class InternalSessionClassImpl implements InternalSession {
         this.metaSession = metaSession;
         this.classLogger = classLogger;
 
-        this.rawWebDriver = new RawWebDriver(metaSession, this);
-        this.flowDecorator = new FlowDecorator(this);
+        this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
+
+        this.rawWebDriver = new RawWebDriver(metaSession, logger);
+        this.flowDecorator = new FlowDecorator(logger, rawWebDriver, getSession());
         this.objectMapper = new ObjectMapper();
         this.httpRequestExecutor = new HttpRequestExecutor(this, HttpClient.newBuilder().build());
     }
@@ -39,7 +41,7 @@ public class InternalSessionClassImpl implements InternalSession {
         if (this.logger == null) {
             this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
         }
-        return new SessionImpl(logger, flowDecorator, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(metaSession, classLogger, logger, rawWebDriver, httpRequestExecutor);
     }
 
     public void resetLoggerToAfterAll() {
@@ -64,26 +66,11 @@ public class InternalSessionClassImpl implements InternalSession {
     }
 
     public InternalSessionImpl createTestSession(final ExtensionContext extensionContext) {
-        String packageName = extensionContext.getTestClass()
-                .map(Class::getPackageName)
-                .orElse("NO_PACKAGE");
+        String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
+        String displayName = extensionContext.getDisplayName();
 
-        String className = extensionContext.getTestClass()
-                .map(Class::getName)
-                .orElse("NO_CLASS_NAME");
+        Logger logger = classLogger.createClassLogger(methodName, displayName);
 
-        String methodName = extensionContext.getTestMethod()
-                .map(Method::getName)
-                .orElse("NO_METHOD_NAME");
-
-        String fullMethodName = extensionContext.getTestMethod()
-                .map(Method::getName)
-                .map(name -> className + "." + methodName)
-                .orElse(className);
-
-        //TODO rewrite this to create the logger from the above
-        Logger logger = classLogger.createClassLogger(extensionContext);
-
-        return new InternalSessionImpl(metaSession, logger, objectMapper);
+        return new InternalSessionImpl(metaSession, classLogger, logger, objectMapper);
     }
 }

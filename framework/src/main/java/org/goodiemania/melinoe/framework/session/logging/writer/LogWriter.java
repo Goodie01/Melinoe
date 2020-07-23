@@ -43,13 +43,14 @@ public class LogWriter {
         List<String> processedLogs = logger.getLogMessages().stream()
                 .map(logMessage -> {
                     String cssStyle = logMessage.getFail() ? "error-text" : "text-muted";
+                    String message = processMessage(logger, logMessage);
                     String secondMessage = processSecondText(logger, logMessage);
                     String hiddenString = processHiddenText(logMessage);
                     if (StringUtils.isBlank(hiddenString)) {
                         return String.format(LogWriterConstants.INDIVIDUAL_SECTION_LOG_HTML,
                                 cssStyle,
                                 logMessage.getDateTime(),
-                                logMessage.getMessage(),
+                                message,
                                 secondMessage);
                     } else {
                         String hiddenSectionId = randomAlpha();
@@ -58,7 +59,7 @@ public class LogWriter {
                                 cssStyle,
                                 hiddenSectionId,
                                 logMessage.getDateTime(),
-                                logMessage.getMessage(),
+                                message,
                                 secondMessage,
                                 hiddenSectionId,
                                 hiddenString);
@@ -71,6 +72,18 @@ public class LogWriter {
         processedLogs.add(LogWriterConstants.HTML_FOOTER);
 
         writeLines(logFile, processedLogs);
+    }
+
+    private String processMessage(final Logger logger, final LogMessage logMessage) {
+        if (logMessage.getSubSessionLogger() == null) {
+            return logMessage.getMessage();
+        }
+
+        File logFile = logger.getLogFile();
+
+        return String.format("<a href='%s'>Sub session: %s</a>",
+                getRelativeFileFileLocation(logMessage.getSubSessionLogger().getLogFile(), logFile),
+                logMessage.getMessage());
     }
 
     private String processSecondText(final Logger logger, final LogMessage logMessage) {
@@ -103,6 +116,9 @@ public class LogWriter {
 
         List<String> processedLogs = classLogger.getLoggers().stream()
                 .map(logger -> {
+                    if (logger.isSubSessionLogger()) {
+                        return "";
+                    }
                     String passColor = logger.getHasPassed() ? "#00ff7b" : "#ff007b";
 
                     return String.format(LogWriterConstants.INDIVIDUAL_SECTION_HTML,

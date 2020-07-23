@@ -24,6 +24,12 @@ public abstract class MelinoeTest {
 
     @RegisterExtension
     static AfterAllCallback afterAllCallback = extensionContext -> {
+        extensionContext.getExecutionException()
+                .ifPresent(throwable -> internalClassSession.getSession().getLogger().add()
+                        .fail()
+                        .withMessage("Exception thrown")
+                        .withThrowable(throwable));
+
         metaSession.endSession();
         metaSession.writeLogs();
     };

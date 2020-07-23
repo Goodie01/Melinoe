@@ -1,7 +1,6 @@
 package org.goodiemania.melinoe.framework.drivers.web.page;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -10,23 +9,30 @@ import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
-import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementImpl implements WebElement {
-    private final InternalSession internalSession;
+    private Logger logger;
+    private RawWebDriver rawWebDriver;
     private final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier;
 
-    public WebElementImpl(final InternalSession internalSession, final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier) {
-        this.internalSession = internalSession;
+    public WebElementImpl(final Logger logger,
+                          final RawWebDriver rawWebDriver,
+                          final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier) {
+        this.logger = logger;
+        this.rawWebDriver = rawWebDriver;
         this.webElementSupplier = webElementSupplier;
     }
 
-    public WebElementImpl(final InternalSession internalSession, final By by) {
-        this(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(remoteWebDriver));
+    public WebElementImpl(final Logger logger,
+                          final RawWebDriver rawWebDriver,
+                          final By by) {
+        this(logger, rawWebDriver, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(remoteWebDriver));
     }
 
     private void withElement(final Consumer<org.openqa.selenium.WebElement> function) {
@@ -38,18 +44,18 @@ public class WebElementImpl implements WebElement {
     }
 
     private RemoteWebDriver getDriver() {
-        if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
+        if (!rawWebDriver.hasPageBeenChecked()) {
             throw new MelinoeException("Please check page before interacting with it");
         }
 
-        return internalSession.getRawWebDriver().getRemoteWebDriver();
+        return rawWebDriver.getRemoteWebDriver();
     }
 
     @Override
     public void click() {
         withElement(webElement -> {
-            File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().add()
+            File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
+            logger.add()
                     .withMessage("Clicking link")
                     .withImage(file);
             webElement.click();
@@ -60,8 +66,8 @@ public class WebElementImpl implements WebElement {
     @Override
     public void submit() {
         withElement(webElement -> {
-            File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().add()
+            File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
+            logger.add()
                     .withMessage("Submitted element")
                     .withImage(file);
             webElement.submit();
@@ -71,8 +77,8 @@ public class WebElementImpl implements WebElement {
     @Override
     public void sendKeys(final String keysToSend) {
         withElement(webElement -> {
-            File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().add()
+            File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
+            logger.add()
                     .withMessage(String.format("Entering text '%s' into element",
                             keysToSend))
                     .withImage(file);
@@ -83,8 +89,8 @@ public class WebElementImpl implements WebElement {
     @Override
     public void clear() {
         withElement(webElement -> {
-            File file = internalSession.getRawWebDriver().getScreenshotTaker().takeScreenshot(webElement);
-            internalSession.getSession().getLogger().add()
+            File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
+            logger.add()
                     .withMessage("Calling clear on element")
                     .withImage(file);
             webElement.clear();
@@ -118,16 +124,21 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public List<WebElement> findElements(final By by) {
-        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(internalSession.getRawWebDriver().getRemoteWebDriver());
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(rawWebDriver.getRemoteWebDriver());
 
-        return new WebElementListImpl(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(seleniumWebElement));
+        return new WebElementListImpl(logger,
+                rawWebDriver,
+                remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(seleniumWebElement));
     }
 
     @Override
     public Optional<WebElement> findElement(final By by) {
-        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(internalSession.getRawWebDriver().getRemoteWebDriver());
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(rawWebDriver.getRemoteWebDriver());
 
-        return Optional.of(new WebElementImpl(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(seleniumWebElement)));
+        return Optional.of(
+                new WebElementImpl(logger,
+                        rawWebDriver,
+                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(seleniumWebElement)));
     }
 
     @Override
