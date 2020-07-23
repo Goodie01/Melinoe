@@ -18,6 +18,7 @@ public class InternalSessionClassImpl implements InternalSession {
     private final RawWebDriver rawWebDriver;
     private final ObjectMapper objectMapper;
     private final HttpRequestExecutor httpRequestExecutor;
+    private final HttpClient httpClient;
 
     private Logger logger;
     private String classLoggerMethodName = "beforeAll";
@@ -28,12 +29,40 @@ public class InternalSessionClassImpl implements InternalSession {
         this.metaSession = metaSession;
         this.classLogger = classLogger;
 
+        this.httpClient = HttpClient.newBuilder().build();
+
         this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
 
-        this.rawWebDriver = new RawWebDriver(metaSession, logger);
-        this.flowDecorator = new FlowDecorator(logger, rawWebDriver, getSession());
+
+        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1");
+        this.httpRequestExecutor = new HttpRequestExecutor(this);
+
+        this.flowDecorator = new FlowDecorator(getSession(), rawWebDriver);
         this.objectMapper = new ObjectMapper();
-        this.httpRequestExecutor = new HttpRequestExecutor(this, HttpClient.newBuilder().build());
+    }
+
+    public InternalSession createTestSession(final ExtensionContext extensionContext) {
+        String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
+        String displayName = extensionContext.getDisplayName();
+
+        Logger logger = classLogger.createClassLogger(methodName, displayName);
+
+        RawWebDriver rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 2");
+        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(this);
+        //TODO the bug is heeeeere
+        //  The flow decorator starts passing in THIS class session into places, when actually we want it to pass in the new session we're creating...
+        //  Ultimately I think we also want to think about splitting internal session into a....
+        //      'internal session' with meta session,  object mapper, http client etc on it,
+        //      and a 'internal session' with the drivers on it
+        FlowDecorator flowDecorator = new FlowDecorator(getSession(), rawWebDriver);
+
+        return new InternalSessionImpl(this, rawWebDriver, httpRequestExecutor, flowDecorator, logger);
+    }
+
+    public void resetLoggerToAfterAll() {
+        logger = null;
+        classLoggerMethodName = "afterAll";
+        classLoggerDisplayName = "After all";
     }
 
     @Override
@@ -41,13 +70,12 @@ public class InternalSessionClassImpl implements InternalSession {
         if (this.logger == null) {
             this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
         }
-        return new SessionImpl(metaSession, classLogger, logger, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor, flowDecorator);
     }
 
-    public void resetLoggerToAfterAll() {
-        logger = null;
-        classLoggerMethodName = "afterAll";
-        classLoggerDisplayName = "After all";
+    @Override
+    public MetaSession getMetaSession() {
+        return metaSession;
     }
 
     @Override
@@ -65,12 +93,13 @@ public class InternalSessionClassImpl implements InternalSession {
         return objectMapper;
     }
 
-    public InternalSessionImpl createTestSession(final ExtensionContext extensionContext) {
-        String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
-        String displayName = extensionContext.getDisplayName();
+    @Override
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
 
-        Logger logger = classLogger.createClassLogger(methodName, displayName);
-
-        return new InternalSessionImpl(metaSession, classLogger, logger, objectMapper);
+    @Override
+    public ClassLogger getClassLogger() {
+        return classLogger;
     }
 }

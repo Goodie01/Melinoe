@@ -8,40 +8,36 @@ import org.goodiemania.melinoe.framework.decorator.FlowDecorator;
 import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
 import org.goodiemania.melinoe.framework.drivers.rest.RestRequestImpl;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
-import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 public class SessionImpl implements Session {
-    private final Logger logger;
-    private final MetaSession metaSession;
-    private final ClassLogger classLogger;
-    private final FlowDecorator flowDecorator;
+    private final InternalSession internalSession;
     private final RawWebDriver rawWebDriver;
-    private final HttpRequestExecutor requestExecutor;
+    private final HttpRequestExecutor httpRequestExecutor;
+    private final FlowDecorator flowDecorator;
+    private final Logger logger;
 
-    public SessionImpl(final MetaSession metaSession,
-                       final ClassLogger classLogger,
+    public SessionImpl(final InternalSession internalSession,
                        final Logger logger,
                        final RawWebDriver rawWebDriver,
-                       final HttpRequestExecutor httpRequestExecutor) {
-        this.metaSession = metaSession;
-        this.classLogger = classLogger;
-        this.rawWebDriver = rawWebDriver;
+                       final HttpRequestExecutor httpRequestExecutor,
+                       final FlowDecorator flowDecorator) {
+        this.internalSession = internalSession;
         this.logger = logger;
-        this.requestExecutor = httpRequestExecutor;
-
-        this.flowDecorator = new FlowDecorator(logger, rawWebDriver, this);
+        this.rawWebDriver = rawWebDriver;
+        this.httpRequestExecutor = httpRequestExecutor;
+        this.flowDecorator = flowDecorator;
     }
 
 
     @Override
     public RestRequest rest(final String uri) {
-        return new RestRequestImpl(requestExecutor, uri);
+        return new RestRequestImpl(httpRequestExecutor, uri);
     }
 
     @Override
     public RestRequest rest(final URI uri) {
-        return new RestRequestImpl(requestExecutor, uri);
+        return new RestRequestImpl(httpRequestExecutor, uri);
     }
 
     @Override
@@ -61,18 +57,20 @@ public class SessionImpl implements Session {
 
     @Override
     public Session createSubSession(final String name) {
-        final Logger subSessionLogger = classLogger.createSubSessionLogger(logger.getMethodName());
+        final Logger subSessionLogger = internalSession.getClassLogger().createSubSessionLogger(logger.getMethodName());
 
         logger.add()
                 .withMessage(name)
                 .withSubSessionLogger(subSessionLogger);
 
-        final RawWebDriver rawWebDriver = new RawWebDriver(metaSession, subSessionLogger);
+        RawWebDriver rawWebDriver = new RawWebDriver(internalSession.getMetaSession(), logger, "sessionImpl");
+        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(internalSession);
+        FlowDecorator flowDecorator = new FlowDecorator(this, rawWebDriver);
 
-        return new SessionImpl(metaSession,
-                classLogger,
+        return new SessionImpl(internalSession,
                 subSessionLogger,
                 rawWebDriver,
-                requestExecutor);
+                httpRequestExecutor,
+                flowDecorator);
     }
 }

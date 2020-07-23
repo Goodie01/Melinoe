@@ -1,7 +1,7 @@
 package org.goodiemania.melinoe.framework.api;
 
+import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.InternalSessionClassImpl;
-import org.goodiemania.melinoe.framework.session.InternalSessionImpl;
 import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
@@ -34,7 +34,7 @@ public abstract class MelinoeTest {
         metaSession.writeLogs();
     };
 
-    private InternalSessionImpl internalSession;
+    private InternalSession internalSession;
 
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {

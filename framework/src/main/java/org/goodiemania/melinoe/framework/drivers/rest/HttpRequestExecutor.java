@@ -1,5 +1,6 @@
 package org.goodiemania.melinoe.framework.drivers.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -9,14 +10,17 @@ import java.util.List;
 import java.util.Map;
 import org.goodiemania.melinoe.framework.api.HttpMethodType;
 import org.goodiemania.melinoe.framework.session.InternalSession;
+import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 public class HttpRequestExecutor {
-    private final InternalSession session;
     private final HttpClient httpClient;
+    private final Logger logger;
+    private final ObjectMapper objectMapper;
 
-    public HttpRequestExecutor(final InternalSession session, final HttpClient httpClient) {
-        this.session = session;
-        this.httpClient = httpClient;
+    public HttpRequestExecutor(final InternalSession session) {
+        this.logger = session.getSession().getLogger();
+        this.objectMapper = session.getObjectMapper();
+        this.httpClient = session.getHttpClient();
     }
 
     public RestResponse execute(final URI uri, final HttpMethodType httpMethodType, final String body, final Map<String, List<String>> headers) {
@@ -33,7 +37,7 @@ public class HttpRequestExecutor {
             HttpResponse<String> stringHttpResponse = httpClient.send(builder.build(), HttpResponse.BodyHandlers.ofString());
             long stopTime = System.currentTimeMillis();
 
-            session.getSession().getLogger().add()
+            logger.add()
                     .withMessage(String.format("Made a HTTP request to %s with a %d status in %dms",
                             uri,
                             stringHttpResponse.statusCode(),
@@ -41,12 +45,13 @@ public class HttpRequestExecutor {
                     .withSecondMessage("Click for raw response")
                     .withHiddenInfo(stringHttpResponse.body());
 
-            return new RestResponse(session, stringHttpResponse);
+
+            return new RestResponse(logger, objectMapper, stringHttpResponse);
         } catch (IOException e) {
-            return new RestResponse(session, e);
+            return new RestResponse(logger, objectMapper, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return new RestResponse(session, e);
+            return new RestResponse(logger, objectMapper, e);
         }
     }
 }

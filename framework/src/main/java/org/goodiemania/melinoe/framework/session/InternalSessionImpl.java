@@ -10,29 +10,33 @@ import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 public class InternalSessionImpl implements InternalSession {
-    private MetaSession metaSession;
-    private ClassLogger classLogger;
-    private final Logger logger;
+    private final InternalSession internalSession;
     private final FlowDecorator flowDecorator;
+    private final Logger logger;
     private final RawWebDriver rawWebDriver;
-    private final ObjectMapper objectMapper;
     private final HttpRequestExecutor httpRequestExecutor;
 
+    public InternalSessionImpl(final InternalSession internalSession,
+                               final RawWebDriver rawWebDriver,
+                               final HttpRequestExecutor httpRequestExecutor,
+                               final FlowDecorator flowDecorator,
+                               final Logger logger) {
 
-    public InternalSessionImpl(final MetaSession metaSession, final ClassLogger classLogger, final Logger logger, final ObjectMapper objectMapper) {
-        this.metaSession = metaSession;
-        this.classLogger = classLogger;
+        this.internalSession = internalSession;
+        this.rawWebDriver = rawWebDriver;
+        this.httpRequestExecutor = httpRequestExecutor;
+        this.flowDecorator = flowDecorator;
         this.logger = logger;
-        this.objectMapper = objectMapper;
+    }
 
-        this.rawWebDriver = new RawWebDriver(metaSession, logger);
-        this.flowDecorator = new FlowDecorator(logger, rawWebDriver, getSession());
-        this.httpRequestExecutor = new HttpRequestExecutor(this, HttpClient.newBuilder().build());
+    @Override
+    public MetaSession getMetaSession() {
+        return internalSession.getMetaSession();
     }
 
     @Override
     public Session getSession() {
-        return new SessionImpl(metaSession, classLogger, logger, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor, flowDecorator);
     }
 
     @Override
@@ -47,6 +51,16 @@ public class InternalSessionImpl implements InternalSession {
 
     @Override
     public ObjectMapper getObjectMapper() {
-        return objectMapper;
+        return internalSession.getObjectMapper();
+    }
+
+    @Override
+    public HttpClient getHttpClient() {
+        return internalSession.getHttpClient();
+    }
+
+    @Override
+    public ClassLogger getClassLogger() {
+        return internalSession.getClassLogger();
     }
 }

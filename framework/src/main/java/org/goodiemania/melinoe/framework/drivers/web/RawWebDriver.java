@@ -29,13 +29,15 @@ public class RawWebDriver {
     private LocalStorage localStorage;
 
     private WebDriverImpl webDriver;
+    private String fileName;
     private MetaSession metaSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
-    public RawWebDriver(final MetaSession metaSession, final Logger logger) {
+    public RawWebDriver(final MetaSession metaSession, final Logger logger, final String fileName) {
         this.metaSession = metaSession;
         this.webDriver = new WebDriverImpl(logger, this);
+        this.fileName = fileName;
     }
 
     public RemoteWebDriver getRemoteWebDriver() {
@@ -64,6 +66,9 @@ public class RawWebDriver {
 
     public void markPageChecked() {
         reloadFlag = UUID.randomUUID().toString();
+        if(localStorage == null) {
+            System.out.println(fileName);
+        }
         localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
     }
 

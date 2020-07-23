@@ -2,7 +2,6 @@ package org.goodiemania.melinoe.framework.api.rest.validators;
 
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.ValidationResult;
 import org.goodiemania.melinoe.framework.drivers.rest.RestResponse;
 
@@ -16,8 +15,8 @@ public class JsonPathValidator implements RestValidator {
     }
 
     @Override
-    public ValidationResult validate(final Session context, final RestResponse webDriver) {
-        String foundValue = JsonPath.parse(webDriver.getResponse()).read(jsonPathExpression, String.class);
+    public ValidationResult validate(final RestResponse restResponse) {
+        String foundValue = JsonPath.parse(restResponse.getResponse()).read(jsonPathExpression, String.class);
 
         if (StringUtils.equals(foundValue, expectedValue)) {
             return ValidationResult.passed(

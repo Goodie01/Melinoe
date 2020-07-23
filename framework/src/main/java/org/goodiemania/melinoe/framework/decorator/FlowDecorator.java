@@ -16,26 +16,15 @@ import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
-import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.goodiemania.melinoe.framework.session.SessionImpl;
-import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 /**
  * Created on 2/07/2019.
  */
 public class FlowDecorator {
     private final RawWebDriver rawWebDriver;
-    private final Logger logger;
     private final Session session;
 
-    public FlowDecorator(final InternalSession internalSession) {
-        this.logger = internalSession.getSession().getLogger();
-        this.rawWebDriver = internalSession.getRawWebDriver();
-        this.session = internalSession.getSession();
-    }
-
-    public FlowDecorator(final Logger logger, final RawWebDriver rawWebDriver, final Session session) {
-        this.logger = logger;
+    public FlowDecorator(final Session session, final RawWebDriver rawWebDriver) {
         this.rawWebDriver = rawWebDriver;
         this.session = session;
     }
@@ -112,11 +101,11 @@ public class FlowDecorator {
         } else if (field.isAnnotationPresent(FindElement.class)) {
             Optional<By> findBy = buildByFromShortFindBy(field.getAnnotation(FindElement.class));
             if (WebElement.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementImpl(logger,
+                return findBy.map(by -> new WebElementImpl(session.getLogger(),
                         rawWebDriver,
                         by));
             } else if (List.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementListImpl(logger,
+                return findBy.map(by -> new WebElementListImpl(session.getLogger(),
                         rawWebDriver,
                         remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(rawWebDriver.getRemoteWebDriver())));
             }
