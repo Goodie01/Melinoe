@@ -1,6 +1,6 @@
 package org.goodiemania.melinoe.framework.api.web;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -11,11 +11,17 @@ public interface WebDriver {
 
     String getTitle();
 
-    void checkPage(List<WebValidator> validators);
-
     void waitFor(Predicate<WebDriver> predicate);
 
     Optional<WebElement> findElement(By by);
 
     List<WebElement> findElements(By by);
+
+    void checkPage(final List<WebValidator> validators);
+
+    void verify(final List<WebValidator> validators);
+
+    default void verify(final WebValidator... validators) {
+        verify(Arrays.asList(validators));
+    }
 }

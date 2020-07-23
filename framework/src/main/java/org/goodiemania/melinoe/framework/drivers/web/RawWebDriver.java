@@ -65,7 +65,7 @@ public class RawWebDriver {
         return webDriverWait;
     }
 
-    public void checkPage(final List<WebValidator> validators) {
+    public void verify(final List<WebValidator> validators) {
         webDriverWait.until(givenWebDriver -> ((JavascriptExecutor) givenWebDriver).executeScript("return document.readyState").equals("complete"));
 
         Session session = internalSession.getSession();
@@ -101,6 +101,11 @@ public class RawWebDriver {
 
     public boolean hasPageBeenChecked() {
         return StringUtils.equals(localStorage.get(reloadFlag), RELOAD_FLAG_VALUE);
+    }
+
+    public void markPageChecked() {
+        reloadFlag = UUID.randomUUID().toString();
+        localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
     }
 
     private void generate() {
@@ -159,6 +164,10 @@ public class RawWebDriver {
 
     public void close() {
         if (remoteWebDriver != null) {
+            if (!hasPageBeenChecked()) {
+                remoteWebDriver.quit();
+                throw new MelinoeException("You must check your page before you close the Web Driver");
+            }
             remoteWebDriver.quit();
             remoteWebDriver = null;
         }
