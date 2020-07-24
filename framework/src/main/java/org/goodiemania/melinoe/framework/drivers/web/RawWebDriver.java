@@ -61,12 +61,15 @@ public class RawWebDriver {
     }
 
     public boolean hasPageBeenChecked() {
+        if (localStorage == null) {
+            System.out.println(fileName);
+        }
         return StringUtils.equals(localStorage.get(reloadFlag), RELOAD_FLAG_VALUE);
     }
 
     public void markPageChecked() {
         reloadFlag = UUID.randomUUID().toString();
-        if(localStorage == null) {
+        if (localStorage == null) {
             System.out.println(fileName);
         }
         localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
@@ -130,7 +133,7 @@ public class RawWebDriver {
         if (remoteWebDriver != null) {
             if (!hasPageBeenChecked()) {
                 remoteWebDriver.quit();
-                throw new MelinoeException("You must check your page before you close the Web Driver");
+                throw new MelinoeException("You must check your page before you close the Web Driver (" + fileName + ")");
             }
             remoteWebDriver.quit();
             remoteWebDriver = null;

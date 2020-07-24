@@ -13,13 +13,13 @@ public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
     private static InternalSessionClassImpl internalClassSession;
     private static boolean afterAll = false;
+    private static Class<?> classType;
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        Class<?> testClass = extensionContext.getTestClass().orElseThrow();
-
         internalClassSession = metaSession.createSessionFor(extensionContext);
-        internalClassSession.getFlowDecorator().decorate(testClass);
+        classType = extensionContext.getTestClass().orElseThrow();
+        internalClassSession.getSession().decorateClass(classType);
     };
 
     @RegisterExtension
@@ -39,7 +39,7 @@ public abstract class MelinoeTest {
     @RegisterExtension
     BeforeEachCallback beforeEachCallback = extensionContext -> {
         internalSession = internalClassSession.createTestSession(extensionContext);
-        internalSession.getFlowDecorator().decorate(this);
+        internalSession.getSession().decorate(this);
         afterAll = true;
     };
 
@@ -55,7 +55,9 @@ public abstract class MelinoeTest {
 
     public static Session getClassSession() {
         if (afterAll) {
+            afterAll = false;
             internalClassSession.resetLoggerToAfterAll();
+            internalClassSession.getSession().decorateClass(classType);
         }
         return internalClassSession.getSession();
     }

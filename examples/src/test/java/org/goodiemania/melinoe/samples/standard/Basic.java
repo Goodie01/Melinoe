@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 @DisplayName("Basic examples")
 public class Basic extends MelinoeTest {
+    private static GithubRepoPage staticGithubRepoPage;
+    private static GithubRepoPullRequestPage staticGithubRepoPullRequestPage;
     private GithubRepoPage githubRepoPage;
     private GithubRepoPullRequestPage githubRepoPullRequestPage;
 
@@ -19,6 +21,10 @@ public class Basic extends MelinoeTest {
         getClassSession().getLogger()
                 .add()
                 .withMessage("Before all");
+        getClassSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage.checkPage();
+        staticGithubRepoPage.clickPullRequestLink();
+        staticGithubRepoPullRequestPage.checkPage();
     }
 
     @AfterAll
@@ -26,11 +32,24 @@ public class Basic extends MelinoeTest {
         getClassSession().getLogger()
                 .add()
                 .withMessage("After all");
+        getClassSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage.checkPage();
+        staticGithubRepoPage.clickPullRequestLink();
+        staticGithubRepoPullRequestPage.checkPage();
     }
 
     @Test
     @DisplayName("Baseline test")
     public void run() {
+        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        githubRepoPage.checkPage();
+        githubRepoPage.clickPullRequestLink();
+        githubRepoPullRequestPage.checkPage();
+    }
+
+    @Test
+    @DisplayName("Baseline test with a subcontext")
+    public void subContextTest() {
         final Session subSession = getSession().createSubSession("Ohboi here we go");
         githubRepoPage = new GithubRepoPage(subSession);
         githubRepoPullRequestPage = new GithubRepoPullRequestPage(subSession);

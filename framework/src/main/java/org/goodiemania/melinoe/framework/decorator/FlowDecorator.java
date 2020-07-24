@@ -30,7 +30,7 @@ public class FlowDecorator {
     }
 
     @SuppressWarnings("java:S3011")
-    public void decorate(final Class<?> parentClass) {
+    public void decorateClass(final Class<?> parentClass) {
         if (parentClass.isAnnotationPresent(IgnoreFlowDecoration.class)) {
             return;
         }
@@ -41,7 +41,7 @@ public class FlowDecorator {
             Field[] fields = currentClass.getDeclaredFields();
             for (Field field : fields) {
                 if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    break;
+                    continue;
                 }
                 createObject(field)
                         .ifPresent(o -> {
@@ -69,7 +69,7 @@ public class FlowDecorator {
             Field[] fields = currentClass.getDeclaredFields();
             for (Field field : fields) {
                 if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
-                    break;
+                    continue;
                 }
                 createObject(field)
                         .ifPresent(o -> {

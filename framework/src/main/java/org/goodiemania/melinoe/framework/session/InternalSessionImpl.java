@@ -3,64 +3,58 @@ package org.goodiemania.melinoe.framework.session;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.http.HttpClient;
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.decorator.FlowDecorator;
 import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 
 public class InternalSessionImpl implements InternalSession {
-    private final InternalSession internalSession;
-    private final FlowDecorator flowDecorator;
     private final Logger logger;
     private final RawWebDriver rawWebDriver;
     private final HttpRequestExecutor httpRequestExecutor;
+    private final ObjectMapper objectMapper;
+    private final MetaSession metaSession;
+    private final HttpClient httpClient;
+    private final ClassLogger classLogger;
 
-    public InternalSessionImpl(final InternalSession internalSession,
+    public InternalSessionImpl(final MetaSession metaSession,
+                               final ObjectMapper objectMapper,
+                               final HttpClient httpClient,
+                               final ClassLogger classLogger,
                                final RawWebDriver rawWebDriver,
                                final HttpRequestExecutor httpRequestExecutor,
-                               final FlowDecorator flowDecorator,
                                final Logger logger) {
-
-        this.internalSession = internalSession;
+        this.metaSession = metaSession;
+        this.objectMapper = objectMapper;
+        this.httpClient = httpClient;
+        this.classLogger = classLogger;
         this.rawWebDriver = rawWebDriver;
         this.httpRequestExecutor = httpRequestExecutor;
-        this.flowDecorator = flowDecorator;
         this.logger = logger;
     }
 
     @Override
     public MetaSession getMetaSession() {
-        return internalSession.getMetaSession();
+        return metaSession;
     }
 
     @Override
     public Session getSession() {
-        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor, flowDecorator);
-    }
-
-    @Override
-    public FlowDecorator getFlowDecorator() {
-        return flowDecorator;
-    }
-
-    @Override
-    public RawWebDriver getRawWebDriver() {
-        return rawWebDriver;
+        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor);
     }
 
     @Override
     public ObjectMapper getObjectMapper() {
-        return internalSession.getObjectMapper();
+        return objectMapper;
     }
 
     @Override
     public HttpClient getHttpClient() {
-        return internalSession.getHttpClient();
+        return httpClient;
     }
 
     @Override
     public ClassLogger getClassLogger() {
-        return internalSession.getClassLogger();
+        return classLogger;
     }
 }

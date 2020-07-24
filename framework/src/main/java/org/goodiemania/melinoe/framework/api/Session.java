@@ -16,5 +16,7 @@ public interface Session {
 
     void decorate(Object object);
 
+    void decorateClass(final Class<?> classType);
+
     Session createSubSession(final String name);
 }

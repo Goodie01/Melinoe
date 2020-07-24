@@ -12,10 +12,6 @@ public interface InternalSession {
 
     Session getSession();
 
-    FlowDecorator getFlowDecorator();
-
-    RawWebDriver getRawWebDriver();
-
     ObjectMapper getObjectMapper();
 
     HttpClient getHttpClient();

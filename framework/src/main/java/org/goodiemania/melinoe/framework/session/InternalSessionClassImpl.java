@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Method;
 import java.net.http.HttpClient;
 import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.decorator.FlowDecorator;
 import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.session.logging.ClassLogger;
@@ -14,16 +13,12 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class InternalSessionClassImpl implements InternalSession {
     private final MetaSession metaSession;
     private final ClassLogger classLogger;
-    private final FlowDecorator flowDecorator;
-    private final RawWebDriver rawWebDriver;
     private final ObjectMapper objectMapper;
-    private final HttpRequestExecutor httpRequestExecutor;
     private final HttpClient httpClient;
 
     private Logger logger;
-    private String classLoggerMethodName = "beforeAll";
-    private String classLoggerDisplayName = "Before all";
-
+    private RawWebDriver rawWebDriver;
+    private HttpRequestExecutor httpRequestExecutor;
 
     public InternalSessionClassImpl(final MetaSession metaSession, final ClassLogger classLogger) {
         this.metaSession = metaSession;
@@ -31,13 +26,11 @@ public class InternalSessionClassImpl implements InternalSession {
 
         this.httpClient = HttpClient.newBuilder().build();
 
-        this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
+        this.logger = classLogger.createClassLogger("beforeAll", "Before all");
 
 
-        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1");
+        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1a");
         this.httpRequestExecutor = new HttpRequestExecutor(this);
-
-        this.flowDecorator = new FlowDecorator(getSession(), rawWebDriver);
         this.objectMapper = new ObjectMapper();
     }
 
@@ -48,44 +41,35 @@ public class InternalSessionClassImpl implements InternalSession {
         Logger logger = classLogger.createClassLogger(methodName, displayName);
 
         RawWebDriver rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 2");
-        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(this);
-        //TODO the bug is heeeeere
-        //  The flow decorator starts passing in THIS class session into places, when actually we want it to pass in the new session we're creating...
-        //  Ultimately I think we also want to think about splitting internal session into a....
-        //      'internal session' with meta session,  object mapper, http client etc on it,
-        //      and a 'internal session' with the drivers on it
-        FlowDecorator flowDecorator = new FlowDecorator(getSession(), rawWebDriver);
+        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(
+                getHttpClient(),
+                logger,
+                getObjectMapper());
 
-        return new InternalSessionImpl(this, rawWebDriver, httpRequestExecutor, flowDecorator, logger);
+        return new InternalSessionImpl(
+                getMetaSession(),
+                getObjectMapper(),
+                getHttpClient(),
+                getClassLogger(),
+                rawWebDriver,
+                httpRequestExecutor,
+                logger);
     }
 
     public void resetLoggerToAfterAll() {
-        logger = null;
-        classLoggerMethodName = "afterAll";
-        classLoggerDisplayName = "After all";
+        this.logger = classLogger.createClassLogger("afterAll", "After all");
+        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1b");
+        this.httpRequestExecutor = new HttpRequestExecutor(this);
     }
 
     @Override
     public Session getSession() {
-        if (this.logger == null) {
-            this.logger = classLogger.createClassLogger(classLoggerMethodName, classLoggerDisplayName);
-        }
-        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor, flowDecorator);
+        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor);
     }
 
     @Override
     public MetaSession getMetaSession() {
         return metaSession;
-    }
-
-    @Override
-    public FlowDecorator getFlowDecorator() {
-        return flowDecorator;
-    }
-
-    @Override
-    public RawWebDriver getRawWebDriver() {
-        return rawWebDriver;
     }
 
     @Override

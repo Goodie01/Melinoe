@@ -14,19 +14,16 @@ public class SessionImpl implements Session {
     private final InternalSession internalSession;
     private final RawWebDriver rawWebDriver;
     private final HttpRequestExecutor httpRequestExecutor;
-    private final FlowDecorator flowDecorator;
     private final Logger logger;
 
     public SessionImpl(final InternalSession internalSession,
                        final Logger logger,
                        final RawWebDriver rawWebDriver,
-                       final HttpRequestExecutor httpRequestExecutor,
-                       final FlowDecorator flowDecorator) {
+                       final HttpRequestExecutor httpRequestExecutor) {
         this.internalSession = internalSession;
         this.logger = logger;
         this.rawWebDriver = rawWebDriver;
         this.httpRequestExecutor = httpRequestExecutor;
-        this.flowDecorator = flowDecorator;
     }
 
 
@@ -51,8 +48,13 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public void decorate(final Object flow) {
-        flowDecorator.decorate(flow);
+    public void decorate(final Object object) {
+        new FlowDecorator(this, rawWebDriver).decorate(object);
+    }
+
+    @Override
+    public void decorateClass(final Class<?> classType) {
+        new FlowDecorator(this, rawWebDriver).decorateClass(classType);
     }
 
     @Override
@@ -63,14 +65,28 @@ public class SessionImpl implements Session {
                 .withMessage(name)
                 .withSubSessionLogger(subSessionLogger);
 
-        RawWebDriver rawWebDriver = new RawWebDriver(internalSession.getMetaSession(), logger, "sessionImpl");
-        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(internalSession);
-        FlowDecorator flowDecorator = new FlowDecorator(this, rawWebDriver);
-
-        return new SessionImpl(internalSession,
+        RawWebDriver rawWebDriver = new RawWebDriver(internalSession.getMetaSession(),
                 subSessionLogger,
+                "sessionImpl");
+
+        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(internalSession.getHttpClient(),
+                subSessionLogger,
+                internalSession.getObjectMapper());
+
+        final InternalSessionImpl internalSubSession = new InternalSessionImpl(
+                this.internalSession.getMetaSession(),
+                this.internalSession.getObjectMapper(),
+                this.internalSession.getHttpClient(),
+                this.internalSession.getClassLogger(),
                 rawWebDriver,
                 httpRequestExecutor,
-                flowDecorator);
+                subSessionLogger
+        );
+
+        return new SessionImpl(internalSubSession,
+                subSessionLogger,
+                rawWebDriver,
+                httpRequestExecutor
+        );
     }
 }

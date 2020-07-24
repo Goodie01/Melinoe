@@ -23,6 +23,13 @@ public class HttpRequestExecutor {
         this.httpClient = session.getHttpClient();
     }
 
+
+    public HttpRequestExecutor(final HttpClient httpClient, final Logger logger, final ObjectMapper objectMapper) {
+        this.logger = logger;
+        this.objectMapper = objectMapper;
+        this.httpClient = httpClient;
+    }
+
     public RestResponse execute(final URI uri, final HttpMethodType httpMethodType, final String body, final Map<String, List<String>> headers) {
         String httpMethod = httpMethodType.toString();
 
