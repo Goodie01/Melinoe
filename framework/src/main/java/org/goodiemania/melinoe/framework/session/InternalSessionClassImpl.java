@@ -13,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class InternalSessionClassImpl implements InternalSession {
     private final MetaSession metaSession;
     private final ClassLogger classLogger;
-    private final ObjectMapper objectMapper;
-    private final HttpClient httpClient;
 
     private Logger logger;
     private RawWebDriver rawWebDriver;
@@ -24,14 +22,9 @@ public class InternalSessionClassImpl implements InternalSession {
         this.metaSession = metaSession;
         this.classLogger = classLogger;
 
-        this.httpClient = HttpClient.newBuilder().build();
-
         this.logger = classLogger.createClassLogger("beforeAll", "Before all");
-
-
         this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1a");
         this.httpRequestExecutor = new HttpRequestExecutor(this);
-        this.objectMapper = new ObjectMapper();
     }
 
     public InternalSession createTestSession(final ExtensionContext extensionContext) {
@@ -48,8 +41,6 @@ public class InternalSessionClassImpl implements InternalSession {
 
         return new InternalSessionImpl(
                 getMetaSession(),
-                getObjectMapper(),
-                getHttpClient(),
                 getClassLogger(),
                 rawWebDriver,
                 httpRequestExecutor,
@@ -74,12 +65,12 @@ public class InternalSessionClassImpl implements InternalSession {
 
     @Override
     public ObjectMapper getObjectMapper() {
-        return objectMapper;
+        return metaSession.getObjectMapper();
     }
 
     @Override
     public HttpClient getHttpClient() {
-        return httpClient;
+        return metaSession.getHttpClient();
     }
 
     @Override

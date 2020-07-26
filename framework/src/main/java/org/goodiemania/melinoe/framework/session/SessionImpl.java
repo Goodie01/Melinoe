@@ -75,8 +75,6 @@ public class SessionImpl implements Session {
 
         final InternalSessionImpl internalSubSession = new InternalSessionImpl(
                 this.internalSession.getMetaSession(),
-                this.internalSession.getObjectMapper(),
-                this.internalSession.getHttpClient(),
                 this.internalSession.getClassLogger(),
                 rawWebDriver,
                 httpRequestExecutor,
