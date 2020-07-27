@@ -10,9 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class RestExampleTests extends MelinoeTest {
-    private GithubFlow githubFlow;
-
-
     @BeforeAll
     public static void init() {
         getClassSession().getLogger()

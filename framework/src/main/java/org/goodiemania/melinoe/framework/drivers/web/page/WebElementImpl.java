@@ -3,13 +3,13 @@ package org.goodiemania.melinoe.framework.drivers.web.page;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -17,43 +17,39 @@ import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementImpl implements WebElement {
-    private Logger logger;
-    private RawWebDriver rawWebDriver;
+    private final InternalSession internalSession;
     private final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier;
 
-    public WebElementImpl(final Logger logger,
-                          final RawWebDriver rawWebDriver,
+    public WebElementImpl(final InternalSession internalSession,
                           final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier) {
-        this.logger = logger;
-        this.rawWebDriver = rawWebDriver;
+        this.internalSession = internalSession;
         this.webElementSupplier = webElementSupplier;
     }
 
-    public WebElementImpl(final Logger logger,
-                          final RawWebDriver rawWebDriver,
+    public WebElementImpl(final InternalSession internalSession,
                           final By by) {
-        this(logger, rawWebDriver, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(remoteWebDriver));
+        this(internalSession, remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(remoteWebDriver));
     }
 
-    private void withElement(final Consumer<org.openqa.selenium.WebElement> function) {
-        function.accept(getElement());
+    private void withElement(final TriWebConsumer function) {
+        function.accept(getElement(), getDriver(), internalSession.getLogger());
     }
 
     private org.openqa.selenium.WebElement getElement() {
-        return webElementSupplier.apply(getDriver());
+        return webElementSupplier.apply(getDriver().getRemoteWebDriver());
     }
 
-    private RemoteWebDriver getDriver() {
-        if (!rawWebDriver.hasPageBeenChecked()) {
+    private RawWebDriver getDriver() {
+        if (!internalSession.getRawWebDriver().hasPageBeenChecked()) {
             throw new MelinoeException("Please check page before interacting with it");
         }
 
-        return rawWebDriver.getRemoteWebDriver();
+        return internalSession.getRawWebDriver();
     }
 
     @Override
     public void click() {
-        withElement(webElement -> {
+        withElement((webElement, rawWebDriver, logger) -> {
             File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
             logger.add()
                     .withMessage("Clicking link")
@@ -65,7 +61,7 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void submit() {
-        withElement(webElement -> {
+        withElement((webElement, rawWebDriver, logger) -> {
             File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
             logger.add()
                     .withMessage("Submitted element")
@@ -76,7 +72,7 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void sendKeys(final String keysToSend) {
-        withElement(webElement -> {
+        withElement((webElement, rawWebDriver, logger) -> {
             File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
             logger.add()
                     .withMessage(String.format("Entering text '%s' into element",
@@ -88,7 +84,7 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void clear() {
-        withElement(webElement -> {
+        withElement((webElement, rawWebDriver, logger) -> {
             File file = rawWebDriver.getScreenshotTaker().takeScreenshot(webElement);
             logger.add()
                     .withMessage("Calling clear on element")
@@ -124,20 +120,18 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public List<WebElement> findElements(final By by) {
-        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(rawWebDriver.getRemoteWebDriver());
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(getDriver().getRemoteWebDriver());
 
-        return new WebElementListImpl(logger,
-                rawWebDriver,
+        return new WebElementListImpl(internalSession,
                 remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(seleniumWebElement));
     }
 
     @Override
     public Optional<WebElement> findElement(final By by) {
-        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(rawWebDriver.getRemoteWebDriver());
+        org.openqa.selenium.WebElement seleniumWebElement = this.webElementSupplier.apply(getDriver().getRemoteWebDriver());
 
         return Optional.of(
-                new WebElementImpl(logger,
-                        rawWebDriver,
+                new WebElementImpl(internalSession,
                         remoteWebDriver -> ConvertMelinoeBy.build(by).findElement(seleniumWebElement)));
     }
 
@@ -164,5 +158,9 @@ public class WebElementImpl implements WebElement {
     @Override
     public String getCssValue(final String propertyName) {
         return null;
+    }
+
+    private interface TriWebConsumer {
+        void accept(org.openqa.selenium.WebElement webElement, RawWebDriver rawWebDriver, Logger logger);
     }
 }

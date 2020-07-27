@@ -16,17 +16,16 @@ import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 
 /**
  * Created on 2/07/2019.
  */
 public class FlowDecorator {
-    private final RawWebDriver rawWebDriver;
-    private final Session session;
+    private final InternalSession internalSession;
 
-    public FlowDecorator(final Session session, final RawWebDriver rawWebDriver) {
-        this.rawWebDriver = rawWebDriver;
-        this.session = session;
+    public FlowDecorator(final InternalSession internalSession) {
+        this.internalSession = internalSession;
     }
 
     @SuppressWarnings("java:S3011")
@@ -101,13 +100,11 @@ public class FlowDecorator {
         } else if (field.isAnnotationPresent(FindElement.class)) {
             Optional<By> findBy = buildByFromShortFindBy(field.getAnnotation(FindElement.class));
             if (WebElement.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementImpl(session.getLogger(),
-                        rawWebDriver,
+                return findBy.map(by -> new WebElementImpl(internalSession,
                         by));
             } else if (List.class.isAssignableFrom(field.getType())) {
-                return findBy.map(by -> new WebElementListImpl(session.getLogger(),
-                        rawWebDriver,
-                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(rawWebDriver.getRemoteWebDriver())));
+                return findBy.map(by -> new WebElementListImpl(internalSession,
+                        remoteWebDriver -> ConvertMelinoeBy.build(by).findElements(remoteWebDriver)));
             }
         }
 
@@ -116,7 +113,7 @@ public class FlowDecorator {
 
     public <T extends BasePage> Optional<Object> buildPage(final Class<T> classType) {
         try {
-            T value = classType.getConstructor(Session.class).newInstance(session);
+            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
             return Optional.of(value);
         } catch (NoSuchMethodException e) {
             return Optional.empty();
@@ -127,7 +124,7 @@ public class FlowDecorator {
 
     public <T extends Flow> Optional<Object> buildFlow(final Class<T> classType) {
         try {
-            T value = classType.getConstructor(Session.class).newInstance(session);
+            T value = classType.getConstructor(Session.class).newInstance(internalSession.getSession());
             return Optional.of(value);
         } catch (NoSuchMethodException e) {
             return Optional.empty();

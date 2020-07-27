@@ -12,8 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.config.Configuration;
-import org.goodiemania.melinoe.framework.session.MetaSession;
-import org.goodiemania.melinoe.framework.session.logging.Logger;
+import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -23,21 +22,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class RawWebDriver {
     private static final String RELOAD_FLAG_VALUE = "reloadFlag";
 
+    private final InternalSession internalSession;
+
     private RemoteWebDriver remoteWebDriver;
     private ScreenshotTaker screenshotTaker;
     private WebDriverWait webDriverWait;
     private LocalStorage localStorage;
 
     private WebDriverImpl webDriver;
-    private String fileName;
-    private MetaSession metaSession;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
-    public RawWebDriver(final MetaSession metaSession, final Logger logger, final String fileName) {
-        this.metaSession = metaSession;
-        this.webDriver = new WebDriverImpl(logger, this);
-        this.fileName = fileName;
+    public RawWebDriver(final InternalSession internalSession) {
+        this.internalSession = internalSession;
+        this.webDriver = new WebDriverImpl(internalSession);
     }
 
     public RemoteWebDriver getRemoteWebDriver() {
@@ -61,17 +59,19 @@ public class RawWebDriver {
     }
 
     public boolean hasPageBeenChecked() {
-        if (localStorage == null) {
-            System.out.println(fileName);
+        if (remoteWebDriver == null) {
+            generate();
         }
+
         return StringUtils.equals(localStorage.get(reloadFlag), RELOAD_FLAG_VALUE);
     }
 
     public void markPageChecked() {
-        reloadFlag = UUID.randomUUID().toString();
-        if (localStorage == null) {
-            System.out.println(fileName);
+        if (remoteWebDriver == null) {
+            generate();
         }
+
+        reloadFlag = UUID.randomUUID().toString();
         localStorage.put(reloadFlag, RELOAD_FLAG_VALUE);
     }
 
@@ -93,11 +93,11 @@ public class RawWebDriver {
         this.remoteWebDriver = new FirefoxDriver(options);
         this.remoteWebDriver.manage().window().maximize();
 
-        screenshotTaker = new ScreenshotTaker(metaSession, this);
+        screenshotTaker = new ScreenshotTaker(internalSession);
         webDriverWait = new WebDriverWait(remoteWebDriver, Duration.ofSeconds(60));
         localStorage = new LocalStorage(this);
 
-        metaSession.addDriver(webDriver);
+        internalSession.getMetaSession().addDriver(webDriver);
     }
 
     private static String waitForDriverExtraction(final String driverLocation) {
@@ -133,7 +133,7 @@ public class RawWebDriver {
         if (remoteWebDriver != null) {
             if (!hasPageBeenChecked()) {
                 remoteWebDriver.quit();
-                throw new MelinoeException("You must check your page before you close the Web Driver (" + fileName + ")");
+                throw new MelinoeException("You must check your page before you close the Web Driver");
             }
             remoteWebDriver.quit();
             remoteWebDriver = null;

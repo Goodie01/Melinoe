@@ -1,8 +1,6 @@
 package org.goodiemania.melinoe.framework.session;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Method;
-import java.net.http.HttpClient;
 import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.drivers.rest.HttpRequestExecutor;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
@@ -23,7 +21,7 @@ public class InternalSessionClassImpl implements InternalSession {
         this.classLogger = classLogger;
 
         this.logger = classLogger.createClassLogger("beforeAll", "Before all");
-        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1a");
+        this.rawWebDriver = new RawWebDriver(this);
         this.httpRequestExecutor = new HttpRequestExecutor(this);
     }
 
@@ -33,29 +31,21 @@ public class InternalSessionClassImpl implements InternalSession {
 
         Logger logger = classLogger.createClassLogger(methodName, displayName);
 
-        RawWebDriver rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 2");
-        HttpRequestExecutor httpRequestExecutor = new HttpRequestExecutor(
-                getHttpClient(),
-                logger,
-                getObjectMapper());
-
         return new InternalSessionImpl(
-                getMetaSession(),
-                getClassLogger(),
-                rawWebDriver,
-                httpRequestExecutor,
+                metaSession,
+                classLogger,
                 logger);
     }
 
     public void resetLoggerToAfterAll() {
         this.logger = classLogger.createClassLogger("afterAll", "After all");
-        this.rawWebDriver = new RawWebDriver(metaSession, logger, "internal class session 1b");
+        this.rawWebDriver = new RawWebDriver(this);
         this.httpRequestExecutor = new HttpRequestExecutor(this);
     }
 
     @Override
     public Session getSession() {
-        return new SessionImpl(this, logger, rawWebDriver, httpRequestExecutor);
+        return new SessionImpl(this);
     }
 
     @Override
@@ -64,17 +54,22 @@ public class InternalSessionClassImpl implements InternalSession {
     }
 
     @Override
-    public ObjectMapper getObjectMapper() {
-        return metaSession.getObjectMapper();
-    }
-
-    @Override
-    public HttpClient getHttpClient() {
-        return metaSession.getHttpClient();
-    }
-
-    @Override
     public ClassLogger getClassLogger() {
         return classLogger;
+    }
+
+    @Override
+    public RawWebDriver getRawWebDriver() {
+        return rawWebDriver;
+    }
+
+    @Override
+    public HttpRequestExecutor getHttpRequestExecutor() {
+        return httpRequestExecutor;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
     }
 }
