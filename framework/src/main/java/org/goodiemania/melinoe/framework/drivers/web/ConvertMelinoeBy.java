@@ -1,6 +1,7 @@
-package org.goodiemania.melinoe.framework.api.web;
+package org.goodiemania.melinoe.framework.drivers.web;
 
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.web.By;
 
 public class ConvertMelinoeBy {
     private ConvertMelinoeBy() {

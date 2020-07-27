@@ -4,10 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
-import org.goodiemania.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.rest.validators.RestValidator;
-import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.junit.jupiter.api.Assertions;
 

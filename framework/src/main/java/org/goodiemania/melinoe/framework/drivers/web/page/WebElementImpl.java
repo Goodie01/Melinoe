@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
+import org.goodiemania.melinoe.framework.api.misc.Dimension;
+import org.goodiemania.melinoe.framework.api.misc.Point;
+import org.goodiemania.melinoe.framework.api.misc.Rectangle;
 import org.goodiemania.melinoe.framework.api.web.By;
-import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
+import org.goodiemania.melinoe.framework.drivers.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementImpl implements WebElement {
@@ -141,23 +141,27 @@ public class WebElementImpl implements WebElement {
     }
 
     @Override
+    public String getCssValue(final String propertyName) {
+        return getElement().getCssValue(propertyName);
+    }
+
+    @Override
     public Point getLocation() {
-        return getElement().getLocation();
+        org.openqa.selenium.Point location = getElement().getLocation();
+        return PointImpl.of(location.x, location.y);
     }
 
     @Override
     public Dimension getSize() {
-        return getElement().getSize();
+        org.openqa.selenium.Dimension size = getElement().getSize();
+
+        return DimensionImpl.of(size.width, size.height);
     }
 
     @Override
     public Rectangle getRect() {
-        return getElement().getRect();
-    }
-
-    @Override
-    public String getCssValue(final String propertyName) {
-        return null;
+        org.openqa.selenium.Rectangle rect = getElement().getRect();
+        return RectangleImpl.of(rect.width, rect.height, rect.x, rect.y);
     }
 
     private interface TriWebConsumer {

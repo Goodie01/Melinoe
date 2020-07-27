@@ -6,7 +6,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.goodiemania.melinoe.framework.session.MetaSession;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import ru.yandex.qatools.ashot.AShot;

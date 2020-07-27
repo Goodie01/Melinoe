@@ -2,9 +2,9 @@ package org.goodiemania.melinoe.framework.api.web;
 
 import java.util.List;
 import java.util.Optional;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.Rectangle;
+import org.goodiemania.melinoe.framework.api.misc.Dimension;
+import org.goodiemania.melinoe.framework.api.misc.Point;
+import org.goodiemania.melinoe.framework.api.misc.Rectangle;
 
 public interface WebElement {
     void click();

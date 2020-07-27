@@ -1,11 +1,9 @@
 package org.goodiemania.melinoe.framework.session.logging;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class ClassLogger {
     private final File logFile;

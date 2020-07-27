@@ -15,11 +15,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.By;
-import org.goodiemania.melinoe.framework.api.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
-import org.goodiemania.melinoe.framework.drivers.web.RawWebDriver;
+import org.goodiemania.melinoe.framework.drivers.web.ConvertMelinoeBy;
 import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class WebElementListImpl implements List<WebElement> {
