@@ -17,6 +17,7 @@ public abstract class MelinoeTest {
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
+        afterAll = false;
         internalClassSession = metaSession.createSessionFor(extensionContext);
         classType = extensionContext.getTestClass().orElseThrow();
         internalClassSession.getSession().decorateClass(classType);
