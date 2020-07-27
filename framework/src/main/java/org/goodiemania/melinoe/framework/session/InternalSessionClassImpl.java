@@ -29,12 +29,10 @@ public class InternalSessionClassImpl implements InternalSession {
         String methodName = extensionContext.getTestMethod().map(Method::getName).orElse("NO_METHOD_FOUND");
         String displayName = extensionContext.getDisplayName();
 
-        Logger logger = classLogger.createClassLogger(methodName, displayName);
-
         return new InternalSessionImpl(
                 metaSession,
                 classLogger,
-                logger);
+                classLogger.createClassLogger(methodName, displayName));
     }
 
     public void resetLoggerToAfterAll() {

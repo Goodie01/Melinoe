@@ -98,8 +98,6 @@ public class ScreenshotTaker {
                 // if there already is a highlighted element, unhighlight it
                 internalSession.getRawWebDriver().getRemoteWebDriver().executeScript(SCRIPT_UNHIGHLIGHT_ELEMENT, lastElem, boarderId);
             } catch (StaleElementReferenceException ignored) {
-                //TODO
-                // the page got reloaded, the element isn't there
                 throw new MelinoeException("We should never get here", ignored);
             } finally {
                 // element either restored or wasn't valid, nullify in both cases

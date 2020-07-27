@@ -2,6 +2,10 @@ package org.goodiemania.melinoe.framework.session.logging.writer;
 
 @SuppressWarnings("java:S1192")
 public class LogWriterConstants {
+    private LogWriterConstants() {
+        
+    }
+
     public static final String HTML_HEAD = "\n"
             + "<!doctype html>\n"
             + "<html lang=\"en\"><head>\n"

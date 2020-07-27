@@ -18,11 +18,7 @@ import org.goodiemania.melinoe.framework.session.logging.MetaLogger;
 
 public class LogWriter {
     private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static Random random;
-
-    public LogWriter() {
-        random = new Random();
-    }
+    private static Random random = new Random();
 
     public void write(final MetaLogger metaLogger) {
         createCssFile(metaLogger);

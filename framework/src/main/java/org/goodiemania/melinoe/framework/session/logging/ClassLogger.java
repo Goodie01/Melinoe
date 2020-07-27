@@ -48,17 +48,16 @@ public class ClassLogger {
     }
 
     public Logger createClassLogger(final String methodName, final String displayName) {
-        final File logFile = fileManager.createLogFile(className, methodName);
-        Logger logger = new Logger(logFile, false, displayName, packageName, className, methodName);
+        final File newLogFile = fileManager.createLogFile(className, methodName);
+        Logger logger = new Logger(newLogFile, false, displayName, packageName, className, methodName);
         loggers.add(logger);
 
         return logger;
     }
 
     public Logger createSubSessionLogger(final String methodName) {
-        final File logFile = fileManager.createLogFile(className, methodName + "_SubSession_" + UUID.randomUUID().toString());
-
-        Logger logger = new Logger(logFile, true, displayName, packageName, className, methodName);
+        final File newLogFile = fileManager.createLogFile(className, methodName + "_SubSession_" + UUID.randomUUID().toString());
+        Logger logger = new Logger(newLogFile, true, displayName, packageName, className, methodName);
         loggers.add(logger);
 
         return logger;

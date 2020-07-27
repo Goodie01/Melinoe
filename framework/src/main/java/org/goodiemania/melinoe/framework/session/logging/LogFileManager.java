@@ -18,6 +18,7 @@ public class LogFileManager {
     private final File imageDir;
     private final File cssDir;
 
+    @SuppressWarnings("java:S106")
     public LogFileManager() {
         try {
             File baseDir = new File(System.getProperty("logDir", "logs"));

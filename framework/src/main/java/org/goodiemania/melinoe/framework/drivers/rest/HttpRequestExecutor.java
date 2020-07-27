@@ -42,12 +42,12 @@ public class HttpRequestExecutor {
                     .withHiddenInfo(stringHttpResponse.body());
 
 
-            return new RestResponse(session.getSession().getLogger(), session.getMetaSession().getObjectMapper(), stringHttpResponse);
+            return new RestResponse(session, stringHttpResponse);
         } catch (IOException e) {
-            return new RestResponse(session.getSession().getLogger(), session.getMetaSession().getObjectMapper(), e);
+            return new RestResponse(session, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return new RestResponse(session.getSession().getLogger(), session.getMetaSession().getObjectMapper(), e);
+            return new RestResponse(session, e);
         }
     }
 }

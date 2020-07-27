@@ -10,8 +10,7 @@ public interface WebValidator {
     /**
      * Attempts to validate the current web page state
      *
-     * @param context   current context for this test
-     * @param webDriver private driver from within the context itself
+     * @param webDriver Web driver, with which to make calls to determine validation status
      * @return validation result, indicating if it succeeded or not, and any associated error messages
      */
     ValidationResult validate(final WebDriver webDriver);
