@@ -3,7 +3,7 @@ package org.goodiemania.melinoe.framework.session.logging.writer;
 @SuppressWarnings("java:S1192")
 public class LogWriterConstants {
     private LogWriterConstants() {
-        
+        //no-op private constructor
     }
 
     public static final String HTML_HEAD = "\n"
