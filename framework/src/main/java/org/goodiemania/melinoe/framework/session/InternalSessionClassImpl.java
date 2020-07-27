@@ -41,14 +41,15 @@ public class InternalSessionClassImpl implements InternalSession {
         this.httpRequestExecutor = new HttpRequestExecutor(this);
     }
 
-    @Override
-    public Session getSession() {
-        return new SessionImpl(this);
-    }
 
     @Override
     public MetaSession getMetaSession() {
         return metaSession;
+    }
+
+    @Override
+    public Session getSession() {
+        return new SessionImpl(this);
     }
 
     @Override
