@@ -17,9 +17,6 @@ public class MetaSession {
 
     private Set<ClosableDriver> drivers = new HashSet<>();
 
-    public MetaSession() {
-    }
-
     public void addDriver(final ClosableDriver driver) {
         drivers.add(driver);
     }
