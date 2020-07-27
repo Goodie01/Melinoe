@@ -54,7 +54,7 @@ public class SessionImpl implements Session {
                 .withMessage(name)
                 .withSubSessionLogger(subSessionLogger);
 
-        final InternalSessionImpl internalSubSession = new InternalSessionImpl(
+        final InternalSession internalSubSession = new InternalSessionImpl(
                 this.internalSession.getMetaSession(),
                 this.internalSession.getClassLogger(),
                 subSessionLogger
