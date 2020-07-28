@@ -14,10 +14,11 @@ public class MetaSession {
     private final MetaLogger metaLogger = new MetaLogger();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder().build();
+    private final LogWriter logWriter = new LogWriter();
 
     private Set<ClosableDriver> drivers = new HashSet<>();
 
-    public void addDriver(final ClosableDriver driver) {
+    public synchronized void addDriver(final ClosableDriver driver) {
         drivers.add(driver);
     }
 
@@ -30,13 +31,15 @@ public class MetaSession {
     }
 
     public void writeLogs() {
-        new LogWriter().write(metaLogger);
+        logWriter.write(metaLogger);
     }
 
     public void endSession() {
-        Set<ClosableDriver> soonToBeClosedDrivers = drivers;
-        drivers = new HashSet<>();
-        soonToBeClosedDrivers.forEach(ClosableDriver::close);
+        synchronized (this) {
+            Set<ClosableDriver> soonToBeClosedDrivers = drivers;
+            drivers = new HashSet<>();
+            soonToBeClosedDrivers.forEach(ClosableDriver::close);
+        }
     }
 
     public ObjectMapper getObjectMapper() {
