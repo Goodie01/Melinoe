@@ -3,9 +3,11 @@ package org.goodiemania.melinoe.framework.session;
 import java.net.URI;
 import java.util.List;
 import org.goodiemania.melinoe.framework.api.Session;
+import org.goodiemania.melinoe.framework.api.hecate.HecateDriver;
 import org.goodiemania.melinoe.framework.api.rest.RestRequest;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.decorator.FlowDecorator;
+import org.goodiemania.melinoe.framework.drivers.hecate.HecateDriverImpl;
 import org.goodiemania.melinoe.framework.drivers.rest.RestRequestImpl;
 import org.goodiemania.melinoe.framework.session.logging.Logger;
 import org.goodiemania.melinoe.framework.validators.Validator;
@@ -32,6 +34,11 @@ public class SessionImpl implements Session {
     @Override
     public WebDriver web() {
         return internalSession.getRawWebDriver().getWebDriver();
+    }
+
+    @Override
+    public HecateDriver hecate(final String uri) {
+        return new HecateDriverImpl(internalSession, uri);
     }
 
     @Override

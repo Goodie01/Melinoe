@@ -19,7 +19,6 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
     <dependencies>
-
         <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
         <dependency>
             <groupId>org.junit.platform</groupId>
@@ -68,7 +67,20 @@
             <artifactId>ashot</artifactId>
             <version>1.5.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.goodiemania.hecate</groupId>
+            <artifactId>api</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Hecate Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/Goodie01/Hecate</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
