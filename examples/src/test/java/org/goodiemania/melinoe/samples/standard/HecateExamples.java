@@ -9,7 +9,7 @@ public class HecateExamples extends MelinoeTest {
     @Test
     @DisplayName("Hecate example")
     void test() {
-        final HecateListenerDriver bobbyDropTables = getSession().hecate("http://localhost:8443/")
+        final HecateListenerDriver bobbyDropTables = getSession().hecate("http://localhost:1234")
                 .createForListener("bobbyDropTables");
     }
 }
