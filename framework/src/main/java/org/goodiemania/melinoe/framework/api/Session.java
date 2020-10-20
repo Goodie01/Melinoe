@@ -16,7 +16,7 @@ public interface Session {
 
     WebDriver web();
 
-    HecateDriver hecate(final String uri);
+    HecateDriver hecate(final String uri, final int port);
 
     Logger getLogger();
 

@@ -37,8 +37,8 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public HecateDriver hecate(final String uri) {
-        return new HecateDriverImpl(internalSession, uri);
+    public HecateDriver hecate(final String host, final int adminPort) {
+        return new HecateDriverImpl(internalSession, host, adminPort);
     }
 
     @Override
