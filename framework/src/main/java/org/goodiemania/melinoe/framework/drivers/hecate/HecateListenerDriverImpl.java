@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.goodiemania.hecate.api.HecateApi;
 import org.goodiemania.hecate.confuration.ListenerConfiguration;
-import org.goodiemania.hecate.confuration.Rule;
 import org.goodiemania.hecate.logs.Log;
 import org.goodiemania.melinoe.framework.api.hecate.HecateListenerDriver;
 import org.goodiemania.melinoe.framework.api.hecate.validators.HecateLogListValidator;
