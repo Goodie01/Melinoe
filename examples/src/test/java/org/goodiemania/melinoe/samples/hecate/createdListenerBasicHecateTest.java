@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.samples.standard;
+package org.goodiemania.melinoe.samples.hecate;
 
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/*
+This set of tests require a running Hecate instance
+ */
 public class createdListenerBasicHecateTest extends MelinoeTest {
 
     private String hecateHost;

@@ -22,12 +22,6 @@ public class HecateListenerDriverImpl implements HecateListenerDriver {
         hecateApi.deleteListener(listenerConfiguration.getId());
     }
 
-    public void addRules() {
-        final Rule rule = new Rule();
-
-        hecateApi.writeRule(listenerConfiguration.getId(), rule);
-    }
-
     public HecateListenerDriverImpl(final InternalSession internalSession,
                                     final HecateApi hecateApi,
                                     final ListenerConfiguration listenerConfiguration) {
