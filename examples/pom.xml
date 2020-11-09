@@ -26,6 +26,13 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Hecate Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/Goodie01/Melinoe</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
