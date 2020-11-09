@@ -29,7 +29,7 @@ public class WebElementContains implements WebValidator {
                     "actual text: " + possibleElementText.get(),
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getType());
         } else {
-            return ValidationResult.passed("Could not find expected text: " + searchText,
+            return ValidationResult.failed("Could not find expected text: " + searchText,
                     "actual text: " + possibleElementText.get(),
                     "element search by: " + elementFinder.getType() + " " + elementFinder.getText());
         }
