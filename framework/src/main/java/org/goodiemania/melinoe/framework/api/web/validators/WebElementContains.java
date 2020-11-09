@@ -23,11 +23,11 @@ public class WebElementContains implements WebValidator {
 
         if (possibleElementText.isEmpty()) {
             return ValidationResult.failed("Could not find element",
-                    "element search by: " + elementFinder.getType() + ":" + elementFinder.getType());
+                    "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
         } else if (StringUtils.contains(possibleElementText.get(), searchText)) {
             return ValidationResult.passed("Found expected text: " + searchText,
                     "actual text: " + possibleElementText.get(),
-                    "element search by: " + elementFinder.getType() + ":" + elementFinder.getType());
+                    "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
         } else {
             return ValidationResult.failed("Could not find expected text: " + searchText,
                     "actual text: " + possibleElementText.get(),
