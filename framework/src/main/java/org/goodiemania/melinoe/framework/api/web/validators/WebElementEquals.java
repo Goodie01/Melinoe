@@ -1,11 +1,9 @@
 package org.goodiemania.melinoe.framework.api.web.validators;
 
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.ValidationResult;
 import org.goodiemania.melinoe.framework.api.web.By;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
-import org.goodiemania.melinoe.framework.api.web.WebElement;
 
 public class WebElementEquals implements WebValidator {
     private final By elementFinder;
@@ -18,18 +16,17 @@ public class WebElementEquals implements WebValidator {
 
     @Override
     public ValidationResult validate(final WebDriver webDriver) {
-        final Optional<String> possibleElementText = webDriver.findElement(elementFinder)
-                .map(WebElement::getText);
+        final String possibleElementText = webDriver.findElement(elementFinder).getText();
 
         if (possibleElementText.isEmpty()) {
             return ValidationResult.failed("Could not find element",
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
-        } else if (StringUtils.equals(possibleElementText.get(), searchText)) {
+        } else if (StringUtils.equals(possibleElementText, searchText)) {
             return ValidationResult.passed("Found expected text: " + searchText,
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
         } else {
             return ValidationResult.failed("Could not find expected text: " + searchText,
-                    "actual text: " + possibleElementText.get(),
+                    "actual text: " + possibleElementText,
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
         }
     }

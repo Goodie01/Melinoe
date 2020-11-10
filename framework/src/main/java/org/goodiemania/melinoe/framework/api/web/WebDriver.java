@@ -13,7 +13,7 @@ public interface WebDriver {
 
     void waitFor(Predicate<WebDriver> predicate);
 
-    Optional<WebElement> findElement(By by);
+    WebElement findElement(By by);
 
     List<WebElement> findElements(By by);
 

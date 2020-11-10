@@ -18,19 +18,19 @@ public class WebElementContains implements WebValidator {
 
     @Override
     public ValidationResult validate(final WebDriver webDriver) {
-        final Optional<String> possibleElementText = webDriver.findElement(elementFinder)
-                .map(WebElement::getText);
+        final String possibleElementText = webDriver.findElement(elementFinder)
+                .getText();
 
         if (possibleElementText.isEmpty()) {
             return ValidationResult.failed("Could not find element",
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
-        } else if (StringUtils.contains(possibleElementText.get(), searchText)) {
+        } else if (StringUtils.contains(possibleElementText, searchText)) {
             return ValidationResult.passed("Found expected text: " + searchText,
-                    "actual text: " + possibleElementText.get(),
+                    "actual text: " + possibleElementText,
                     "element search by: " + elementFinder.getType() + ":" + elementFinder.getText());
         } else {
             return ValidationResult.failed("Could not find expected text: " + searchText,
-                    "actual text: " + possibleElementText.get(),
+                    "actual text: " + possibleElementText,
                     "element search by: " + elementFinder.getType() + " " + elementFinder.getText());
         }
     }

@@ -47,8 +47,8 @@ public class WebDriverImpl implements ClosableDriver, WebDriver {
     }
 
     @Override
-    public Optional<WebElement> findElement(final By by) {
-        return Optional.of(new WebElementImpl(internalSession, by));
+    public WebElement findElement(final By by) {
+        return new WebElementImpl(internalSession, by);
     }
 
     @Override
