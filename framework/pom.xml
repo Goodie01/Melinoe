@@ -4,7 +4,7 @@
 
     <groupId>org.goodiemania.melinoe</groupId>
     <artifactId>framework</artifactId>
-    <version>0.1.6-SNAPSHOT</version>
+    <version>0.1.6</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,7 +19,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/Goodie01/Melinoe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>framework-0.1.6</tag>
     </scm>
 
     <distributionManagement>
