@@ -1,6 +1,5 @@
 package org.goodiemania.melinoe.framework.api.web.validators;
 
-import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.ValidationResult;
 import org.goodiemania.melinoe.framework.api.web.By;
@@ -26,7 +25,7 @@ public class WebElementContains implements WebValidator {
 
     @Override
     public ValidationResult validate(final WebDriver webDriver) {
-        if(elementFinder != null) {
+        if (elementFinder != null) {
             final String possibleElementText = webDriver.findElement(elementFinder)
                     .getText();
 
