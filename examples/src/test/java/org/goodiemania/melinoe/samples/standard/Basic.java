@@ -50,6 +50,7 @@ public class Basic extends MelinoeTest {
     @Test
     @DisplayName("Baseline test with a subcontext")
     public void subContextTest() {
+        getSession().web().navigate().to("https://twitter.com");
         final Session subSession = getSession().createSubSession("Ohboi here we go");
         githubRepoPage = new GithubRepoPage(subSession);
         githubRepoPullRequestPage = new GithubRepoPullRequestPage(subSession);

@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
+import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 
-public interface WebDriver {
+public interface WebDriver extends ClosableDriver {
     Navigate navigate();
 
     String getTitle();

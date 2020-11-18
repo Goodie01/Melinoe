@@ -1,7 +1,6 @@
 package org.goodiemania.melinoe.framework.drivers.web;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.goodiemania.melinoe.framework.api.web.By;
@@ -9,14 +8,13 @@ import org.goodiemania.melinoe.framework.api.web.Navigate;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.api.web.WebElement;
 import org.goodiemania.melinoe.framework.api.web.validators.WebValidator;
-import org.goodiemania.melinoe.framework.drivers.ClosableDriver;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementImpl;
 import org.goodiemania.melinoe.framework.drivers.web.page.WebElementListImpl;
 import org.goodiemania.melinoe.framework.session.InternalSession;
 import org.goodiemania.melinoe.framework.validators.Validator;
 import org.openqa.selenium.JavascriptExecutor;
 
-public class WebDriverImpl implements ClosableDriver, WebDriver {
+public class WebDriverImpl implements WebDriver {
     private final InternalSession internalSession;
     private final Navigate navigate;
 

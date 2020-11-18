@@ -12,12 +12,11 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 public abstract class MelinoeTest {
     private static final MetaSession metaSession = new MetaSession();
     private static InternalSessionClassImpl internalClassSession;
-    private static boolean afterAll = false;
+    private static boolean resetClassSessionToAfterAll = false;
     private static Class<?> classType;
 
     @RegisterExtension
     static BeforeAllCallback beforeAllCallback = extensionContext -> {
-        afterAll = false;
         internalClassSession = metaSession.createSessionFor(extensionContext);
         classType = extensionContext.getTestClass().orElseThrow();
         internalClassSession.getSession().decorateClass(classType);
@@ -41,7 +40,7 @@ public abstract class MelinoeTest {
     BeforeEachCallback beforeEachCallback = extensionContext -> {
         internalSession = internalClassSession.createTestSession(extensionContext);
         internalSession.getSession().decorate(this);
-        afterAll = true;
+        resetClassSessionToAfterAll = true;
     };
 
     @RegisterExtension
@@ -55,9 +54,9 @@ public abstract class MelinoeTest {
     };
 
     public static Session getClassSession() {
-        if (afterAll) {
-            afterAll = false;
-            internalClassSession.resetLoggerToAfterAll();
+        if (resetClassSessionToAfterAll) {
+            resetClassSessionToAfterAll = false;
+            internalClassSession.resetToAfterAll();
             internalClassSession.getSession().decorateClass(classType);
         }
         return internalClassSession.getSession();

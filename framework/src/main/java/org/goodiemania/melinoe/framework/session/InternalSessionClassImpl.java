@@ -35,8 +35,12 @@ public class InternalSessionClassImpl implements InternalSession {
                 classLogger.createClassLogger(methodName, displayName));
     }
 
-    public void resetLoggerToAfterAll() {
+    public void resetToAfterAll() {
         this.logger = classLogger.createClassLogger("afterAll", "After all");
+        reset();
+    }
+
+    public void reset() {
         this.rawWebDriver = new RawWebDriver(this);
         this.httpRequestExecutor = new HttpRequestExecutor(this);
     }

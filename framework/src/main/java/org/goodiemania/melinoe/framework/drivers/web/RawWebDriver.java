@@ -12,10 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.melinoe.framework.api.exceptions.MelinoeException;
 import org.goodiemania.melinoe.framework.api.web.WebDriver;
 import org.goodiemania.melinoe.framework.config.Configuration;
+import org.goodiemania.melinoe.framework.drivers.web.browsers.DriverChooser;
+import org.goodiemania.melinoe.framework.drivers.web.browsers.FirefoxHeadless;
 import org.goodiemania.melinoe.framework.session.InternalSession;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -29,7 +28,7 @@ public class RawWebDriver {
     private WebDriverWait webDriverWait;
     private LocalStorage localStorage;
 
-    private WebDriverImpl webDriver;
+    private final WebDriverImpl webDriver;
 
     private String reloadFlag = RELOAD_FLAG_VALUE;
 
@@ -77,20 +76,10 @@ public class RawWebDriver {
 
     private void generate() {
         final String browserChoice = Configuration.BROWSER.get();
-        if (!StringUtils.equalsIgnoreCase(browserChoice, "FIREFOX")) {
-            throw new MelinoeException(
-                    String.format("Invalid browser choice selected, we currently only support 'firefox', '%s' was given", browserChoice)
-            );
-        }
 
-        System.setProperty("webdriver.gecko.driver", waitForDriverExtraction("drivers/geckodriver.exe"));
-        FirefoxOptions options = new FirefoxOptions();
-        options.setLogLevel(FirefoxDriverLogLevel.FATAL);
-        options.setHeadless(true);
+        this.remoteWebDriver = DriverChooser.chooseDriver(browserChoice)
+                .apply(Configuration.BROWSER_EXE_LOCATION.get());
 
-        options.setBinary(Configuration.BROWSER_EXE_LOCATION.get());
-
-        this.remoteWebDriver = new FirefoxDriver(options);
         this.remoteWebDriver.manage().window().maximize();
 
         screenshotTaker = new ScreenshotTaker(internalSession);
@@ -98,35 +87,6 @@ public class RawWebDriver {
         localStorage = new LocalStorage(this);
 
         internalSession.getMetaSession().addDriver(webDriver);
-    }
-
-    private static String waitForDriverExtraction(final String driverLocation) {
-        Optional<String> newDriverLocation;
-        while ((newDriverLocation = attemptToExtractDriver(driverLocation)).isEmpty()) {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                //suggestion from sonar
-                Thread.currentThread().interrupt();
-            }
-        }
-        return newDriverLocation.get();
-    }
-
-    private static Optional<String> attemptToExtractDriver(final String driverLocation) {
-        File targetFile = new File("target/" + driverLocation);
-
-        if (!targetFile.exists()) {
-            InputStream resourceAsStream = WebDriverImpl.class.getClassLoader().getResourceAsStream(driverLocation);
-            Objects.requireNonNull(resourceAsStream);
-            try {
-                FileUtils.copyInputStreamToFile(resourceAsStream, targetFile);
-            } catch (IOException e) {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(targetFile.getAbsolutePath());
     }
 
     public void close() {
