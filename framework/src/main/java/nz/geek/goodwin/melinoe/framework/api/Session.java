@@ -1,8 +1,8 @@
 package nz.geek.goodwin.melinoe.framework.api;
 
+import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.internal.MotherSession;
-import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
 
 /**
  * @author Goodie

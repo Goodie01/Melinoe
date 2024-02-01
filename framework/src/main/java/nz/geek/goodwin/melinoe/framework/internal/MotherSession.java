@@ -1,10 +1,18 @@
 package nz.geek.goodwin.melinoe.framework.internal;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
-import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
+import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
 import org.openqa.selenium.WebDriver;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Goodie
@@ -14,13 +22,19 @@ import org.openqa.selenium.WebDriver;
 public class MotherSession {
     private static MotherSession SESSION;
     private final LogFileManager logFileManager;
-    private final Logger logger;
+    private final LoggerImpl logger;
     private final WebDriverRegister webDriverRegister;
+    private final ObjectMapper objectMapper;
 
     private MotherSession() {
         webDriverRegister = new WebDriverRegister();
         logFileManager = new LogFileManager();
-        logger = new Logger(logFileManager);
+        logger = new LoggerImpl(logFileManager);
+
+        objectMapper = new ObjectMapper()
+                .registerModule(new ParameterNamesModule())
+                .registerModule(new Jdk8Module())
+                .registerModule(new JavaTimeModule());
     }
 
     public static MotherSession getInstance() {
@@ -35,7 +49,12 @@ public class MotherSession {
     }
 
     public void closeAll() {
-        //TODO write log file
-        webDriverRegister.getWebDrivers().forEach(WebDriver::quit);
+        try {
+            objectMapper.writer().writeValue(logFileManager.createRootLogFile(), logger.getLogMessages());
+        } catch (IOException e) {
+            throw new MelinoeException(e);
+        } finally {
+            webDriverRegister.getWebDrivers().forEach(WebDriver::quit);
+        }
     }
 }

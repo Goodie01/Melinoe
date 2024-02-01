@@ -45,7 +45,7 @@ public class LogFileManager {
 
     public File createRootLogFile() {
         try {
-            File indexFile = new File(runDirectory, "index.html");
+            File indexFile = new File(runDirectory, "index.json");
             FileUtils.touch(indexFile);
 
             return indexFile;

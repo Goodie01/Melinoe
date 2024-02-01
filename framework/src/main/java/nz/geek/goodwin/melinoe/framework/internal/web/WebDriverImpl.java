@@ -2,15 +2,14 @@ package nz.geek.goodwin.melinoe.framework.internal.web;
 
 import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.Navigate;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.ValidationResult;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
-import nz.geek.goodwin.melinoe.framework.internal.SessionImpl;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
-import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
 import nz.geek.goodwin.melinoe.framework.internal.web.decorator.FlowDecorator;
 import nz.geek.goodwin.melinoe.framework.internal.web.driver.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -111,6 +110,8 @@ public class WebDriverImpl implements WebDriver {
     @Override
     public void verify(List<WebValidator> validators) {
         logger.add().withMessage("Running supplied validators").withImage(screenshotTaker.takeScreenshot());
+
+        waitFor(webDriver -> remoteWebDriver.executeScript("return document.readyState").equals("complete"));
 
         List<ValidationResult> list = validators.stream()
                 .map(webValidator -> webValidator.validate(this))

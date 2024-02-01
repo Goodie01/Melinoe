@@ -1,8 +1,8 @@
 package nz.geek.goodwin.melinoe.framework.internal.web;
 
+import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
-import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;

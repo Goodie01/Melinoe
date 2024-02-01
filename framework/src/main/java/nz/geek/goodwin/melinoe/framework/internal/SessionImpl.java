@@ -1,9 +1,10 @@
 package nz.geek.goodwin.melinoe.framework.internal;
 
 import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
-import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
+import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
 
