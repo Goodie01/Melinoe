@@ -17,7 +17,7 @@ public class Basic{
 
     @BeforeAll
     public static void init() {
-        session = Session.get();
+        session = Session.create();
         session.log().add()
                 .withMessage("Before all");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
@@ -31,7 +31,7 @@ public class Basic{
 
     @AfterAll
     public static void tearDown() {
-        session = Session.get();
+        session = Session.create();
         session.log()
                 .add()
                 .withMessage("After all");
@@ -42,13 +42,13 @@ public class Basic{
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();
-        Session.close();
+        Session.closeAll();
     }
 
     @Test
     @DisplayName("Baseline test")
     public void run() {
-        session = Session.get();
+        session = Session.create();
         githubRepoPage = new GithubRepoPage(session);
         githubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
 
@@ -61,7 +61,7 @@ public class Basic{
     @Test
     @DisplayName("Baseline test with a subcontext")
     public void subContextTest() {
-        session = Session.get();
+        session = Session.create();
         session.web().navigate().to("https://twitter.com");
         final Session subSession = session.createChildSession("Ohboi here we go");
         githubRepoPage = new GithubRepoPage(subSession);
@@ -76,7 +76,7 @@ public class Basic{
     @Test
     @DisplayName("Baseline test that interacts with a list of elements")
     public void runAgain() {
-        session = Session.get();
+        session = Session.create();
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
 
         githubRepoPage = new GithubRepoPage(session);

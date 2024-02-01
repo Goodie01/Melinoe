@@ -4,6 +4,7 @@ import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
 import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
+import org.openqa.selenium.WebDriver;
 
 /**
  * @author Goodie
@@ -30,13 +31,11 @@ public class MotherSession {
     }
 
     public Session newSession() {
-        return new SessionImpl(logFileManager, logger, webDriverRegister);
+        return new SessionImpl(logFileManager, logger.createSublogger("Test 1"), webDriverRegister);
     }
 
-    public void close() {
-        webDriverRegister.getWebDrivers().forEach(webDriver -> {
-            webDriver.close();
-            webDriver.quit();
-        });
+    public void closeAll() {
+        //TODO write log file
+        webDriverRegister.getWebDrivers().forEach(WebDriver::quit);
     }
 }

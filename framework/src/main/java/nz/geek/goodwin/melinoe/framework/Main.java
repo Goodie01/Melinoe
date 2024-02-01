@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hello there");
 
-        Session session = Session.get();
+        Session session = Session.create();
         WebDriver web = session.web();
         web.navigate().to("https://www.nzx.com/instruments/CEN/dividends");
         web.verify(List.of(webDriver -> {
@@ -22,6 +22,6 @@ public class Main {
             }
         }));
 
-        Session.close();
+        Session.closeAll();
     }
 }

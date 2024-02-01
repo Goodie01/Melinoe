@@ -9,11 +9,11 @@ import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
  *
  */
 public interface Session {
-    static Session get() {
+    static Session create() {
         return MotherSession.getInstance().newSession();
     }
-    static void close() {
-        MotherSession.getInstance().close();
+    static void closeAll() {
+        MotherSession.getInstance().closeAll();
     }
     Session createChildSession(String name);
 

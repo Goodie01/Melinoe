@@ -17,7 +17,6 @@ import java.util.UUID;
 public class LogFileManager {
     private final File runDirectory;
     private final File imageDir;
-    private final File cssDir;
 
     public LogFileManager() {
         try {
@@ -36,10 +35,6 @@ public class LogFileManager {
 
             imageDir = new File(runDirectory, "img");
             FileUtils.forceMkdir(imageDir);
-
-            cssDir = new File(runDirectory, "css");
-            FileUtils.forceMkdir(cssDir);
-
 
             System.out.println("Log URI: file://" + runDirectory.getAbsolutePath() + "/index.html");
 
