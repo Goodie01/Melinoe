@@ -18,6 +18,7 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: 21
+        cache: 'maven'
     - name: Build framework with Maven
       run: mvn -B install --file framework/pom.xml
       env:
