@@ -6,7 +6,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 public class FirefoxDriver {
     public static RemoteWebDriver get(final String browserExeLocation) {
-        System.setProperty("webdriver.gecko.driver", CommonUtils.waitForDriverExtraction("geckodriver.exe"));
+        System.setProperty("webdriver.gecko.driver", CommonUtils.waitForDriverExtraction("drivers/geckodriver.exe"));
         FirefoxOptions options = new FirefoxOptions();
         options.setLogLevel(FirefoxDriverLogLevel.FATAL);
         options.addArguments("-headless");

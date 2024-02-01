@@ -16,7 +16,7 @@ public class GithubRepoPage extends BasePage {
     private List<WebElement> fileList;
 
     public GithubRepoPage(final Session session) {
-        super(session, TitleValidator.equals("GitHub - Goodie01/Melinoe: Melinoe is named for the greek mythological figure who is known as a \"bringer of nightmares and madness\"; which seems apt for a library designed to enable automated testing"));
+        super(session, TitleValidator.equals("GitHub - Goodie01/Melinoe: Melinoe is named for the greek mythological figure who is known as a \"bringer of nightmares and madness\", this seems apt for a automated testing framework"));
     }
 
     public void clickPullRequestLink() {

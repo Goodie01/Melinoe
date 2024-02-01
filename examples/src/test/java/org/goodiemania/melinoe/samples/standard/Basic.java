@@ -21,6 +21,9 @@ public class Basic{
         session.log().add()
                 .withMessage("Before all");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage = new GithubRepoPage(session);
+        staticGithubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();
@@ -33,15 +36,23 @@ public class Basic{
                 .add()
                 .withMessage("After all");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage = new GithubRepoPage(session);
+        staticGithubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();
+        Session.close();
     }
 
     @Test
     @DisplayName("Baseline test")
     public void run() {
-        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        session = Session.get();
+        githubRepoPage = new GithubRepoPage(session);
+        githubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         githubRepoPage.checkPage();
         githubRepoPage.clickPullRequestLink();
         githubRepoPullRequestPage.checkPage();
@@ -50,8 +61,9 @@ public class Basic{
     @Test
     @DisplayName("Baseline test with a subcontext")
     public void subContextTest() {
-        getSession().web().navigate().to("https://twitter.com");
-        final Session subSession = getSession().createSubSession("Ohboi here we go");
+        session = Session.get();
+        session.web().navigate().to("https://twitter.com");
+        final Session subSession = session.createChildSession("Ohboi here we go");
         githubRepoPage = new GithubRepoPage(subSession);
         githubRepoPullRequestPage = new GithubRepoPullRequestPage(subSession);
 
@@ -64,10 +76,15 @@ public class Basic{
     @Test
     @DisplayName("Baseline test that interacts with a list of elements")
     public void runAgain() {
-        getSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        session = Session.get();
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
+
+        githubRepoPage = new GithubRepoPage(session);
+        githubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
         githubRepoPage.checkPage();
         githubRepoPage.getFileTypes()
-                .forEach(s -> getSession().getLogger()
+                .forEach(s -> session.log()
                         .add()
                         .withMessage(s));
     }
