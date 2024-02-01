@@ -1,11 +1,11 @@
 package org.goodiemania.melinoe.samples;
 
-import org.goodiemania.melinoe.framework.api.Session;
-import org.goodiemania.melinoe.framework.api.web.validators.TitleValidator;
-import org.goodiemania.melinoe.framework.api.web.BasePage;
+import nz.geek.goodwin.melinoe.framework.api.web.BasePage;
+import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.web.validation.TitleValidator;
 
 public class GithubRepoPullRequestPage extends BasePage {
     public GithubRepoPullRequestPage(final Session session) {
-        super(session, new TitleValidator("Pull requests · Goodie01/Melinoe · GitHub"));
+        super(session, TitleValidator.equals("Pull requests · Goodie01/Melinoe · GitHub"));
     }
 }

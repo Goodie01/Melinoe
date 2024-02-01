@@ -59,17 +59,6 @@ public class LogFileManager {
         }
     }
 
-    public File createCssFile() {
-        try {
-            File indexFile = new File(cssDir, "main.css");
-            FileUtils.touch(indexFile);
-
-            return indexFile;
-        } catch (final IOException e) {
-            throw new MelinoeException(e);
-        }
-    }
-
     public File createNewImageFile() {
         return new File(imageDir, UUID.randomUUID().toString() + ".png");
     }

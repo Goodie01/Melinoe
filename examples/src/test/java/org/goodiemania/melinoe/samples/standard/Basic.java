@@ -1,7 +1,6 @@
 package org.goodiemania.melinoe.samples.standard;
 
-import org.goodiemania.melinoe.framework.api.MelinoeTest;
-import org.goodiemania.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.Session;
 import org.goodiemania.melinoe.samples.GithubRepoPage;
 import org.goodiemania.melinoe.samples.GithubRepoPullRequestPage;
 import org.junit.jupiter.api.AfterAll;
@@ -9,19 +8,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("Basic examples")
-public class Basic extends MelinoeTest {
+public class Basic{
     private static GithubRepoPage staticGithubRepoPage;
     private static GithubRepoPullRequestPage staticGithubRepoPullRequestPage;
+    private static Session session;
     private GithubRepoPage githubRepoPage;
     private GithubRepoPullRequestPage githubRepoPullRequestPage;
 
     @BeforeAll
     public static void init() {
-        getClassSession().getLogger()
-                .add()
+        session = Session.get();
+        session.log().add()
                 .withMessage("Before all");
-        getClassSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();
@@ -29,10 +28,11 @@ public class Basic extends MelinoeTest {
 
     @AfterAll
     public static void tearDown() {
-        getClassSession().getLogger()
+        session = Session.get();
+        session.log()
                 .add()
                 .withMessage("After all");
-        getClassSession().web().navigate().to("https://github.com/Goodie01/Melinoe");
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();

@@ -29,7 +29,7 @@ public class MotherSession {
         return SESSION;
     }
 
-    public Session get() {
+    public Session newSession() {
         return new SessionImpl(logFileManager, logger, webDriverRegister);
     }
 

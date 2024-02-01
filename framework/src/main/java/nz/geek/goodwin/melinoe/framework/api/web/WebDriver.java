@@ -10,6 +10,10 @@ import java.util.function.Predicate;
  * @author Goodie
  */
 public interface WebDriver {
+    void decorate(Object object);
+
+    void decorateClass(Class<?> classType);
+
     Navigate navigate();
 
     String getTitle();

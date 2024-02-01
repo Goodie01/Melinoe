@@ -2,14 +2,14 @@ package nz.geek.goodwin.melinoe.framework.internal.log;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class LogMessage {
     private final LocalDateTime dateTime;
-    private String message = "";
-    private Throwable throwable = null;
-    private boolean fail = false;
+    private String message;
+    private Throwable throwable;
     private File image;
-    private Logger subSessionLogger;
+    private List<LogMessage> subSessionMessages;
     private boolean success = true;
 
     public LogMessage(final LocalDateTime dateTime) {
@@ -22,10 +22,6 @@ public class LogMessage {
 
     public String getMessage() {
         return message;
-    }
-
-    public boolean getFail() {
-        return fail;
     }
 
     public File getImage() {
@@ -41,11 +37,6 @@ public class LogMessage {
         return this;
     }
 
-    public LogMessage fail() {
-        this.fail = true;
-        return this;
-    }
-
     public LogMessage withThrowable(final Throwable throwable) {
         this.throwable = throwable;
         return this;
@@ -56,12 +47,12 @@ public class LogMessage {
         return this;
     }
 
-    public Logger getSubSessionLogger() {
-        return subSessionLogger;
+    protected List<LogMessage> getSubSessionMessages() {
+        return subSessionMessages;
     }
 
-    public LogMessage withSubSessionLogger(final Logger subSessionLogger) {
-        this.subSessionLogger = subSessionLogger;
+    protected LogMessage withSubSessionMessages(final List<LogMessage> subSessionLogger) {
+        this.subSessionMessages = subSessionLogger;
         return this;
     }
 

@@ -1,14 +1,17 @@
 package nz.geek.goodwin.melinoe.framework.internal.web;
 
 import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
+import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.Navigate;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.ValidationResult;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
+import nz.geek.goodwin.melinoe.framework.internal.SessionImpl;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
 import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
+import nz.geek.goodwin.melinoe.framework.internal.web.decorator.FlowDecorator;
 import nz.geek.goodwin.melinoe.framework.internal.web.driver.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -26,12 +29,26 @@ public class WebDriverImpl implements WebDriver {
     private final RemoteWebDriver remoteWebDriver;
     private final ScreenshotTaker screenshotTaker;
     private final Logger logger;
+    private final FlowDecorator flowDecorator;
 
-    public WebDriverImpl(LogFileManager logFileManager, Logger logger, WebDriverRegister webDriverRegister) {
+    public WebDriverImpl(Session session, LogFileManager logFileManager, Logger logger, WebDriverRegister webDriverRegister) {
         this.logger = logger;
+
         this.remoteWebDriver = FirefoxDriver.get("C:\\Program Files\\Firefox Nightly\\firefox.exe");
-        this.screenshotTaker = new ScreenshotTaker(remoteWebDriver, logFileManager);
         webDriverRegister.add(this.remoteWebDriver);
+
+        this.screenshotTaker = new ScreenshotTaker(remoteWebDriver, logFileManager);
+        this.flowDecorator = new FlowDecorator(session);
+    }
+
+    @Override
+    public void decorate(final Object object) {
+        this.flowDecorator.decorate(object);
+    }
+
+    @Override
+    public void decorateClass(final Class<?> classType) {
+        this.flowDecorator.decorateClass(classType);
     }
 
     @Override
@@ -46,6 +63,9 @@ public class WebDriverImpl implements WebDriver {
 
     public void takeScreenshot() {
         logger.add().withMessage("Screenshot").withImage(screenshotTaker.takeScreenshot());
+    }
+    public void takeScreenshot(final String logMessage) {
+        logger.add().withMessage(logMessage).withImage(screenshotTaker.takeScreenshot());
     }
 
     @Override

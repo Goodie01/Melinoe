@@ -14,6 +14,7 @@ public class SessionImpl implements Session {
     private final LogFileManager logFileManager;
     private final Logger logger;
     private final WebDriverRegister webDriverRegister;
+    private WebDriverImpl webDriver;
 
     public SessionImpl(LogFileManager logFileManager, Logger logger, WebDriverRegister webDriverRegister) {
         this.logFileManager = logFileManager;
@@ -23,12 +24,15 @@ public class SessionImpl implements Session {
 
     @Override
     public Session createChildSession(String name) {
-        return this;
+        return new SessionImpl(logFileManager, logger.createSublogger(name), webDriverRegister);
     }
 
     @Override
     public WebDriver web() {
-        return new WebDriverImpl(logFileManager, logger, webDriverRegister);
+        if(webDriver == null) {
+            webDriver = new WebDriverImpl(this, logFileManager, logger, webDriverRegister);
+        }
+        return webDriver;
     }
 
     @Override

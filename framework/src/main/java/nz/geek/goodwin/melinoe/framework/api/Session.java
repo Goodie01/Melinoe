@@ -10,7 +10,7 @@ import nz.geek.goodwin.melinoe.framework.internal.log.Logger;
  */
 public interface Session {
     static Session get() {
-        return MotherSession.getInstance().get();
+        return MotherSession.getInstance().newSession();
     }
     static void close() {
         MotherSession.getInstance().close();

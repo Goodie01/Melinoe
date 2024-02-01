@@ -1,23 +1,38 @@
 package nz.geek.goodwin.melinoe.framework.api.web.validation;
 
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
+import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.function.ToBooleanBiFunction;
+
+import java.util.function.BiFunction;
 
 /**
  * Created on 28/06/2019.
  */
 public class TitleValidator implements WebValidator {
     private final String expectedTitle;
+    private final ToBooleanBiFunction<String, String> comparisonType;
 
-    public TitleValidator(final String expectedTitle) {
+    private TitleValidator(final String expectedTitle, ToBooleanBiFunction<String, String> comparisonType) {
         this.expectedTitle = expectedTitle;
+        this.comparisonType = comparisonType;
+    }
+
+    public static TitleValidator contains(final String searchText) {
+        return new TitleValidator(searchText, StringUtils::contains);
+    }
+
+    public static TitleValidator equals(final String searchText) {
+        return new TitleValidator( searchText, StringUtils::equals);
     }
 
     @Override
     public ValidationResult validate(final WebDriver webDriver) {
         String actualTitle = webDriver.getTitle();
-        if (StringUtils.equals(actualTitle, expectedTitle)) {
-            return ValidationResult.passed("Found expected title: " + expectedTitle);
+        if (comparisonType.applyAsBoolean(actualTitle, expectedTitle)) {
+            return ValidationResult.passed("",
+                    "Found expected title: " + expectedTitle);
         } else {
             return ValidationResult.failed("Title is not as expected",
                     String.format("Expected title: %s", expectedTitle),
