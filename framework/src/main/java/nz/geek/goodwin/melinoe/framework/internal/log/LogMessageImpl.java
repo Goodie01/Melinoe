@@ -10,7 +10,7 @@ public class LogMessageImpl implements LogMessage {
     private final LocalDateTime dateTime;
     private String message;
     private Throwable throwable;
-    private File image;
+    private String image;
     private List<LogMessage> subSessionMessages;
     private boolean success = true;
 
@@ -29,7 +29,7 @@ public class LogMessageImpl implements LogMessage {
     }
 
     @Override
-    public File getImage() {
+    public String getImage() {
         return image;
     }
 
@@ -51,7 +51,7 @@ public class LogMessageImpl implements LogMessage {
     }
 
     @Override
-    public LogMessage withImage(final File image) {
+    public LogMessage withImage(final String image) {
         this.image = image;
         return this;
     }

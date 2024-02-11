@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+
 public class Basic{
     private static GithubRepoPage staticGithubRepoPage;
     private static GithubRepoPullRequestPage staticGithubRepoPullRequestPage;

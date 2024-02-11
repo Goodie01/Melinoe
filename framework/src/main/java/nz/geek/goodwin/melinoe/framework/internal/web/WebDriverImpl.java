@@ -27,10 +27,12 @@ public class WebDriverImpl implements WebDriver {
 
     private final RemoteWebDriver remoteWebDriver;
     private final ScreenshotTaker screenshotTaker;
+    private final LogFileManager logFileManager;
     private final Logger logger;
     private final FlowDecorator flowDecorator;
 
     public WebDriverImpl(Session session, LogFileManager logFileManager, Logger logger, WebDriverRegister webDriverRegister) {
+        this.logFileManager = logFileManager;
         this.logger = logger;
 
         this.remoteWebDriver = FirefoxDriver.get("C:\\Program Files\\Firefox Nightly\\firefox.exe");
@@ -61,6 +63,7 @@ public class WebDriverImpl implements WebDriver {
     }
 
     public void takeScreenshot() {
+        logFileManager.getLogFile();
         logger.add().withMessage("Screenshot").withImage(screenshotTaker.takeScreenshot());
     }
     public void takeScreenshot(final String logMessage) {

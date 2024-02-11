@@ -3,6 +3,8 @@ package nz.geek.goodwin.melinoe.framework.internal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.Session;
@@ -11,8 +13,9 @@ import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
 import org.openqa.selenium.WebDriver;
 
-import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author Goodie
@@ -31,10 +34,19 @@ public class MotherSession {
         logFileManager = new LogFileManager();
         logger = new LoggerImpl(logFileManager);
 
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+        LocalDateTimeDeserializer dateTimeDeserializer = new LocalDateTimeDeserializer(formatter);
+        LocalDateTimeSerializer dateTimeSerializer = new LocalDateTimeSerializer(formatter);
+
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addDeserializer(LocalDateTime.class, dateTimeDeserializer);
+        javaTimeModule.addSerializer(LocalDateTime.class, dateTimeSerializer);
+
         objectMapper = new ObjectMapper()
                 .registerModule(new ParameterNamesModule())
                 .registerModule(new Jdk8Module())
-                .registerModule(new JavaTimeModule());
+                .registerModule(javaTimeModule);
     }
 
     public static MotherSession getInstance() {
@@ -50,7 +62,7 @@ public class MotherSession {
 
     public void closeAll() {
         try {
-            objectMapper.writer().writeValue(logFileManager.createRootLogFile(), logger.getLogMessages());
+            objectMapper.writer().writeValue(logFileManager.getLogFile(), logger.getLogMessages());
         } catch (IOException e) {
             throw new MelinoeException(e);
         } finally {

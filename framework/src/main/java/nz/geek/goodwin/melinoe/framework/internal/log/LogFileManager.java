@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -17,6 +16,7 @@ import java.util.UUID;
 public class LogFileManager {
     private final File runDirectory;
     private final File imageDir;
+    private final File logFile;
 
     public LogFileManager() {
         try {
@@ -36,45 +36,23 @@ public class LogFileManager {
             imageDir = new File(runDirectory, "img");
             FileUtils.forceMkdir(imageDir);
 
-            System.out.println("Log URI: file://" + runDirectory.getAbsolutePath() + "/index.html");
+            logFile = new File(runDirectory, "log.json");
+            FileUtils.touch(logFile);
+
+            System.out.println("Log URI: file://" + logFile.getAbsolutePath());
 
         } catch (IOException e) {
             throw new MelinoeException(e);
         }
     }
 
-    public File createRootLogFile() {
-        try {
-            File indexFile = new File(runDirectory, "index.json");
-            FileUtils.touch(indexFile);
-
-            return indexFile;
-        } catch (final IOException e) {
-            throw new MelinoeException(e);
-        }
+    public File getLogFile() {
+        return logFile;
     }
+
+    public File getRunDirectory() { return runDirectory; }
 
     public File createNewImageFile() {
         return new File(imageDir, UUID.randomUUID().toString() + ".png");
-    }
-
-    public File createLogFile(final String className) {
-        return createLogFile(className, "index");
-    }
-
-    public File createLogFile(final String className, final String methodName) {
-        try {
-            final File testDirectory = new File(runDirectory, className);
-            FileUtils.forceMkdir(runDirectory);
-            File indexFile = new File(testDirectory, methodName + ".html");
-            FileUtils.touch(indexFile);
-
-            PrintWriter pw = new PrintWriter(indexFile);
-            pw.close();
-
-            return indexFile;
-        } catch (final IOException e) {
-            throw new MelinoeException(e);
-        }
     }
 }

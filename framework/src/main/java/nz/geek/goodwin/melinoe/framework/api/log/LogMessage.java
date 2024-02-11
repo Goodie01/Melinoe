@@ -12,7 +12,7 @@ public interface LogMessage {
 
     String getMessage();
 
-    File getImage();
+    String getImage();
 
     Throwable getThrowable();
 
@@ -20,7 +20,7 @@ public interface LogMessage {
 
     LogMessage withThrowable(Throwable throwable);
 
-    LogMessage withImage(File image);
+    LogMessage withImage(String image);
 
     List<LogMessage> getSubSessionMessages();
 

@@ -48,7 +48,7 @@ public class WebElementImpl implements WebElement {
     }
     private void loggedActionWithElement(final String text, final Consumer<org.openqa.selenium.WebElement> function) {
         withElement(webElement -> {
-            File file = screenshotTaker.takeScreenshot(webElement);
+            String file = screenshotTaker.takeScreenshot(webElement);
             logger.add().withMessage(text).withImage(file);
             function.accept(webElement);
         });

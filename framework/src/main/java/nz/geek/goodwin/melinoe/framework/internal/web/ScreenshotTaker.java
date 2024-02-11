@@ -68,7 +68,7 @@ public class ScreenshotTaker {
         this.logFileManager = logFileManager;
     }
 
-    public File takeScreenshot() {
+    public String takeScreenshot() {
         Screenshot screenshot = new AShot()
                 .shootingStrategy(ShootingStrategies.viewportPasting(100))
                 .takeScreenshot(remoteWebDriver);
@@ -78,15 +78,17 @@ public class ScreenshotTaker {
 
         try {
             ImageIO.write(originalImage, "png", imageFile);
-            return imageFile;
+
+
+            return logFileManager.getRunDirectory().toPath().relativize(imageFile.toPath()).toString();
         } catch (IOException e) {
             throw new MelinoeException("Unable to write image", e);
         }
     }
 
-    public File takeScreenshot(final WebElement element) {
+    public String takeScreenshot(final WebElement element) {
         String boarderId = highlightElement(element);
-        File file = takeScreenshot();
+        String file = takeScreenshot();
         unhighlightLast(boarderId);
         return file;
     }
