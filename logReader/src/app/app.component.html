@@ -13,23 +13,24 @@
         <tbody>
         <ng-container *ngFor="let message of displayedMessage; index as i">
           <tr>
-            <th>{{ message.dateTime }}</th>
+            <th class="align-top">{{ message.dateTime }}</th>
             <ng-container *ngIf="message.subSessionMessages != undefined">
               <td (click)="browseMessages(i)">
                 {{ message.message }}
               </td>
             </ng-container>
             <ng-container *ngIf="message.subSessionMessages == undefined">
-              <td>
+              <td class="align-top">
                 {{ message.message }}
               </td>
             </ng-container>
-            <td>Quality Control Specialist</td>
-          </tr>
-          <tr *ngIf="message.image != undefined">
-            <th></th>
-            <td><img src="assets/{{message.image}}"/></td>
-            <td></td>
+            <td class="align-top">
+              <ng-container *ngIf="message.image != undefined">
+                <a target="#" href="assets/{{message.image}}">
+                  <img class="w-60" src="assets/{{message.image}}"/>
+                </a>
+              </ng-container>
+            </td>
           </tr>
         </ng-container>
         </tbody>

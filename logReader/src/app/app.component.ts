@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
         } else {
           this.paramaters = []
         }
-        
+
         this.loadDisplayedMessages()
       })
   };
