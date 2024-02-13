@@ -11,9 +11,15 @@ import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
 import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
+import nz.geek.goodwin.melinoe.framework.internal.web.driver.CommonUtils;
+import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.WebDriver;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -24,15 +30,15 @@ import java.time.format.DateTimeFormatter;
  */
 public class MotherSession {
     private static MotherSession SESSION;
-    private final LogFileManager logFileManager;
+    private final LogFileManager fileManager;
     private final LoggerImpl logger;
     private final WebDriverRegister webDriverRegister;
     private final ObjectMapper objectMapper;
 
     private MotherSession() {
         webDriverRegister = new WebDriverRegister();
-        logFileManager = new LogFileManager();
-        logger = new LoggerImpl(logFileManager);
+        fileManager = new LogFileManager();
+        logger = new LoggerImpl(fileManager);
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
@@ -57,16 +63,36 @@ public class MotherSession {
     }
 
     public Session newSession() {
-        return new SessionImpl(logFileManager, logger.createSublogger("Test 1"), webDriverRegister);
+        return new SessionImpl(fileManager, logger.createSublogger("Test 1"), webDriverRegister);
     }
 
     public void closeAll() {
         try {
-            objectMapper.writer().writeValue(logFileManager.getLogFile(), logger.getLogMessages());
+            String jsonOutput = objectMapper.writer().writeValueAsString(logger.getLogMessages());
+            writeLogJsonFile(jsonOutput);
+            writeLogHtmlFile(jsonOutput);
         } catch (IOException e) {
             throw new MelinoeException(e);
         } finally {
             webDriverRegister.getWebDrivers().forEach(WebDriver::quit);
         }
     }
+
+    private void writeLogJsonFile(final String logJson) throws FileNotFoundException {
+        try (PrintWriter out = new PrintWriter(fileManager.getLogFile())) {
+            out.println(logJson);
+        }
+    }
+
+    private void writeLogHtmlFile(final String logJson) throws IOException {
+        try (PrintWriter out = new PrintWriter(fileManager.getLogHtmlFile())) {
+            InputStream resourceAsStream = MotherSession.class.getClassLoader().getResourceAsStream("html/logsTest.html");
+            String htmlOutput = IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8);
+
+            htmlOutput = htmlOutput.replace("let log = []","let log =" + logJson);
+
+            out.print(htmlOutput);
+        }
+    }
+
 }

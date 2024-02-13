@@ -17,6 +17,7 @@ public class LogFileManager {
     private final File runDirectory;
     private final File imageDir;
     private final File logFile;
+    private final File logHtmlFile;
 
     public LogFileManager() {
         try {
@@ -39,7 +40,10 @@ public class LogFileManager {
             logFile = new File(runDirectory, "log.json");
             FileUtils.touch(logFile);
 
-            System.out.println("Log URI: file://" + logFile.getAbsolutePath());
+            logHtmlFile = new File(runDirectory, "index.html");
+            FileUtils.touch(logFile);
+
+            System.out.println("Log URI: file://" + logHtmlFile.getAbsolutePath());
 
         } catch (IOException e) {
             throw new MelinoeException(e);
@@ -48,6 +52,10 @@ public class LogFileManager {
 
     public File getLogFile() {
         return logFile;
+    }
+
+    public File getLogHtmlFile() {
+        return logHtmlFile;
     }
 
     public File getRunDirectory() { return runDirectory; }
