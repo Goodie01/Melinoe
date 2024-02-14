@@ -11,7 +11,6 @@ import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
 import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
-import nz.geek.goodwin.melinoe.framework.internal.web.driver.CommonUtils;
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.WebDriver;
 
@@ -63,7 +62,29 @@ public class MotherSession {
     }
 
     public Session newSession() {
-        return new SessionImpl(fileManager, logger.createSublogger("Test 1"), webDriverRegister);
+        String logMessage;
+        switch (MelinoeExtension.EXECUTION_TYPE) {
+            case BEFORE_ALL -> {
+                logMessage = "Before all";
+            }
+            case BEFORE_EACH -> {
+                logMessage = "Before each";
+            }
+            case TEST -> {
+                logMessage = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
+            }
+            case AFTER_EACH -> {
+                logMessage = "After each";
+            }
+            case AFTER_ALL -> {
+                logMessage = "After all";
+            }
+            default -> {
+                logMessage = "Other???";
+            }
+        }
+
+        return new SessionImpl(fileManager, logger.createSublogger(logMessage), webDriverRegister);
     }
 
     public void closeAll() {

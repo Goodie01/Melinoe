@@ -1,15 +1,21 @@
 package org.goodiemania.melinoe.samples.standard;
 
 import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.internal.MelinoeExtension;
 import org.goodiemania.melinoe.samples.GithubRepoPage;
 import org.goodiemania.melinoe.samples.GithubRepoPullRequestPage;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.File;
 
+@ExtendWith(MelinoeExtension.class)
 public class Basic{
     private static GithubRepoPage staticGithubRepoPage;
     private static GithubRepoPullRequestPage staticGithubRepoPullRequestPage;
@@ -18,8 +24,10 @@ public class Basic{
     private GithubRepoPullRequestPage githubRepoPullRequestPage;
 
     @BeforeAll
-    public static void init() {
+    public static void initAll() {
+        System.out.println("Before all");
         session = Session.create();
+        System.out.println("Before all");
         session.log().add()
                 .withMessage("Before all");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
@@ -32,11 +40,44 @@ public class Basic{
     }
 
     @AfterAll
-    public static void tearDown() {
+    public static void tearDownAll() {
+        System.out.println("After all");
         session = Session.create();
+        System.out.println("After all");
         session.log()
                 .add()
                 .withMessage("After all");
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage = new GithubRepoPage(session);
+        staticGithubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
+        staticGithubRepoPage.checkPage();
+        staticGithubRepoPage.clickPullRequestLink();
+        staticGithubRepoPullRequestPage.checkPage();
+        Session.closeAll();
+    }
+
+    @BeforeEach
+    public void init() {
+        System.out.println("Before each");
+        session = Session.create();
+        System.out.println("Before each");
+        session.log().add().withMessage("Before each");
+        session.web().navigate().to("https://github.com/Goodie01/Melinoe");
+        staticGithubRepoPage = new GithubRepoPage(session);
+        staticGithubRepoPullRequestPage = new GithubRepoPullRequestPage(session);
+
+        staticGithubRepoPage.checkPage();
+        staticGithubRepoPage.clickPullRequestLink();
+        staticGithubRepoPullRequestPage.checkPage();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        System.out.println("After each");
+        session = Session.create();
+        System.out.println("After each");
+        session.log().add().withMessage("After each");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         staticGithubRepoPage = new GithubRepoPage(session);
         staticGithubRepoPullRequestPage = new GithubRepoPullRequestPage(session);

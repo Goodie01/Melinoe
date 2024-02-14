@@ -4,7 +4,6 @@ import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
-import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverImpl;
 import nz.geek.goodwin.melinoe.framework.internal.web.WebDriverRegister;
 
@@ -21,6 +20,11 @@ public class SessionImpl implements Session {
         this.logFileManager = logFileManager;
         this.logger = logger;
         this.webDriverRegister = webDriverRegister;
+
+        System.out.println("DISP: " + MelinoeExtension.DISPLAY_NAME);
+        System.out.println("METH: " + MelinoeExtension.METHOD_NAME);
+        System.out.println("CLSS: " + MelinoeExtension.CLASS_NAME);
+        System.out.println("THRO: " + MelinoeExtension.THROWABLE);
     }
 
     @Override

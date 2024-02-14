@@ -42,10 +42,7 @@
             let displayedMessages = []
             for (let i = 0; i < viewQuery.length; i++) {
                 let index = viewQuery[i];
-                console.log(index)
                 let maybeMessages = log[index].subSessionMessages;
-                console.dir(maybeMessages)
-
                 if (maybeMessages !== undefined) {
                     displayedMessages = maybeMessages
                 }
@@ -72,12 +69,14 @@
         const message = displayedMessages[i];
 
         let builtHtml = `<tr><td class="align-top">${message.dateTime}</td>`;
+        let formattedMessage = message.message.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
         if(message.subSessionMessages == null) {
-            builtHtml = `${builtHtml}<td class="align-top">${message.message}</td>`
+            builtHtml = `${builtHtml}<td class="align-top">${formattedMessage}</td>`
         } else {
             let searchQuery
             searchQuery = buildNewSearchQuery(i,viewQuery);
-            builtHtml = `${builtHtml}<td class="align-top"><a href="index.html?q=${searchQuery}">${message.message}</a></td>`
+            builtHtml = `${builtHtml}<td class="align-top"><a href="index.html?q=${searchQuery}">${formattedMessage}</a></td>`
         }
         if(message.image == null) {
             builtHtml = `${builtHtml}<td class="align-top">-</td>`
