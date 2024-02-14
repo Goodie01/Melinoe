@@ -21,6 +21,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Goodie
@@ -30,14 +32,16 @@ import java.time.format.DateTimeFormatter;
 public class MotherSession {
     private static MotherSession SESSION;
     private final LogFileManager fileManager;
-    private final LoggerImpl logger;
+    private final LoggerImpl rootLogger;
+    private final Map<String, LoggerImpl> classLoggersMap;
     private final WebDriverRegister webDriverRegister;
     private final ObjectMapper objectMapper;
 
     private MotherSession() {
         webDriverRegister = new WebDriverRegister();
         fileManager = new LogFileManager();
-        logger = new LoggerImpl(fileManager);
+        rootLogger = new LoggerImpl(fileManager);
+        classLoggersMap = new HashMap<>();
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
 
@@ -64,32 +68,22 @@ public class MotherSession {
     public Session newSession() {
         String logMessage;
         switch (MelinoeExtension.EXECUTION_TYPE) {
-            case BEFORE_ALL -> {
-                logMessage = "Before all";
-            }
-            case BEFORE_EACH -> {
-                logMessage = "Before each";
-            }
-            case TEST -> {
-                logMessage = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
-            }
-            case AFTER_EACH -> {
-                logMessage = "After each";
-            }
-            case AFTER_ALL -> {
-                logMessage = "After all";
-            }
-            default -> {
-                logMessage = "Other???";
-            }
+            case BEFORE_ALL -> logMessage = "Before all";
+            case BEFORE_EACH -> logMessage = "Before each";
+            case TEST -> logMessage = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
+            case AFTER_EACH -> logMessage = "After each";
+            case AFTER_ALL -> logMessage = "After all";
+            default -> logMessage = "Other???";
         }
 
-        return new SessionImpl(fileManager, logger.createSublogger(logMessage), webDriverRegister);
+        LoggerImpl classLogger = classLoggersMap.computeIfAbsent(MelinoeExtension.CLASS_NAME, s -> rootLogger.createSublogger(MelinoeExtension.CLASS_NAME));
+
+        return new SessionImpl(fileManager, classLogger.createSublogger(logMessage), webDriverRegister);
     }
 
     public void closeAll() {
         try {
-            String jsonOutput = objectMapper.writer().writeValueAsString(logger.getLogMessages());
+            String jsonOutput = objectMapper.writer().writeValueAsString(rootLogger.getLogMessages());
             writeLogJsonFile(jsonOutput);
             writeLogHtmlFile(jsonOutput);
         } catch (IOException e) {

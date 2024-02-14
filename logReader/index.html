@@ -39,10 +39,10 @@
         if (viewQuery.length === 0) {
             return log
         } else {
-            let displayedMessages = []
+            let displayedMessages = log
             for (let i = 0; i < viewQuery.length; i++) {
                 let index = viewQuery[i];
-                let maybeMessages = log[index].subSessionMessages;
+                let maybeMessages = displayedMessages[index].subSessionMessages;
                 if (maybeMessages !== undefined) {
                     displayedMessages = maybeMessages
                 }
