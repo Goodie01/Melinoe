@@ -20,11 +20,6 @@ public class SessionImpl implements Session {
         this.logFileManager = logFileManager;
         this.logger = logger;
         this.webDriverRegister = webDriverRegister;
-
-        System.out.println("DISP: " + MelinoeExtension.DISPLAY_NAME);
-        System.out.println("METH: " + MelinoeExtension.METHOD_NAME);
-        System.out.println("CLSS: " + MelinoeExtension.CLASS_NAME);
-        System.out.println("THRO: " + MelinoeExtension.THROWABLE);
     }
 
     @Override

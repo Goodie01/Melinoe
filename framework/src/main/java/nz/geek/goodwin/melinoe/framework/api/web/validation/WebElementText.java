@@ -5,6 +5,8 @@ import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.function.ToBooleanBiFunction;
 
+import java.util.function.Supplier;
+
 public class WebElementText implements WebValidator {
     private final String searchText;
     private final WebElement webElement;

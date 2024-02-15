@@ -1,4 +1,4 @@
-package org.goodiemania.melinoe.samples;
+package org.goodiemania.melinoe.samples.github;
 
 import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.web.BasePage;

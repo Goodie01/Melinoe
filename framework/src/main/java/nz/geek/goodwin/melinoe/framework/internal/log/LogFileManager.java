@@ -43,7 +43,7 @@ public class LogFileManager {
             logHtmlFile = new File(runDirectory, "index.html");
             FileUtils.touch(logFile);
 
-            System.out.println("Log URI: file://" + logHtmlFile.getAbsolutePath());
+            System.out.println("Log URI: file:///" + logHtmlFile.getCanonicalPath().replace('\\','/'));
 
         } catch (IOException e) {
             throw new MelinoeException(e);

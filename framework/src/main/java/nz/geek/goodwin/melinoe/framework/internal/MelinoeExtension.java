@@ -30,42 +30,36 @@ public class MelinoeExtension implements BeforeTestExecutionCallback, AfterTestE
     public void beforeAll(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.BEFORE_ALL;
-        System.out.println("Before all callback");
     }
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.BEFORE_EACH;
-        System.out.println("Before each callback");
     }
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.TEST;
-        System.out.println("Before test execution");
     }
 
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.AFTER_EACH;
-        System.out.println("After test execution");
     }
 
     @Override
     public void afterEach(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.AFTER_ALL;
-        System.out.println("After each callback");
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         fetchInformation(context);
         EXECUTION_TYPE = Type.OTHER;
-        System.out.println("After all callback");
     }
 
 

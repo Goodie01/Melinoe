@@ -2,8 +2,8 @@ package org.goodiemania.melinoe.samples.standard;
 
 import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.internal.MelinoeExtension;
-import org.goodiemania.melinoe.samples.GithubRepoPage;
-import org.goodiemania.melinoe.samples.GithubRepoPullRequestPage;
+import org.goodiemania.melinoe.samples.github.GithubRepoPage;
+import org.goodiemania.melinoe.samples.github.GithubRepoPullRequestPage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -11,12 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.RegisterExtension;
-
-import java.io.File;
 
 @ExtendWith(MelinoeExtension.class)
-public class Basic{
+public class GitHubTest {
     private static GithubRepoPage staticGithubRepoPage;
     private static GithubRepoPullRequestPage staticGithubRepoPullRequestPage;
     private static Session session;
@@ -25,9 +22,7 @@ public class Basic{
 
     @BeforeAll
     public static void initAll() {
-        System.out.println("Before all");
         session = Session.create();
-        System.out.println("Before all");
         session.log().add()
                 .withMessage("Before all");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
@@ -41,9 +36,7 @@ public class Basic{
 
     @AfterAll
     public static void tearDownAll() {
-        System.out.println("After all");
         session = Session.create();
-        System.out.println("After all");
         session.log()
                 .add()
                 .withMessage("After all");
@@ -59,9 +52,7 @@ public class Basic{
 
     @BeforeEach
     public void init() {
-        System.out.println("Before each");
         session = Session.create();
-        System.out.println("Before each");
         session.log().add().withMessage("Before each");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         staticGithubRepoPage = new GithubRepoPage(session);
@@ -74,9 +65,7 @@ public class Basic{
 
     @AfterEach
     public void tearDown() {
-        System.out.println("After each");
         session = Session.create();
-        System.out.println("After each");
         session.log().add().withMessage("After each");
         session.web().navigate().to("https://github.com/Goodie01/Melinoe");
         staticGithubRepoPage = new GithubRepoPage(session);
