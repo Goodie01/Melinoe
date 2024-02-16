@@ -1,10 +1,13 @@
 package nz.geek.goodwin.melinoe.framework.internal;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+
+import java.io.StringWriter;
+import java.io.PrintWriter;
+
+import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.log.Logger;
+import nz.geek.goodwin.melinoe.framework.internal.log.LoggerImpl;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
@@ -12,8 +15,11 @@ import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.openqa.selenium.bidi.log.Log;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Goodie
@@ -23,60 +29,113 @@ public class MelinoeExtension implements BeforeTestExecutionCallback, AfterTestE
     public static String CLASS_NAME;
     public static String METHOD_NAME;
     public static Throwable THROWABLE;
-    public static Type EXECUTION_TYPE;
+    public static TestMethodType EXECUTION_TYPE;
+
+    public static boolean IN_JUNIT_TEST = false;
+
+    private static String CURRENT_LOGGER_STORE_NAME = "";
+    private static Map<String, Logger> LOG_STORE = new HashMap<>();
 
 
     @Override
     public void beforeAll(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.BEFORE_ALL;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.BEFORE_ALL;
     }
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.BEFORE_EACH;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.BEFORE_EACH;
     }
 
     @Override
     public void beforeTestExecution(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.TEST;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.TEST;
     }
 
     @Override
     public void afterTestExecution(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.AFTER_EACH;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.AFTER_EACH;
+
+        Object logger = context.getStore(ExtensionContext.Namespace.GLOBAL).get("logger"); //TODO store logger here, so I can pull it out and add a failed exception, if said exception exists
     }
 
     @Override
     public void afterEach(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.AFTER_ALL;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.AFTER_ALL;
     }
 
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
-        fetchInformation(context);
-        EXECUTION_TYPE = Type.OTHER;
+        populateInformation(context);
+        EXECUTION_TYPE = TestMethodType.OTHER;
+        Session.closeAll();
+    }
+
+    public static void storeLogger(Logger logger) {
+        LOG_STORE.put(createLoggerCustomStoreName(), logger);
     }
 
 
-    private static void fetchInformation(ExtensionContext context) {
+    private static void populateInformation(ExtensionContext context) {
+        IN_JUNIT_TEST = true;
         METHOD_NAME = context.getTestMethod().map(Method::getName).orElse(null);
         CLASS_NAME = context.getTestClass().map(Class::getCanonicalName).orElse(null);
         DISPLAY_NAME = context.getDisplayName();
-        context.getExecutionException().ifPresentOrElse(throwable -> THROWABLE = throwable, () -> THROWABLE = null);
+
+        if(METHOD_NAME == null) {
+            CURRENT_LOGGER_STORE_NAME = CLASS_NAME;
+        } else {
+            CURRENT_LOGGER_STORE_NAME = CLASS_NAME + "." + METHOD_NAME;
+        }
+
+        context.getExecutionException().ifPresentOrElse(throwable -> {
+            THROWABLE = throwable;
+            Logger logger = LOG_STORE.get(createLoggerCustomStoreName());
+            if(logger == null) {
+                return;
+            }
+
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            throwable.printStackTrace(pw);
+            String stacktrace = sw.toString();
+
+            logger.add().withSuccess(false).withMessage(stacktrace);
+
+        }, () -> THROWABLE = null);
     }
 
-    public enum Type {
-        BEFORE_ALL,
-        BEFORE_EACH,
-        TEST,
-        AFTER_EACH,
-        AFTER_ALL,
-        OTHER,
-        ;
+    private static String createLoggerCustomStoreName() {
+        String logMessage = switch (MelinoeExtension.EXECUTION_TYPE) {
+            case BEFORE_ALL -> "before_all";
+            case BEFORE_EACH -> "before_each";
+            case AFTER_EACH -> "after_each";
+            case AFTER_ALL -> "after_all";
+            default -> "ather???";
+        };
+
+        if(isBeforeOrAfterAll()) {
+            return CLASS_NAME + "." + logMessage;
+        } else {
+            if(isBeforeOrAfterEach()) {
+                return CLASS_NAME + "." + METHOD_NAME + "."+ logMessage;
+            }
+            return CLASS_NAME + "." + METHOD_NAME;
+        }
     }
+
+
+    private static boolean isBeforeOrAfterEach() {
+        return EXECUTION_TYPE == TestMethodType.BEFORE_EACH || EXECUTION_TYPE == TestMethodType.AFTER_EACH;
+    }
+
+    private static boolean isBeforeOrAfterAll() {
+        return EXECUTION_TYPE == TestMethodType.BEFORE_ALL || EXECUTION_TYPE == TestMethodType.AFTER_ALL;
+    }
+
 }

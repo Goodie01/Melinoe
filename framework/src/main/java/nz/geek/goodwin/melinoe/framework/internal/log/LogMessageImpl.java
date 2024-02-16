@@ -68,12 +68,16 @@ public class LogMessageImpl implements LogMessage {
     }
 
     @Override
-    public void withSuccess(boolean success) {
+    public LogMessage withSuccess(boolean success) {
         this.success = success;
+        return this;
     }
 
     @Override
     public boolean isSuccess() {
+        if(subSessionMessages != null) {
+            return !subSessionMessages.stream().anyMatch(logMessage -> !logMessage.isSuccess()) && success;
+        }
         return success;
     }
 }

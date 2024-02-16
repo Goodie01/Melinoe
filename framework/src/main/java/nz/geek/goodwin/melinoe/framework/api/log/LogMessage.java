@@ -26,7 +26,7 @@ public interface LogMessage {
 
     LogMessage withSubSessionMessages(List<LogMessage> subSessionLogger);
 
-    void withSuccess(boolean success);
+    LogMessage withSuccess(boolean success);
 
     boolean isSuccess();
 }

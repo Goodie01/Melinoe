@@ -41,7 +41,7 @@ public class MotherSession {
     private MotherSession() {
         webDriverRegister = new WebDriverRegister();
         fileManager = new LogFileManager();
-        rootLogger = new LoggerImpl(fileManager);
+        rootLogger = new LoggerImpl();
         classLoggersMap = new HashMap<>();
         methodLoggersMap = new HashMap<>();
 
@@ -68,8 +68,11 @@ public class MotherSession {
     }
 
     public Session newSession() {
-        String prettyName = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
+        if(!MelinoeExtension.IN_JUNIT_TEST) {
+            return new SessionImpl(fileManager, rootLogger, webDriverRegister);
+        }
 
+        String prettyName = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
         String logMessage = switch (MelinoeExtension.EXECUTION_TYPE) {
             case BEFORE_ALL -> "Before all";
             case BEFORE_EACH -> "Before each";
@@ -78,17 +81,35 @@ public class MotherSession {
             default -> "Other???";
         };
 
-        LoggerImpl classLogger = classLoggersMap.computeIfAbsent(MelinoeExtension.CLASS_NAME, s -> rootLogger.createSublogger(MelinoeExtension.CLASS_NAME));
+        String classLoggerKey = MelinoeExtension.CLASS_NAME;
+        LoggerImpl classLogger = classLoggersMap.computeIfAbsent(classLoggerKey, s -> rootLogger.createSublogger(MelinoeExtension.CLASS_NAME));
+        MelinoeExtension.storeLogger(classLogger);
 
-        if(MelinoeExtension.EXECUTION_TYPE == MelinoeExtension.Type.BEFORE_ALL || MelinoeExtension.EXECUTION_TYPE == MelinoeExtension.Type.AFTER_ALL) {
-            return new SessionImpl(fileManager, classLogger.createSublogger(logMessage), webDriverRegister);
+        if(isBeforeOrAfterAll()) {
+            LoggerImpl beforeAfterAllLogger = classLogger.createSublogger(logMessage);
+            MelinoeExtension.storeLogger(beforeAfterAllLogger);
+            return new SessionImpl(fileManager, beforeAfterAllLogger, webDriverRegister);
         } else {
-            LoggerImpl methodLogger = methodLoggersMap.computeIfAbsent(MelinoeExtension.CLASS_NAME + MelinoeExtension.METHOD_NAME, s -> classLogger.createSublogger(prettyName));
-            if(MelinoeExtension.EXECUTION_TYPE == MelinoeExtension.Type.BEFORE_EACH || MelinoeExtension.EXECUTION_TYPE == MelinoeExtension.Type.AFTER_EACH) {
-                return new SessionImpl(fileManager, methodLogger.createSublogger(logMessage), webDriverRegister);
+            String methodLoggerKey = MelinoeExtension.CLASS_NAME + MelinoeExtension.METHOD_NAME;
+            LoggerImpl methodLogger = methodLoggersMap.computeIfAbsent(methodLoggerKey, s -> classLogger.createSublogger(prettyName));
+
+            if(isBeforeOrAfterEach()) {
+                LoggerImpl sublogger = methodLogger.createSublogger(logMessage);
+                MelinoeExtension.storeLogger(sublogger);
+                return new SessionImpl(fileManager, sublogger, webDriverRegister);
             }
+
+            MelinoeExtension.storeLogger(methodLogger);
             return new SessionImpl(fileManager, methodLogger, webDriverRegister);
         }
+    }
+
+    private static boolean isBeforeOrAfterEach() {
+        return MelinoeExtension.EXECUTION_TYPE == TestMethodType.BEFORE_EACH || MelinoeExtension.EXECUTION_TYPE == TestMethodType.AFTER_EACH;
+    }
+
+    private static boolean isBeforeOrAfterAll() {
+        return MelinoeExtension.EXECUTION_TYPE == TestMethodType.BEFORE_ALL || MelinoeExtension.EXECUTION_TYPE == TestMethodType.AFTER_ALL;
     }
 
     public void closeAll() {

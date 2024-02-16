@@ -11,16 +11,13 @@ import java.util.List;
  * @author Goodie
  */
 public class LoggerImpl implements Logger {
-    private final LogFileManager logFileManager;
     private final List<LogMessage> logMessages;
 
-    public LoggerImpl(LogFileManager logFileManager) {
-        this.logFileManager = logFileManager;
+    public LoggerImpl() {
         logMessages = new ArrayList<>();
     }
 
-    private LoggerImpl(LogFileManager logFileManager, List<LogMessage> logMessages) {
-        this.logFileManager = logFileManager;
+    private LoggerImpl(List<LogMessage> logMessages) {
         this.logMessages = logMessages;
     }
 
@@ -37,7 +34,7 @@ public class LoggerImpl implements Logger {
         ArrayList<LogMessage> subSessionLogger = new ArrayList<>();
         add().withSubSessionMessages(subSessionLogger).withMessage(title);
 
-        return new LoggerImpl(logFileManager, subSessionLogger);
+        return new LoggerImpl(subSessionLogger);
     }
 
     public List<LogMessage> getLogMessages() {

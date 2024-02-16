@@ -74,7 +74,6 @@ public class GitHubTest {
         staticGithubRepoPage.checkPage();
         staticGithubRepoPage.clickPullRequestLink();
         staticGithubRepoPullRequestPage.checkPage();
-        Session.closeAll();
     }
 
     @Test

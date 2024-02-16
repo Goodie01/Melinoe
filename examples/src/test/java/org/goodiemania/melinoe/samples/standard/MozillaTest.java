@@ -32,4 +32,11 @@ public class MozillaTest {
         mozillaManifestopage.checkPage();
         mozillaManifestopage.validateSubtitle();
     }
+
+    @Test
+    @DisplayName("Run with exception")
+    public void runWithException() {
+        session = Session.create();
+        throw new RuntimeException("This test should fail");
+    }
 }
