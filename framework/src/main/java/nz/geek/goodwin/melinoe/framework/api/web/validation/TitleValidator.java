@@ -31,8 +31,7 @@ public class TitleValidator implements WebValidator {
     public ValidationResult validate(final WebDriver webDriver) {
         String actualTitle = webDriver.getTitle();
         if (comparisonType.applyAsBoolean(actualTitle, expectedTitle)) {
-            return ValidationResult.passed("",
-                    "Found expected title: " + expectedTitle);
+            return ValidationResult.passed("Found expected title: " + expectedTitle);
         } else {
             return ValidationResult.failed("Title is not as expected",
                     String.format("Expected title: %s", expectedTitle),

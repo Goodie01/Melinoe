@@ -8,7 +8,7 @@ import java.util.List;
  */
 public record ValidationResult(boolean valid, List<String> messages) {
 
-    public static ValidationResult passed(final String... messages) {
+    public static ValidationResult  passed(final String... messages) {
         return new ValidationResult(true, Arrays.asList(messages));
     }
 

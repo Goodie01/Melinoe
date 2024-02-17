@@ -17,21 +17,21 @@
         }
         .table-zebra tbody tr.failure:nth-child(even) {
             --tw-bg-opacity: 1;
-            background-color: #dc2626
+            background-color: #ef4444
         }
         .table-zebra tbody tr.failure:nth-child(odd) {
             --tw-bg-opacity: 1;
-            background-color: #b91c1c
+            background-color: #ef4444
         }
         .table thead {
             --tw-bg-opacity: 1;
-            background-color: #1d4ed8
+            background-color: #a8a29e
         }
     </style>
 </head>
 <body>
 <div class="overflow-x-auto">
-    <table class="table table-zebra">
+    <table class="my-5 mx-auto w-10/12 table table-zebra">
         <thead>
         <tr>
             <th>Time</th>
@@ -97,20 +97,22 @@
             styleClass = 'failure';
         }
 
-        let builtHtml = `<tr class="${styleClass}"><td class="align-top">${message.dateTime}</td>`;
+        let builtHtml = `<tr class="${styleClass}">`;
         let formattedMessage = message.message.replace(/(?:\r\n|\r|\n)/g, '<br>');
 
         if(message.subSessionMessages == null) {
-            builtHtml = `${builtHtml}<td class="align-top">${formattedMessage}</td>`
+            builtHtml = `${builtHtml}<td class="align-top">${message.dateTime}</td><td class="align-top">${formattedMessage}</td>`
         } else {
             let searchQuery
             searchQuery = buildNewSearchQuery(i,viewQuery);
-            builtHtml = `${builtHtml}<td class="align-top"><a href="index.html?q=${searchQuery}">${formattedMessage}</a></td>`
+            builtHtml = `${builtHtml}
+                        <td class="align-top"><a class="block" href="index.html?q=${searchQuery}">${message.dateTime}</a></td>
+                        <td class="align-top"><a class="block" href="index.html?q=${searchQuery}">${formattedMessage}</a></td>`
         }
         if(message.image == null) {
             builtHtml = `${builtHtml}<td class="align-top">-</td>`
         } else {
-            builtHtml = `${builtHtml}<td class="align-top"><a target="#" href="${message.image}"><img class="w-60" src="${message.image}"/></a></td>`
+            builtHtml = `${builtHtml}<td class="align-top"><a target="#" href="${message.image}"><img class="object-cover object-top h-60 w-60" src="${message.image}"/></a></td>`
         }
 
         logBody.innerHTML = `${logBody.innerHTML}${builtHtml}`

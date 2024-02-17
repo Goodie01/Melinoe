@@ -116,6 +116,7 @@ public class WebDriverImpl implements WebDriver {
 
         waitFor(webDriver -> remoteWebDriver.executeScript("return document.readyState").equals("complete"));
 
+        //TODO retry mechanism here
         List<ValidationResult> list = validators.stream()
                 .map(webValidator -> webValidator.validate(this))
                 .toList();
