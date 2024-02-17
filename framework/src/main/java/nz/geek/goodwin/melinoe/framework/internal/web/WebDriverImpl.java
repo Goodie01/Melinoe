@@ -9,7 +9,9 @@ import nz.geek.goodwin.melinoe.framework.api.web.validation.ValidationResult;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
+import nz.geek.goodwin.melinoe.framework.internal.Configuration;
 import nz.geek.goodwin.melinoe.framework.internal.log.LogFileManager;
+import nz.geek.goodwin.melinoe.framework.internal.misc.Sleeper;
 import nz.geek.goodwin.melinoe.framework.internal.web.decorator.FlowDecorator;
 import nz.geek.goodwin.melinoe.framework.internal.web.driver.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -116,13 +118,24 @@ public class WebDriverImpl implements WebDriver {
 
         waitFor(webDriver -> remoteWebDriver.executeScript("return document.readyState").equals("complete"));
 
-        //TODO retry mechanism here
-        List<ValidationResult> list = validators.stream()
-                .map(webValidator -> webValidator.validate(this))
-                .toList();
+        List<ValidationResult> list;
+        int retryCount = 0;
+
+        do {
+            retryCount++;
+            list = validators.stream()
+                    .map(webValidator -> webValidator.validate(this))
+                    .toList();
+            Sleeper.sleep(Configuration.RETRY_SLEEP_TIME_MS.intVal());
+        } while (list.stream().anyMatch(validationResult -> !validationResult.valid()) && retryCount < Configuration.RETRY_COUNT.intVal());
+
+        final int tryCount = retryCount;
 
         list.forEach(validationResult -> {
             String messages = validationResult.messages().stream().collect(Collectors.joining(System.lineSeparator()));
+            if(tryCount != 1) {
+                messages = messages + System.lineSeparator() + "Took " + tryCount + " attempts to achieve result";
+            }
             logger.add().withMessage(messages).withSuccess(validationResult.valid());
         });
 

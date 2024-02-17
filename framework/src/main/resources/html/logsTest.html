@@ -112,7 +112,7 @@
         if(message.image == null) {
             builtHtml = `${builtHtml}<td class="align-top">-</td>`
         } else {
-            builtHtml = `${builtHtml}<td class="align-top"><a target="#" href="${message.image}"><img class="object-cover object-top h-60 w-60" src="${message.image}"/></a></td>`
+            builtHtml = `${builtHtml}<td class="align-top"><a target="#" href="${message.image}"><img class="object-cover object-top h-60 min-w-60" src="${message.image}"/></a></td>`
         }
 
         logBody.innerHTML = `${logBody.innerHTML}${builtHtml}`

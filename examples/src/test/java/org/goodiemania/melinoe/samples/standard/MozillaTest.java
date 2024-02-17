@@ -32,6 +32,19 @@ public class MozillaTest {
         mozillaManifestopage.checkPage();
         mozillaManifestopage.validateSubtitle();
     }
+    @Test
+    @DisplayName("Another failing test")
+    public void runWithBadTitle() {
+        session = Session.create();
+        mozillaHomepage = new MozillaHomepage(session);
+        mozillaManifestopage = new MozillaManifestopage(session);
+
+        session.web().navigate().to("https://www.mozilla.org/en-US/");
+        mozillaHomepage.checkPage();
+        mozillaHomepage.clickManifestoLink();
+
+        mozillaHomepage.checkPage();
+    }
 
     @Test
     @DisplayName("Run with exception")
