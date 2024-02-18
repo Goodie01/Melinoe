@@ -9,6 +9,11 @@ public class By {
         this.text = text;
     }
 
+    @Override
+    public String toString() {
+        return type.plainName + " of '" + text + "'";
+    }
+
     public ByType getType() {
         return type;
     }
@@ -50,13 +55,24 @@ public class By {
     }
 
     public enum ByType {
-        ID,
-        LINK_TEXT,
-        PARTIAL_LINK_TEXT,
-        NAME,
-        TAG_NAME,
-        X_PATH,
-        CLASS_NAME,
-        CSS_SELECTOR
+        ID("ID"),
+        LINK_TEXT("link text"),
+        PARTIAL_LINK_TEXT("partial link text"),
+        NAME("name"),
+        TAG_NAME("tag name"),
+        X_PATH("x-path"),
+        CLASS_NAME("class name"),
+        CSS_SELECTOR("css selector");
+
+        private final String plainName;
+
+        ByType(String plainName) {
+
+            this.plainName = plainName;
+        }
+
+        public String getPlainName() {
+            return plainName;
+        }
     }
 }

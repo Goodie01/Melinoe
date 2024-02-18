@@ -2,6 +2,7 @@ package nz.geek.goodwin.melinoe.framework.internal.web;
 
 import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.Session;
+import nz.geek.goodwin.melinoe.framework.api.log.LogMessage;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.Navigate;
@@ -32,6 +33,7 @@ public class WebDriverImpl implements WebDriver {
     private final LogFileManager logFileManager;
     private final Logger logger;
     private final FlowDecorator flowDecorator;
+    private final PageCheckStatus pageCheckStatus;
 
     public WebDriverImpl(Session session, LogFileManager logFileManager, Logger logger, WebDriverRegister webDriverRegister) {
         this.logFileManager = logFileManager;
@@ -42,6 +44,7 @@ public class WebDriverImpl implements WebDriver {
 
         this.screenshotTaker = new ScreenshotTaker(remoteWebDriver, logFileManager);
         this.flowDecorator = new FlowDecorator(session);
+        this.pageCheckStatus = new PageCheckStatus(remoteWebDriver);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class WebDriverImpl implements WebDriver {
 
     @Override
     public Navigate navigate() {
-        return new NavigateImpl(remoteWebDriver);
+        return new NavigateImpl(remoteWebDriver, logger);
     }
 
     @Override
@@ -104,17 +107,19 @@ public class WebDriverImpl implements WebDriver {
 
     @Override
     public WebElement findElement(By by) {
-        return new WebElementImpl(remoteWebDriver, screenshotTaker, logger, by);
+        return new WebElementImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by);
     }
 
     @Override
     public List<WebElement> findElements(By by) {
-        return new WebElementListImpl(remoteWebDriver, screenshotTaker, logger, by);
+        return new WebElementListImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by);
     }
 
     @Override
     public void verify(List<WebValidator> validators) {
-        logger.add().withMessage("Running supplied validators").withImage(screenshotTaker.takeScreenshot());
+        if(!pageCheckStatus.check()) {
+            logger.add().withMessage("Verifying page").withImage(screenshotTaker.takeScreenshot());
+        }
 
         waitFor(webDriver -> remoteWebDriver.executeScript("return document.readyState").equals("complete"));
 
@@ -146,5 +151,7 @@ public class WebDriverImpl implements WebDriver {
         if(!list1.isEmpty()) {
             throw new MelinoeException("Verification failed");
         }
+
+        pageCheckStatus.set();
     }
 }

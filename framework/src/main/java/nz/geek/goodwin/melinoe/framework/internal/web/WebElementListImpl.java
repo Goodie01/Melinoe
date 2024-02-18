@@ -3,6 +3,7 @@ package nz.geek.goodwin.melinoe.framework.internal.web;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
+import org.openqa.selenium.devtools.v121.page.Page;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.Collection;
@@ -23,19 +24,19 @@ public class WebElementListImpl implements List<WebElement> {
     private final RemoteWebDriver remoteWebDriver;
     private final Function<RemoteWebDriver, List<WebElement>> webElementSupplier;
 
-    public WebElementListImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, Logger logger, By by) {
+    public WebElementListImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, PageCheckStatus pageCheckStatus, Logger logger, By by) {
         this.remoteWebDriver = remoteWebDriver;
         this.webElementSupplier = webDriver -> webDriver.findElements(ConvertBy.build(by))
                 .stream()
-                .map(webElement -> (WebElement) new WebElementImpl(remoteWebDriver, screenshotTaker, logger, remoteWebDriver1 -> webElement))
+                .map(webElement -> (WebElement) new WebElementImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by, remoteWebDriver1 -> webElement))
                 .toList();
     }
 
-    public WebElementListImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, Logger logger, Function<RemoteWebDriver, org.openqa.selenium.WebElement> parentSupplier, By by) {
+    public WebElementListImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, PageCheckStatus pageCheckStatus, Logger logger, Function<RemoteWebDriver, org.openqa.selenium.WebElement> parentSupplier, By by) {
         this.remoteWebDriver = remoteWebDriver;
         this.webElementSupplier = webDriver -> parentSupplier.apply(webDriver).findElements(ConvertBy.build(by))
                 .stream()
-                .map(webElement -> (WebElement) new WebElementImpl(remoteWebDriver, screenshotTaker, logger, remoteWebDriver1 -> webElement))
+                .map(webElement -> (WebElement) new WebElementImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by, remoteWebDriver1 -> webElement))
                 .toList();
     }
 

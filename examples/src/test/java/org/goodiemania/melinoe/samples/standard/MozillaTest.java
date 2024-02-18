@@ -33,7 +33,7 @@ public class MozillaTest {
         mozillaManifestopage.validateSubtitle();
     }
     @Test
-    @DisplayName("Another failing test")
+    @DisplayName("Run, checking for a page and being on the wrong page")
     public void runWithBadTitle() {
         session = Session.create();
         mozillaHomepage = new MozillaHomepage(session);
@@ -44,6 +44,16 @@ public class MozillaTest {
         mozillaHomepage.clickManifestoLink();
 
         mozillaHomepage.checkPage();
+    }
+    @Test
+    @DisplayName("Run, dont't validate page")
+    public void runWithOutChecking() {
+        session = Session.create();
+        mozillaHomepage = new MozillaHomepage(session);
+        mozillaManifestopage = new MozillaManifestopage(session);
+
+        session.web().navigate().to("https://www.mozilla.org/en-US/");
+        mozillaHomepage.clickManifestoLink();
     }
 
     @Test

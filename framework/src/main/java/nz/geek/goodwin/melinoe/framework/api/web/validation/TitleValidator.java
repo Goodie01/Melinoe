@@ -1,11 +1,8 @@
 package nz.geek.goodwin.melinoe.framework.api.web.validation;
 
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
-import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.function.ToBooleanBiFunction;
-
-import java.util.function.BiFunction;
 
 /**
  * Created on 28/06/2019.
@@ -24,7 +21,7 @@ public class TitleValidator implements WebValidator {
     }
 
     public static TitleValidator equals(final String searchText) {
-        return new TitleValidator( searchText, StringUtils::equals);
+        return new TitleValidator(searchText, StringUtils::equals);
     }
 
     @Override

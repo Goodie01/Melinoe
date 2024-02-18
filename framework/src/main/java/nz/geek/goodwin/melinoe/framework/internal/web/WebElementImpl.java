@@ -1,11 +1,11 @@
 package nz.geek.goodwin.melinoe.framework.internal.web;
 
+import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import java.io.File;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -15,31 +15,30 @@ import java.util.function.Function;
  */
 public class WebElementImpl implements WebElement {
     private final Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier;
+    private final By by;
     private final RemoteWebDriver remoteWebDriver;
     private final ScreenshotTaker screenshotTaker;
+    private final PageCheckStatus pageCheckStatus;
     private final Logger logger;
 
-    public WebElementImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, Logger logger, Function<RemoteWebDriver, org.openqa.selenium.WebElement> parentSupplier, By by) {
+    public WebElementImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, PageCheckStatus pageCheckStatus, Logger logger, By by, Function<RemoteWebDriver, org.openqa.selenium.WebElement> parentSupplier) {
         this.remoteWebDriver = remoteWebDriver;
         this.screenshotTaker = screenshotTaker;
+        this.pageCheckStatus = pageCheckStatus;
         this.logger = logger;
+        this.by = by;
 
         this.webElementSupplier = (webDriver) -> parentSupplier.apply(webDriver).findElement(ConvertBy.build(by));
     }
 
-    public WebElementImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, Logger logger, By by) {
+    public WebElementImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, PageCheckStatus pageCheckStatus, Logger logger, By by) {
         this.remoteWebDriver = remoteWebDriver;
         this.screenshotTaker = screenshotTaker;
+        this.pageCheckStatus = pageCheckStatus;
         this.logger = logger;
+        this.by = by;
 
         this.webElementSupplier = (webDriver) -> webDriver.findElement(ConvertBy.build(by));
-    }
-
-    public WebElementImpl(RemoteWebDriver remoteWebDriver, ScreenshotTaker screenshotTaker, Logger logger, Function<RemoteWebDriver, org.openqa.selenium.WebElement> webElementSupplier) {
-        this.webElementSupplier = webElementSupplier;
-        this.remoteWebDriver = remoteWebDriver;
-        this.screenshotTaker = screenshotTaker;
-        this.logger = logger;
     }
 
     private void withElement(final Consumer<org.openqa.selenium.WebElement> function) {
@@ -47,9 +46,12 @@ public class WebElementImpl implements WebElement {
         function.accept(foundWebElement);
     }
     private void loggedActionWithElement(final String text, final Consumer<org.openqa.selenium.WebElement> function) {
+        if(!pageCheckStatus.check()) {
+            throw new MelinoeException("Please check run at least one validator before interacting with a page.");
+        }
         withElement(webElement -> {
             String file = screenshotTaker.takeScreenshot(webElement);
-            logger.add().withMessage(text).withImage(file);
+            logger.add().withMessage(text + " element identified by " + by.toString()).withImage(file);
             function.accept(webElement);
         });
     }
@@ -66,12 +68,12 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public void sendKeys(String stringToEnter) {
-        loggedActionWithElement("Sending Keys", webElement -> webElement.sendKeys(stringToEnter));
+        loggedActionWithElement("Sending Keys to", webElement -> webElement.sendKeys(stringToEnter));
     }
 
     @Override
     public void clear() {
-        loggedActionWithElement("Clear", org.openqa.selenium.WebElement::clear);
+        loggedActionWithElement("Clearing", org.openqa.selenium.WebElement::clear);
     }
 
     @Override
@@ -111,11 +113,11 @@ public class WebElementImpl implements WebElement {
 
     @Override
     public List<WebElement> findElements(By by) {
-        return new WebElementListImpl(remoteWebDriver, screenshotTaker, logger, webElementSupplier, by);
+        return new WebElementListImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, webElementSupplier, by);
     }
 
     @Override
     public WebElement findElement(By by) {
-        return new WebElementImpl(remoteWebDriver, screenshotTaker, logger, webElementSupplier, by);
+        return new WebElementImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by, webElementSupplier);
     }
 }
