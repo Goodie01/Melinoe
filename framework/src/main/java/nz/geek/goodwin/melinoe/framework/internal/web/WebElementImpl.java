@@ -4,6 +4,8 @@ import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
+import nz.geek.goodwin.melinoe.framework.internal.Configuration;
+import nz.geek.goodwin.melinoe.framework.internal.misc.Sleeper;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.util.List;
@@ -64,6 +66,7 @@ public class WebElementImpl implements WebElement {
     @Override
     public void submit() {
         loggedActionWithElement("Submitting", org.openqa.selenium.WebElement::submit);
+        Sleeper.sleep(Configuration.RETRY_SLEEP_TIME_MS.intVal());
     }
 
     @Override
