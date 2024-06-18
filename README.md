@@ -1,5 +1,6 @@
 # Melinoe
 ![Java CI with Maven](https://github.com/Goodie01/Melinoe/workflows/Java%20CI%20with%20Maven/badge.svg)
+![Release](https://github.com/Goodie01/Melinoe/actions/workflows/release.yml/badge.svg)
 
 The goal is to provide a testing framework that can cover testing all aspects of a application in a similar method, that can have new components added to it as needed. This could, eventually, extend as far as testing a thick GUI Client.
 
