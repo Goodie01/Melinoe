@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Testy mc testerson</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.0/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .table-zebra tbody tr.success:hover {
+            --tw-bg-opacity: 1;
+            background-color: #166534
+        }
+        .table-zebra tbody tr.success {
+            --tw-bg-opacity: 1;
+            background-color: #16a34a
+        }
+        .table-zebra tbody tr.failure:hover {
+            --tw-bg-opacity: 1;
+            background-color: #9f1239
+        }
+        .table-zebra tbody tr.failure {
+            --tw-bg-opacity: 1;
+            background-color: #e11d48
+        }
+        .table thead {
+            --tw-bg-opacity: 1;
+            background-color: #a8a29e
+        }
+    </style>
+</head>
+<body>
+<div class="overflow-x-auto">
+    <table class="my-5 mx-auto w-10/12 table table-zebra">
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Title</th>
+            <th>-</th>
+        </tr>
+        </thead>
+        <tbody id="logBody">
+        </tbody>
+    </table>
+</div>
+</body>
+<script>
+    let log = []
+    function extractViewQuery() {
+        let rawQueryParam = new URLSearchParams(window.location.search).get('q');
+
+        if (rawQueryParam == null || rawQueryParam === "") {
+            return []
+        } else {
+            return rawQueryParam.split('.')
+                .map(value => Number(value))
+        }
+    }
+
+    function extractDisplayedLogMessages (log, viewQuery) {
+        if (viewQuery.length === 0) {
+            return log
+        } else {
+            let displayedMessages = log
+            for (let i = 0; i < viewQuery.length; i++) {
+                let index = viewQuery[i];
+                let maybeMessages = displayedMessages[index].subSessionMessages;
+                if (maybeMessages !== undefined) {
+                    displayedMessages = maybeMessages
+                }
+            }
+            return displayedMessages
+        }
+    }
+
+    function buildNewSearchQuery(i,viewQuery) {
+        if (viewQuery.length === 0) {
+            return i
+        } else {
+            return viewQuery.join(".") + "." + i
+        }
+    }
+
+    const viewQuery = extractViewQuery();
+    const displayedMessages = extractDisplayedLogMessages(log, viewQuery);
+
+    let logBody = document.getElementById("logBody");
+
+
+    for (let i = 0; i < displayedMessages.length; i++){
+        const message = displayedMessages[i];
+
+        let styleClass;
+        if(message.success) {
+            styleClass = 'success';
+        } else {
+            styleClass = 'failure';
+        }
+
+        let builtHtml = `<tr class="${styleClass}">`;
+        let formattedMessage = message.message.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+        if(message.subSessionMessages == null) {
+            builtHtml = `${builtHtml}<td class="align-top">${message.dateTime}</td><td class="align-top">${formattedMessage}</td>`
+        } else {
+            let successes = message.subSessionMessages.filter(value => value.success).length;
+            let failures = message.subSessionMessages.length - successes;
+            let searchQuery = buildNewSearchQuery(i,viewQuery);
+
+            builtHtml = `${builtHtml}
+                        <td class="align-top"><a class="block" href="index.html?q=${searchQuery}">${message.dateTime}</a></td>
+                        <td class="align-top"><a class="block" href="index.html?q=${searchQuery}">${formattedMessage} <br/> ${successes} Success. ${failures} failures.</a></td>`
+        }
+        if(message.image == null) {
+            builtHtml = `${builtHtml}<td class="align-top">-</td>`
+        } else {
+            builtHtml = `${builtHtml}<td class="align-top"><a target="#" href="${message.image}"><img class="object-cover object-top h-60 min-w-60" src="${message.image}"/></a></td>`
+        }
+        builtHtml = `${builtHtml}</tr>`
+
+        logBody.innerHTML = `${logBody.innerHTML}${builtHtml}`
+    }
+</script>
+</html>

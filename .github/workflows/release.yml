@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 21
+    - name: Build framework with Maven
+      run: mvn -B install --file framework/pom.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Build examples with Maven
+#        run: mvn -B install --file examples/pom.xml -Dmaven.test.skip=true
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#      - name: Run sonar for framework
+#        run: mvn -B verify sonar:sonar --file framework/pom.xml
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      - name: Run Sonar for examples
+#        run: mvn -B sonar:sonar --file examples/pom.xml -Dmaven.test.skip=true
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Configure Git user
+      run: |
+        git config user.email "actions@github.com"
+        git config user.name "GitHub Actions"
+    - name: Publish framework jar
+      run: mvn -B --file framework/pom.xml release:prepare release:perform
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get new framework version
+      run: echo "VERSION=$(mvn -B --file framework/pom.xml help:evaluate -Dexpression=project.version | grep -e '^[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT')" >> $GITHUB_ENV
+    - name: Update examples
+      run: mvn -B --file examples/pom.xml versions:set -DnewVersion=${{ env.VERSION }}
+    - name: Update examples
+      run: mvn -B --file examples/pom.xml versions:use-dep-version -Dincludes="nz.geek.goodwin.melinoe:framework" -DdepVersion=${{ env.VERSION }}  -DforceVersion=true
+    - name: Build framework with Maven
+      run: mvn -B --file examples/pom.xml versions:commit scm:checkin -Dmessage="automated commit" -Dusername=user -DpushChanges=true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
