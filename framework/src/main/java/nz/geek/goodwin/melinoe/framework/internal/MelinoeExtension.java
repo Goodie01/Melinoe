@@ -27,6 +27,7 @@ import java.util.Map;
  * @author Goodie
  */
 public class MelinoeExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback, BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback {
+    public static String CLASS_DISPLAY_NAME;
     public static String DISPLAY_NAME;
     public static String CLASS_NAME;
     public static String METHOD_NAME;
@@ -89,6 +90,9 @@ public class MelinoeExtension implements BeforeTestExecutionCallback, AfterTestE
         METHOD_NAME = context.getTestMethod().map(Method::getName).orElse(null);
         CLASS_NAME = context.getTestClass().map(Class::getCanonicalName).orElse(null);
         DISPLAY_NAME = context.getDisplayName();
+        if(METHOD_NAME == null) {
+            CLASS_DISPLAY_NAME = DISPLAY_NAME;
+        }
 
         context.getExecutionException().ifPresentOrElse(throwable -> {
             THROWABLE = throwable;
