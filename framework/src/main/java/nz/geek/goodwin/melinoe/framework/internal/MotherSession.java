@@ -69,7 +69,6 @@ public class MotherSession {
             return new SessionImpl(fileManager, rootLogger, closableRegister);
         }
 
-        String prettyName = MelinoeExtension.DISPLAY_NAME + System.lineSeparator() + MelinoeExtension.METHOD_NAME + "()";
         String logMessage = switch (MelinoeExtension.EXECUTION_TYPE) {
             case BEFORE_ALL -> "Before all";
             case BEFORE_EACH -> "Before each";
@@ -78,8 +77,7 @@ public class MotherSession {
             default -> "Other???";
         };
 
-        String classLoggerKey = MelinoeExtension.CLASS_NAME;
-        LoggerImpl classLogger = loggersMap.computeIfAbsent(classLoggerKey, s -> rootLogger.createSublogger(MelinoeExtension.CLASS_NAME));
+        LoggerImpl classLogger = loggersMap.computeIfAbsent(MelinoeExtension.CLASS_NAME, s -> rootLogger.createSublogger(MelinoeExtension.CLASS_DISPLAY_NAME));
         MelinoeExtension.storeLogger(classLogger);
 
         if(isBeforeOrAfterAll()) {
@@ -88,7 +86,7 @@ public class MotherSession {
             return new SessionImpl(fileManager, beforeAfterAllLogger, closableRegister);
         } else {
             String methodLoggerKey = MelinoeExtension.CLASS_NAME + MelinoeExtension.METHOD_NAME;
-            LoggerImpl methodLogger = loggersMap.computeIfAbsent(methodLoggerKey, s -> classLogger.createSublogger(prettyName));
+            LoggerImpl methodLogger = loggersMap.computeIfAbsent(methodLoggerKey, s -> classLogger.createSublogger(MelinoeExtension.DISPLAY_NAME));
 
             if(isBeforeOrAfterEach()) {
                 LoggerImpl sublogger = methodLogger.createSublogger(logMessage);
