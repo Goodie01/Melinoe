@@ -10,11 +10,11 @@ Melinoë is a chthonic nymph or goddess invoked in one of the Orphic Hymns and r
 
 In my time I've seen many automation frameworks. I have found that many of them focused on making the inputs as easy to read and digestible as possible. Often leaning in to such paradigms as BDD.
 
-Often this would follow a workflow where testers would write a BDD statement, which developers would then ensure connects to the correct code in the backend. In theory this means that developers only have to fill in the new blocks, and allows for code re-usability and for testers to know what the test was doing. In practice I often found that the testers BDD statements were often written in such a way as to often need new code, and re-usability was often a afterthought.
+Often this would follow a workflow where testers would write a BDD statement, which developers would then ensure connects to the correct code in the backend. In theory this means that developers only have to fill in the new blocks, and allows for code re-usability and for testers to know what the test was doing. In practice I often found that BDD did not live up to this dream. Statements either became long and coveted, and reusable, or not reusable, and readable.
 
-In other words I often found this liken to wringing blood from a stone. In my experience the most successful test framework I used was one that focused on making the output as digestible as possible. 
+In my experience the most successful test framework I used was one that focused on making the output as digestible as possible. 
 
-With this framework, and workflow testers describe what they want the tests to do in whatever method they want, developers are free to write code to do this as they like, and the output is readable by developers, testers, and others involved in the project as required.
+With this framework, the suggested workflow is that testers describe what they want the tests to do, and developers are free to write code to do this as they like, and the output is readable by product and project managers, developers, and testers.
 
 
 
