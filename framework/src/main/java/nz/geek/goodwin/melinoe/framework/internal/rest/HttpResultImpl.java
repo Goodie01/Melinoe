@@ -42,9 +42,9 @@ public class HttpResultImpl<T> implements HttpResult<T> {
             request.withMessage("> " + name + ": " + value);
         }));
 
-        String json = reqBody();
-        if(StringUtils.isNotBlank(json)) {
-            requestSublogger.add().withMessage(Prettifier.prettify(json));
+        String jsonReq = reqBody();
+        if(StringUtils.isNotBlank(jsonReq)) {
+            requestSublogger.add().withMessage(Prettifier.prettify(jsonReq));
         }
 
         LogMessage response = requestSublogger.add()
@@ -55,10 +55,12 @@ public class HttpResultImpl<T> implements HttpResult<T> {
             response.withMessage("< " + name + ": " + value);
         }));
 
-        json = String.valueOf(getBody());//TODO handle bodies other than strings
+        String jsonResp = StringUtils.trim(String.valueOf(getBody()));//TODO handle bodies other than strings better
 
-        if(StringUtils.isNotBlank(json)) {
-            requestSublogger.add().withMessage(Prettifier.prettify(json));
+        if(StringUtils.isNotBlank(jsonResp) && jsonResp.charAt(0) == '{') {
+            requestSublogger.add().withMessage(Prettifier.prettify(jsonResp));
+        } else {
+            requestSublogger.add().withMessage(jsonResp);
         }
     }
 
