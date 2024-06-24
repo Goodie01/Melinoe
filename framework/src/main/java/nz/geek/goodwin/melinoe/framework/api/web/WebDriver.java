@@ -1,5 +1,6 @@
 package nz.geek.goodwin.melinoe.framework.api.web;
 
+import nz.geek.goodwin.melinoe.framework.api.Experimental;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
 
 import java.util.Arrays;
@@ -25,12 +26,15 @@ public interface WebDriver {
 
     List<WebElement> findElements(By by);
 
+    @Experimental
     void clearCookie(String name);
 
+    @Experimental
     void clearCookie(Cookie cookie);
 
+    @Experimental
     void clearAll();
-
+    @Experimental
     Map<String, Cookie> cookies();
 
     void verify(final List<WebValidator> validators);
