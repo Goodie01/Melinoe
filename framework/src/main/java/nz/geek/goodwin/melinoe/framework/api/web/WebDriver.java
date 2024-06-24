@@ -4,6 +4,7 @@ import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -23,6 +24,14 @@ public interface WebDriver {
     WebElement findElement(By by);
 
     List<WebElement> findElements(By by);
+
+    void clearCookie(String name);
+
+    void clearCookie(Cookie cookie);
+
+    void clearAll();
+
+    Map<String, Cookie> cookies();
 
     void verify(final List<WebValidator> validators);
 

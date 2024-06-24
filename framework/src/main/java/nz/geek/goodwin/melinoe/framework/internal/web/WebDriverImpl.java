@@ -4,6 +4,7 @@ import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
 import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
+import nz.geek.goodwin.melinoe.framework.api.web.Cookie;
 import nz.geek.goodwin.melinoe.framework.api.web.Navigate;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.ValidationResult;
 import nz.geek.goodwin.melinoe.framework.api.web.WebDriver;
@@ -21,6 +22,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -118,6 +121,33 @@ public class WebDriverImpl implements WebDriver {
     @Override
     public List<WebElement> findElements(By by) {
         return new WebElementListImpl(remoteWebDriver, screenshotTaker, pageCheckStatus, logger, by);
+    }
+
+    @Override
+    public void clearCookie(String name) {
+        remoteWebDriver.manage().getCookieNamed(name);
+    }
+
+    @Override
+    public void clearCookie(Cookie cookie) {
+        remoteWebDriver.manage().getCookieNamed(cookie.getName());
+    }
+
+    @Override
+    public void clearAll() {
+        remoteWebDriver.manage().deleteAllCookies();
+    }
+
+    @Override
+    public Map<String, Cookie> cookies() {
+        if(!pageCheckStatus.check()) {
+            throw new MelinoeException("Please check run at least one validator before interacting with a pages cookies.");
+        }
+
+        return remoteWebDriver.manage().getCookies()
+                .stream()
+                .map(CookieImpl::new)
+                .collect(Collectors.toMap(CookieImpl::getName, Function.identity()));
     }
 
     @Override
