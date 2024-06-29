@@ -25,43 +25,14 @@ import java.util.stream.Collectors;
 public class HttpResultImpl<T> implements HttpResult<T> {
     private final Logger logger;
     private final HttpRequest req;
-    private final HttpResponse<T> resp;
-    private boolean checked = false;
+    private final HttpResponse<String> resp;
+    private final T body;
 
-    public HttpResultImpl(HttpRequest req, HttpResponse<T> resp, Logger logger) {
+    public HttpResultImpl(HttpRequest req, HttpResponse<String> resp, T t, Logger logger) {
         this.req = req;
         this.resp = resp;
+        this.body = t;
         this.logger = logger;
-
-        Logger requestSublogger = logger.createSublogger(reqMethod() + " " + reqUri().getHost() + reqUri().getPath());
-        LogMessage request = requestSublogger.add()
-                .withMessage("> " + reqMethod() + " " + reqUri())
-                .withMessage("> " + req.version().map(Enum::toString).orElse("Unspecified version"));
-
-        reqHeaders().forEach((name, values) -> values.forEach(value -> {
-            request.withMessage("> " + name + ": " + value);
-        }));
-
-        String jsonReq = reqBody();
-        if(StringUtils.isNotBlank(jsonReq)) {
-            requestSublogger.add().withMessage(Prettifier.prettify(jsonReq));
-        }
-
-        LogMessage response = requestSublogger.add()
-                .withMessage("< " + resp.version().toString() + " " + respStatus())
-                .withMessage("< " + respUri());
-
-        respHeaders().forEach((name, values) -> values.forEach(value -> {
-            response.withMessage("< " + name + ": " + value);
-        }));
-
-        String jsonResp = StringUtils.trim(String.valueOf(getBody()));//TODO handle bodies other than strings better
-
-        if(StringUtils.isNotBlank(jsonResp) && jsonResp.charAt(0) == '{') {
-            requestSublogger.add().withMessage(Prettifier.prettify(jsonResp));
-        } else {
-            requestSublogger.add().withMessage(jsonResp);
-        }
     }
 
     @Override
@@ -75,8 +46,19 @@ public class HttpResultImpl<T> implements HttpResult<T> {
     }
 
     @Override
-    public Map<String, List<String>> respHeaders() {
-        return this.resp.headers().map();
+    public Map<String, List<String>> reqHeaders() {
+        return this.req.headers().map();
+    }
+
+
+    @Override
+    public String reqBody() {
+        return req.bodyPublisher().map(p -> {
+            var bodySubscriber = HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8);
+            var flowSubscriber = new HttpResultImpl.StringSubscriber(bodySubscriber);
+            p.subscribe(flowSubscriber);
+            return bodySubscriber.getBody().toCompletableFuture().join();
+        }).orElseThrow();
     }
 
     @Override
@@ -90,55 +72,13 @@ public class HttpResultImpl<T> implements HttpResult<T> {
     }
 
     @Override
-    public Map<String, List<String>> reqHeaders() {
-        return this.req.headers().map();
+    public Map<String, List<String>> respHeaders() {
+        return this.resp.headers().map();
     }
 
     @Override
     public T respBody() {
-        if (!checked) {
-            throw new MelinoeException("Please check run at least one validator before interacting with a Http Result.");
-        }
-        return getBody();
-    }
-
-    private T getBody() {
-        return this.resp.body();
-    }
-
-    @Override
-    public HttpResult<T> verify(List<RestValidator<T>> validators) {
-        Logger verifyingLogger;
-        if (!checked) {
-            verifyingLogger = logger.createSublogger("Verifying response");
-        } else {
-            verifyingLogger = logger;
-        }
-
-        checked = true;
-        List<ValidationResult> list = validators.stream()
-                .map(webValidator -> webValidator.validate(this))
-                .toList();
-
-        list.forEach(validationResult -> {
-            String messages = validationResult.messages().stream().collect(Collectors.joining(System.lineSeparator()));
-            verifyingLogger.add().withMessage(messages).withSuccess(validationResult.valid());
-        });
-
-        VerificationUtils.checkVerificationResults(list);
-
-        return this;
-    }
-
-
-    @Override
-    public String reqBody() {
-        return req.bodyPublisher().map(p -> {
-            var bodySubscriber = HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8);
-            var flowSubscriber = new HttpResultImpl.StringSubscriber(bodySubscriber);
-            p.subscribe(flowSubscriber);
-            return bodySubscriber.getBody().toCompletableFuture().join();
-        }).orElseThrow();
+        return body;
     }
 
     private static final class StringSubscriber implements Flow.Subscriber<ByteBuffer> {

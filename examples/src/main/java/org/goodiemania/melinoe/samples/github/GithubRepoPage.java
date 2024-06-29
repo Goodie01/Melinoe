@@ -2,14 +2,13 @@ package org.goodiemania.melinoe.samples.github;
 
 import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.web.BasePage;
-import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.FindElement;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
-import nz.geek.goodwin.melinoe.framework.api.web.validation.TitleValidator;
-import nz.geek.goodwin.melinoe.framework.api.web.validation.WebElementText;
+import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 public class GithubRepoPage extends BasePage {
     @FindElement(linkText = "Pull requests")
     private WebElement pullRequestLink;
@@ -19,7 +18,7 @@ public class GithubRepoPage extends BasePage {
 
     public GithubRepoPage(final Session session) {
         super(session,
-                TitleValidator.equals("GitHub - Goodie01/Melinoe: Melinoe is named for the greek mythological figure who is known as a \"bringer of nightmares and madness\", this seems apt for a automated testing framework"));
+                WebValidator.titleEquals("GitHub - Goodie01/Melinoe: Melinoe is named for the greek mythological figure who is known as a \"bringer of nightmares and madness\", this seems apt for a automated testing framework"));
         //
     }
 

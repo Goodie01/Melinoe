@@ -28,10 +28,4 @@ public interface HttpResult<T> {
     Map<String, List<String>> respHeaders();
 
     T respBody();
-
-    default HttpResult<T> verify(final RestValidator<T>... validators) {
-        return verify(Arrays.asList(validators));
-    }
-
-    HttpResult<T> verify(List<RestValidator<T>> validators);
 }

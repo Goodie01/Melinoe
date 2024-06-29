@@ -1,12 +1,13 @@
 package nz.geek.goodwin.melinoe.framework.api.rest.validation;
 
+import nz.geek.goodwin.melinoe.framework.api.Validator;
 import nz.geek.goodwin.melinoe.framework.api.rest.HttpResult;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.ValidationResult;
 
 /**
  * @author Goodie
  */
-public interface RestValidator<T> {
+public interface RestValidator<T> extends Validator<HttpResult<T>> {
     ValidationResult validate(final HttpResult<T> result);
 
     static <T> RestValidator<T> statusCodeEquals(int statusCode) {
