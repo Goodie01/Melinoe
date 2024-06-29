@@ -5,8 +5,8 @@ import nz.geek.goodwin.melinoe.framework.api.web.BasePage;
 import nz.geek.goodwin.melinoe.framework.api.web.By;
 import nz.geek.goodwin.melinoe.framework.api.web.FindElement;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
-import nz.geek.goodwin.melinoe.framework.api.web.validation.TitleValidator;
 import nz.geek.goodwin.melinoe.framework.api.web.validation.WebElementText;
+import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
 
 /**
  * @author Goodie
@@ -16,7 +16,7 @@ public class MozillaManifestopage extends BasePage {
     private WebElement manifestoSubTitle;
 
     public MozillaManifestopage(Session session) {
-        super(session, TitleValidator.equals("The Mozilla Manifesto"),
+        super(session, WebValidator.titleEquals("The Mozilla Manifesto"),
                 WebElementText.equals(By.cssSelector(".addendum-subtitle"), "Pledge for a Healthy Internet"));
 
     }

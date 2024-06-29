@@ -4,7 +4,7 @@ import nz.geek.goodwin.melinoe.framework.api.Session;
 import nz.geek.goodwin.melinoe.framework.api.web.BasePage;
 import nz.geek.goodwin.melinoe.framework.api.web.FindElement;
 import nz.geek.goodwin.melinoe.framework.api.web.WebElement;
-import nz.geek.goodwin.melinoe.framework.api.web.validation.TitleValidator;
+import nz.geek.goodwin.melinoe.framework.api.web.validation.WebValidator;
 
 /**
  * @author Goodie
@@ -14,7 +14,7 @@ public class MozillaHomepage extends BasePage {
     private WebElement manifestoLink;
 
     public MozillaHomepage(Session session) {
-        super(session, TitleValidator.equals("Internet for people, not profit — Mozilla (US)"));
+        super(session, WebValidator.titleEquals("Internet for people, not profit — Mozilla (US)"));
     }
 
     public void clickManifestoLink() {

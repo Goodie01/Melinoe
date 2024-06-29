@@ -5,22 +5,26 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nz.geek.goodwin.melinoe.framework.api.MelinoeException;
+import nz.geek.goodwin.melinoe.framework.api.log.LogMessage;
 import nz.geek.goodwin.melinoe.framework.api.log.Logger;
 import nz.geek.goodwin.melinoe.framework.api.rest.HttpRequest;
 import nz.geek.goodwin.melinoe.framework.api.rest.HttpResult;
+import nz.geek.goodwin.melinoe.framework.api.rest.validation.RestValidator;
+import nz.geek.goodwin.melinoe.framework.internal.verify.VerificationUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Flow;
 
 import static java.net.URI.create;
 
@@ -92,56 +96,88 @@ public class HttpRequestImpl implements HttpRequest {
     }
 
     @Override
-    public HttpResult<String> resultAsString() {
-        try {
-            java.net.http.HttpRequest req = buildHttpRequest();
-            HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-
-            return new HttpResultImpl<>(req, resp, logger);
-        } catch (Exception e) {
-            throw new MelinoeException(e);
-        }
+    public HttpResult<String> verifyAsString(List<RestValidator<String>> validators) {
+        return gettHttpResult(s -> s, validators);
     }
 
     @Override
-    public HttpResult<JsonNode> result() {
-        try {
-            java.net.http.HttpRequest req = buildHttpRequest();
-            HttpResponse<JsonNode> resp = client.send(req, new JsonBodyHandler<>(objectMapper::readTree));
-
-            return new HttpResultImpl<>(req, resp, logger);
-        } catch (Exception e) {
-            throw new MelinoeException(e);
-        }
+    public HttpResult<JsonNode> verify(List<RestValidator<JsonNode>> validators) {
+        return gettHttpResult(objectMapper::readTree, validators);
     }
 
     @Override
-    public <T> HttpResult<T> result(Class<T> tClass) {
-        try {
-            java.net.http.HttpRequest req = buildHttpRequest();
-            HttpResponse<T> resp = client.send(req, new JsonBodyHandler<>(inputStream -> objectMapper.readValue(inputStream, tClass)));
-
-            return new HttpResultImpl<>(req, resp, logger);
-        } catch (Exception e) {
-            throw new MelinoeException(e);
-        }
+    public <T> HttpResult<T> verify(TypeReference<T> typeReference, List<RestValidator<T>> validators) {
+        return gettHttpResult(s -> objectMapper.readValue(s, typeReference), validators);
     }
 
     @Override
-    public <T> HttpResult<T> result(TypeReference<T> typeReference) {
-        try {
-            java.net.http.HttpRequest req = buildHttpRequest();
-            HttpResponse<T> resp = client.send(req, new JsonBodyHandler<>(inputStream -> objectMapper.readValue(inputStream, typeReference)));
-            return new HttpResultImpl<T>(req, resp, logger);
-        } catch (Exception e) {
-            throw new MelinoeException(e);
+    public <T> HttpResult<T> verify(Class<T> tClass, final List<RestValidator<T>> validators) {
+        return gettHttpResult(s -> objectMapper.readValue(s, tClass), validators);
+    }
+
+    private <T> HttpResult<T> gettHttpResult(Function<String, T> tSupplier, List<RestValidator<T>> validators) {
+        java.net.http.HttpRequest req = buildHttpRequest();
+        Logger requestSublogger = logger.createSublogger(req.method() + " " + req.uri().getHost() + req.uri().getPath());
+
+        return VerificationUtils.validate(validators, requestSublogger, () -> {
+            try {
+                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+                T t = tSupplier.apply(resp.body());
+                HttpResultImpl<T> result = new HttpResultImpl<>(req, resp, t, logger);
+                log(requestSublogger, req, resp);
+
+                return result;
+            } catch (Exception e) {
+                throw new MelinoeException(e);
+            }
+        });
+    }
+
+    private String reqBody(java.net.http.HttpRequest req) {
+        return req.bodyPublisher().map(p -> {
+            var bodySubscriber = HttpResponse.BodySubscribers.ofString(StandardCharsets.UTF_8);
+            var flowSubscriber = new StringSubscriber(bodySubscriber);
+            p.subscribe(flowSubscriber);
+            return bodySubscriber.getBody().toCompletableFuture().join();
+        }).orElseThrow();
+    }
+
+    private void log(Logger logger, java.net.http.HttpRequest req, HttpResponse<String> resp) {
+        logger.add().withMessage("Making request");
+        LogMessage request = logger.add()
+                .withMessage("> " + req.method() + " " + req.uri())
+                .withMessage("> " + req.version().map(Enum::toString).orElse("Unspecified version"));
+
+        req.headers().map().forEach((name, values) -> values.forEach(value -> {
+            request.withMessage("> " + name + ": " + value);
+        }));
+
+        String jsonReq = reqBody(req);
+        if (StringUtils.isNotBlank(jsonReq)) {
+            logger.add().withMessage(Prettifier.prettify(jsonReq));
+        }
+
+        LogMessage response = logger.add()
+                .withMessage("< " + resp.version().toString() + " " + resp.statusCode())
+                .withMessage("< " + resp.uri());
+
+        resp.headers().map().forEach((name, values) -> values.forEach(value -> {
+            response.withMessage("< " + name + ": " + value);
+        }));
+
+        String jsonResp = StringUtils.trim(resp.body());//TODO handle bodies other than strings better
+
+        if (StringUtils.startsWith(jsonResp, "{")) {
+            logger.add().withMessage(Prettifier.prettify(jsonResp));
+        } else {
+            logger.add().withMessage(jsonResp);
         }
     }
 
     private java.net.http.HttpRequest buildHttpRequest() {
         URI requestUrl = create(url);
         java.net.http.HttpRequest.BodyPublisher bodyPublisher;
-        if(body == null) {
+        if (body == null) {
             bodyPublisher = java.net.http.HttpRequest.BodyPublishers.noBody();
         } else {
             bodyPublisher = java.net.http.HttpRequest.BodyPublishers.ofString(body);
@@ -158,38 +194,35 @@ public class HttpRequestImpl implements HttpRequest {
         return req.build();
     }
 
-    //https://stackoverflow.com/questions/57629401/deserializing-json-using-java-11-httpclient-and-custom-bodyhandler-with-jackson
-    private class JsonBodyHandler<W> implements HttpResponse.BodyHandler<W> {
+    private static final class StringSubscriber implements Flow.Subscriber<ByteBuffer> {
+        final HttpResponse.BodySubscriber<String> wrapped;
 
-        private final Function<W> function;
-
-        public JsonBodyHandler(Function<W> function) {
-            this.function = function;
+        StringSubscriber(HttpResponse.BodySubscriber<String> wrapped) {
+            this.wrapped = wrapped;
         }
 
         @Override
-        public HttpResponse.BodySubscriber<W> apply(HttpResponse.ResponseInfo responseInfo) {
-            return HttpResponse.BodySubscribers.mapping(
-                    HttpResponse.BodySubscribers.ofInputStream(),
-                    inputStream -> {
-                        try (InputStream stream = inputStream) {
-                            return function.apply(stream);
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    });
+        public void onSubscribe(Flow.Subscription subscription) {
+            wrapped.onSubscribe(subscription);
         }
 
+        @Override
+        public void onNext(ByteBuffer item) {
+            wrapped.onNext(List.of(item));
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            wrapped.onError(throwable);
+        }
+
+        @Override
+        public void onComplete() {
+            wrapped.onComplete();
+        }
     }
+    public interface Function<T, R> {
 
-    private interface Function<R> {
-
-        /**
-         * Applies this function to the given argument.
-         *
-         * @param t the function argument
-         * @return the function result
-         */
-        R apply(InputStream t) throws IOException;
+        R apply(T t) throws Exception;
     }
 }

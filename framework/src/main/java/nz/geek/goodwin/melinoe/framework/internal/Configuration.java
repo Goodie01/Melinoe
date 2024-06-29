@@ -11,9 +11,21 @@ import org.apache.commons.lang3.StringUtils;
 public enum Configuration {
     BROWSER,
     BROWSER_EXE_LOCATION,
-    RETRY_COUNT,
-    RETRY_SLEEP_TIME_MS,
+    RETRY_COUNT("5"),
+    RETRY_SLEEP_TIME_MS("100"),
     ;
+
+    private static Properties PROPERTIES;
+
+    private final String defaultValue;
+
+    Configuration() {
+        this.defaultValue = null;
+    }
+
+    Configuration(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 
     private Object valueOf() {
         String propertyName = this.toString();
@@ -23,15 +35,18 @@ public enum Configuration {
             return propertyFromSystem;
         }
 
-        Properties properties = new Properties();
-        String propertyFile = System.getProperty("props", "default.properties");
+        if(PROPERTIES == null) {
+            PROPERTIES = new Properties();
+            String propertyFile = System.getProperty("props", "default.properties");
 
-        try (FileReader propertiesFileReader = new FileReader(propertyFile)) {
-            properties.load(propertiesFileReader);
-        } catch (IOException | NullPointerException e) {
-            throw new IllegalStateException("Unable to load properties file", e);
+            try (FileReader propertiesFileReader = new FileReader(propertyFile)) {
+                PROPERTIES.load(propertiesFileReader);
+            } catch (IOException | NullPointerException e) {
+                throw new IllegalStateException("Unable to load properties file", e);
+            }
         }
-        return properties.get(propertyName);
+
+        return PROPERTIES.getProperty(propertyName, defaultValue);
     }
     public String val() {
         return valueOf().toString();

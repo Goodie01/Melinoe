@@ -14,6 +14,7 @@ import java.util.List;
 public class FailingTests {
     private Session session;
     private MozillaHomepage mozillaHomepage;
+
     @Test
     @DisplayName("Run, checking for a page and being on the wrong page")
     public void runWithBadTitle() {
@@ -26,6 +27,7 @@ public class FailingTests {
 
         mozillaHomepage.checkPage();
     }
+
     @Test
     @DisplayName("Run, dont't validate page")
     public void runWithOutChecking() {
@@ -49,7 +51,6 @@ public class FailingTests {
         session = Session.create();
         session.rest().get("https://1.1.1.1/dns-query?name=cloudflare.com")
                 .header("accept", "application/dns-json")
-                .result()
                 .verify(List.of(RestValidator.statusCodeEquals(201)));
     }
 }

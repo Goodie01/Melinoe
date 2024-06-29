@@ -152,37 +152,8 @@ public class WebDriverImpl implements WebDriver {
 
     @Override
     public void verify(List<WebValidator> validators) {
-        Logger verifyingLogger;
-        if(!pageCheckStatus.check()) {
-            verifyingLogger = logger.createSublogger("Verifying page - " + getTitle(), screenshotTaker.takeScreenshot());
-        } else {
-            verifyingLogger = logger;
-        }
-
         waitFor(webDriver -> remoteWebDriver.executeScript("return document.readyState").equals("complete"));
-
-        List<ValidationResult> list;
-        int retryCount = 0;
-
-        do {
-            retryCount++;
-            list = validators.stream()
-                    .map(webValidator -> webValidator.validate(this))
-                    .toList();
-            Sleeper.sleep(Configuration.RETRY_SLEEP_TIME_MS.intVal());
-        } while (list.stream().anyMatch(validationResult -> !validationResult.valid()) && retryCount < Configuration.RETRY_COUNT.intVal());
-
-        final int tryCount = retryCount;
-
-        list.forEach(validationResult -> {
-            String messages = validationResult.messages().stream().collect(Collectors.joining(System.lineSeparator()));
-            if(tryCount != 1) {
-                messages = messages + System.lineSeparator() + "Took " + tryCount + " attempts to achieve result";
-            }
-            verifyingLogger.add().withMessage(messages).withSuccess(validationResult.valid());
-        });
-
-        VerificationUtils.checkVerificationResults(list);
+        VerificationUtils.validate(validators, logger.createSublogger("Verifying page - " + getTitle(), screenshotTaker.takeScreenshot()), () -> this);
         pageCheckStatus.set();
     }
 }
