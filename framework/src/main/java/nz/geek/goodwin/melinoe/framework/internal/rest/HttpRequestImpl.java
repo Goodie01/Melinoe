@@ -122,11 +122,11 @@ public class HttpRequestImpl implements HttpRequest {
         return VerificationUtils.validate(validators, requestSublogger, () -> {
             try {
                 HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                T t = tSupplier.apply(resp.body());
-                HttpResultImpl<T> result = new HttpResultImpl<>(req, resp, t, logger);
                 log(requestSublogger, req, resp);
 
-                return result;
+                T t = tSupplier.apply(resp.body());
+
+                return new HttpResultImpl<>(req, resp, t, logger);
             } catch (Exception e) {
                 throw new MelinoeException(e);
             }
